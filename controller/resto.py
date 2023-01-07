@@ -51,13 +51,13 @@ def update_shop(shop_id):
 
 
 
-# @shopapp.route('/api/shop/delete/<shop_id>', methods=['DELETE'])
-# def delete_shop(shop_id):
-#     result = shop_collection.delete_one({"_id": ObjectId(shop_id)})
-#     if result.deleted_count > 0:
-#         return jsonify({"message": "Shop deleted successfully"})
-#     else:
-#         return jsonify({"message": "Shop not found"}, 404)
+@shopapp.route('/api/shop/delete/<shop_id>', methods=['DELETE'])
+def delete_shop(shop_id):
+    result = shop_collection.delete_one({"_id": ObjectId(shop_id)})
+    if result.deleted_count > 0:
+        return jsonify({"message": "Shop deleted successfully"})
+    else:
+        return jsonify({"message": "Shop not found"}, 404)
 # # __________________________________-shop End-__________________________________
 
 
