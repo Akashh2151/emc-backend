@@ -64,11 +64,11 @@ def delete_shop(shop_id):
 
 # # __________________________________-ShopMasters-__________________________________
 
-# @shopapp.route('/api/shopmasters/create', methods=['POST'])
-# def create_shop_master():
-#     data = request.get_json()
-#     result = shop_masters_collection.insert_one(data)
-#     return jsonify({"message": "ShopMaster created successfully", "shop_master_id": str(result.inserted_id)})
+@shopapp.route('/api/shopmasters/create', methods=['POST'])
+def create_shop_master():
+    data = request.get_json()
+    result = shop_masters_collection.insert_one(data)
+    return jsonify({"message": "ShopMaster created successfully", "shop_master_id": str(result.inserted_id)})
 
 # @shopapp.route('/api/shopmasters/<shop_master_id>', methods=['GET'])
 # def get_shop_master(shop_master_id):
