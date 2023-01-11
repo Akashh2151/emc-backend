@@ -70,14 +70,14 @@ def create_shop_master():
     result = shop_masters_collection.insert_one(data)
     return jsonify({"message": "ShopMaster created successfully", "shop_master_id": str(result.inserted_id)})
 
-# @shopapp.route('/api/shopmasters/<shop_master_id>', methods=['GET'])
-# def get_shop_master(shop_master_id):
-#     shop_master = shop_masters_collection.find_one({"_id": ObjectId(shop_master_id)})
-#     if shop_master:
-#         shop_master["_id"] = str(shop_master["_id"])
-#         return jsonify(shop_master)
-#     else:
-#         return jsonify({"message": "ShopMaster not found"}, 404)
+@shopapp.route('/api/shopmasters/<shop_master_id>', methods=['GET'])
+def get_shop_master(shop_master_id):
+    shop_master = shop_masters_collection.find_one({"_id": ObjectId(shop_master_id)})
+    if shop_master:
+        shop_master["_id"] = str(shop_master["_id"])
+        return jsonify(shop_master)
+    else:
+        return jsonify({"message": "ShopMaster not found"}, 404)
 
 # @shopapp.route('/api/shopmasters/update/<shop_master_id>', methods=['PUT'])
 # def update_shop_master(shop_master_id):
