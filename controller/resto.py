@@ -148,13 +148,13 @@ def update_general_master(general_master_id):
         return jsonify({"error": str(e)}, 500)
 
 
-# @shopapp.route('/api/generalmaster/delete/<general_master_id>', methods=['DELETE'])
-# def delete_general_master(general_master_id):
-#     result = general_master_collection.delete_one({"_id": ObjectId(general_master_id)})
-#     if result.deleted_count > 0:
-#         return jsonify({"message": "GeneralMaster deleted successfully"})
-#     else:
-#         return jsonify({"message": "GeneralMaster not found"}, 404)
+@shopapp.route('/api/generalmaster/delete/<general_master_id>', methods=['DELETE'])
+def delete_general_master(general_master_id):
+    result = general_master_collection.delete_one({"_id": ObjectId(general_master_id)})
+    if result.deleted_count > 0:
+        return jsonify({"message": "GeneralMaster deleted successfully"})
+    else:
+        return jsonify({"message": "GeneralMaster not found"}, 404)
 
 # # __________________________________-GeneralMaster End-__________________________________
 
