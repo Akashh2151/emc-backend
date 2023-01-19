@@ -176,18 +176,18 @@ def create_shop_item_master():
     except Exception as e:
         return jsonify({"error": str(e)}, 500)
 
-# # Get ShopItemMaster Details
-# @shopapp.route('/api/shopitemmaster/<shop_item_master_id>', methods=['GET'])
-# def get_shop_item_master(shop_item_master_id):
-#     try:
-#         shop_item_master = shop_item_master_collection.find_one({"_id": ObjectId(shop_item_master_id)})
-#         if shop_item_master:
-#             shop_item_master["_id"] = str(shop_item_master["_id"])
-#             return jsonify(shop_item_master)
-#         else:
-#             return jsonify({"message": "ShopItemMaster not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# Get ShopItemMaster Details
+@shopapp.route('/api/shopitemmaster/<shop_item_master_id>', methods=['GET'])
+def get_shop_item_master(shop_item_master_id):
+    try:
+        shop_item_master = shop_item_master_collection.find_one({"_id": ObjectId(shop_item_master_id)})
+        if shop_item_master:
+            shop_item_master["_id"] = str(shop_item_master["_id"])
+            return jsonify(shop_item_master)
+        else:
+            return jsonify({"message": "ShopItemMaster not found"}, 404)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 # # Update ShopItemMaster Details
 # @shopapp.route('/api/shopitemmaster/update/<shop_item_master_id>', methods=['PUT'])
