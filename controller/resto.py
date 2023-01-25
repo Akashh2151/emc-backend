@@ -251,24 +251,24 @@ def get_shop_payment_master(payment_master_id):
     except Exception as e:
         return jsonify({"error": str(e)}, 500)
 
-# # Update ShopPaymentMaster Details
-# @shopapp.route('/api/shoppaymentmaster/update/<payment_master_id>', methods=['PUT'])
-# def update_shop_payment_master(payment_master_id):
-#     data = request.get_json()
-#     try:
-#         if data:
-#             # Exclude the '_id' field from the update
-#             data.pop('_id', None)
+# Update ShopPaymentMaster Details
+@shopapp.route('/api/shoppaymentmaster/update/<payment_master_id>', methods=['PUT'])
+def update_shop_payment_master(payment_master_id):
+    data = request.get_json()
+    try:
+        if data:
+            # Exclude the '_id' field from the update
+            data.pop('_id', None)
 
-#             result = shop_payment_master.update_one({"_id": ObjectId(payment_master_id)}, {"$set": data})
-#             if result.modified_count > 0:
-#                 return jsonify({"message": "ShopPaymentMaster updated successfully"})
-#             else:
-#                 return jsonify({"message": "ShopPaymentMaster not found or no changes made"}, 404)
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+            result = shop_payment_master.update_one({"_id": ObjectId(payment_master_id)}, {"$set": data})
+            if result.modified_count > 0:
+                return jsonify({"message": "ShopPaymentMaster updated successfully"})
+            else:
+                return jsonify({"message": "ShopPaymentMaster not found or no changes made"}, 404)
+        else:
+            return jsonify({"error": "Invalid JSON data"}, 400)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 
 # # Delete ShopPaymentMaster
