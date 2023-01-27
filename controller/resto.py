@@ -271,17 +271,17 @@ def update_shop_payment_master(payment_master_id):
         return jsonify({"error": str(e)}, 500)
 
 
-# # Delete ShopPaymentMaster
-# @shopapp.route('/api/shoppaymentmaster/delete/<payment_master_id>', methods=['DELETE'])
-# def delete_shop_payment_master(payment_master_id):
-#     try:
-#         result = shop_payment_master.delete_one({"_id": ObjectId(payment_master_id)})
-#         if result.deleted_count > 0:
-#             return jsonify({"message": "ShopPaymentMaster deleted successfully"})
-#         else:
-#             return jsonify({"message": "ShopPaymentMaster not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# Delete ShopPaymentMaster
+@shopapp.route('/api/shoppaymentmaster/delete/<payment_master_id>', methods=['DELETE'])
+def delete_shop_payment_master(payment_master_id):
+    try:
+        result = shop_payment_master.delete_one({"_id": ObjectId(payment_master_id)})
+        if result.deleted_count > 0:
+            return jsonify({"message": "ShopPaymentMaster deleted successfully"})
+        else:
+            return jsonify({"message": "ShopPaymentMaster not found"}, 404)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
  
 
 # # __________________________________-ShopPaymentMaster End-__________________________________
