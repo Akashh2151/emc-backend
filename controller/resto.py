@@ -289,18 +289,18 @@ def delete_shop_payment_master(payment_master_id):
 
 
 # # __________________________________-ShopInvoices __________________________________
-# # Create ShopInvoice
-# @shopapp.route('/api/shopinvoices/create', methods=['POST'])
-# def create_shop_invoice():
-#     data = request.get_json()
-#     try:
-#         if data:
-#             result = shop_invoices.insert_one(data)
-#             return jsonify({"message": "ShopInvoice created successfully", "invoice_id": str(result.inserted_id)})
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# Create ShopInvoice
+@shopapp.route('/api/shopinvoices/create', methods=['POST'])
+def create_shop_invoice():
+    data = request.get_json()
+    try:
+        if data:
+            result = shop_invoices.insert_one(data)
+            return jsonify({"message": "ShopInvoice created successfully", "invoice_id": str(result.inserted_id)})
+        else:
+            return jsonify({"error": "Invalid JSON data"}, 400)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 # # Get ShopInvoice Details
 # @shopapp.route('/api/shopinvoices/<invoice_id>', methods=['GET'])
