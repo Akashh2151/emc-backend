@@ -335,17 +335,17 @@ def update_shop_invoice(invoice_id):
         return jsonify({"error": str(e)}, 500)
 
 
-# # Delete ShopInvoice
-# @shopapp.route('/api/shopinvoices/delete/<invoice_id>', methods=['DELETE'])
-# def delete_shop_invoice(invoice_id):
-#     try:
-#         result = shop_invoices.delete_one({"_id": ObjectId(invoice_id)})
-#         if result.deleted_count > 0:
-#             return jsonify({"message": "ShopInvoice deleted successfully"})
-#         else:
-#             return jsonify({"message": "ShopInvoice not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# Delete ShopInvoice
+@shopapp.route('/api/shopinvoices/delete/<invoice_id>', methods=['DELETE'])
+def delete_shop_invoice(invoice_id):
+    try:
+        result = shop_invoices.delete_one({"_id": ObjectId(invoice_id)})
+        if result.deleted_count > 0:
+            return jsonify({"message": "ShopInvoice deleted successfully"})
+        else:
+            return jsonify({"message": "ShopInvoice not found"}, 404)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 # # __________________________________-ShopInvoices End-__________________________________
 
