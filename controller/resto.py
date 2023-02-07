@@ -303,17 +303,17 @@ def create_shop_invoice():
         return jsonify({"error": str(e)}, 500)
 
 # Get ShopInvoice Details
-@shopapp.route('/api/shopinvoices/<invoice_id>', methods=['GET'])
-def get_shop_invoice(invoice_id):
-    try:
-        invoice = shop_invoices.find_one({"_id": ObjectId(invoice_id)})
-        if invoice:
-            invoice["_id"] = str(invoice["_id"])
-            return jsonify(invoice)
-        else:
-            return jsonify({"message": "ShopInvoice not found"}, 404)
-    except Exception as e:
-        return jsonify({"error": str(e)}, 500)
+# @shopapp.route('/api/shopinvoices/<invoice_id>', methods=['GET'])
+# def get_shop_invoice(invoice_id):
+#     try:
+#         invoice = shop_invoices.find_one({"_id": ObjectId(invoice_id)})
+#         if invoice:
+#             invoice["_id"] = str(invoice["_id"])
+#             return jsonify(invoice)
+#         else:
+#             return jsonify({"message": "ShopInvoice not found"}, 404)
+#     except Exception as e:
+#         return jsonify({"error": str(e)}, 500)
 
 # Update ShopInvoice Details
 # @shopapp.route('/api/shopinvoices/update/<invoice_id>', methods=['PUT'])
