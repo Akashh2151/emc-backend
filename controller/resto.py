@@ -239,17 +239,17 @@ def create_shop_payment_master():
         return jsonify({"error": str(e)}, 500)
 
 # Get ShopPaymentMaster Details
-@shopapp.route('/api/shoppaymentmaster/<payment_master_id>', methods=['GET'])
-def get_shop_payment_master(payment_master_id):
-    try:
-        payment_master = shop_payment_master.find_one({"_id": ObjectId(payment_master_id)})
-        if payment_master:
-            payment_master["_id"] = str(payment_master["_id"])
-            return jsonify(payment_master)
-        else:
-            return jsonify({"message": "ShopPaymentMaster not found"}, 404)
-    except Exception as e:
-        return jsonify({"error": str(e)}, 500)
+# @shopapp.route('/api/shoppaymentmaster/<payment_master_id>', methods=['GET'])
+# def get_shop_payment_master(payment_master_id):
+#     try:
+#         payment_master = shop_payment_master.find_one({"_id": ObjectId(payment_master_id)})
+#         if payment_master:
+#             payment_master["_id"] = str(payment_master["_id"])
+#             return jsonify(payment_master)
+#         else:
+#             return jsonify({"message": "ShopPaymentMaster not found"}, 404)
+#     except Exception as e:
+#         return jsonify({"error": str(e)}, 500)
 
 # Update ShopPaymentMaster Details
 # @shopapp.route('/api/shoppaymentmaster/update/<payment_master_id>', methods=['PUT'])
