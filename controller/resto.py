@@ -226,17 +226,17 @@ def delete_shop_item_master(shop_item_master_id):
 # # __________________________________-ShopPaymentMaster-__________________________________
 
 # Create ShopPaymentMaster
-@shopapp.route('/api/shoppaymentmaster/create', methods=['POST'])
-def create_shop_payment_master():
-    data = request.get_json()
-    try:
-        if data:
-            result = shop_payment_master.insert_one(data)
-            return jsonify({"message": "ShopPaymentMaster created successfully", "payment_master_id": str(result.inserted_id)})
-        else:
-            return jsonify({"error": "Invalid JSON data"}, 400)
-    except Exception as e:
-        return jsonify({"error": str(e)}, 500)
+# @shopapp.route('/api/shoppaymentmaster/create', methods=['POST'])
+# def create_shop_payment_master():
+#     data = request.get_json()
+#     try:
+#         if data:
+#             result = shop_payment_master.insert_one(data)
+#             return jsonify({"message": "ShopPaymentMaster created successfully", "payment_master_id": str(result.inserted_id)})
+#         else:
+#             return jsonify({"error": "Invalid JSON data"}, 400)
+#     except Exception as e:
+#         return jsonify({"error": str(e)}, 500)
 
 # Get ShopPaymentMaster Details
 # @shopapp.route('/api/shoppaymentmaster/<payment_master_id>', methods=['GET'])
