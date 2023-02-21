@@ -164,17 +164,17 @@ def delete_general_master(general_master_id):
 # # __________________________________-ShopItemMaster -__________________________________
 
  # Create ShopItemMaster
-@shopapp.route('/api/shopitemmaster/create', methods=['POST'])
-def create_shop_item_master():
-    data = request.get_json()
-    try:
-        if data:
-            result = shop_item_master_collection.insert_one(data)
-            return jsonify({"message": "ShopItemMaster created successfully", "shop_item_master_id": str(result.inserted_id)})
-        else:
-            return jsonify({"error": "Invalid JSON data"}, 400)
-    except Exception as e:
-        return jsonify({"error": str(e)}, 500)
+# @shopapp.route('/api/shopitemmaster/create', methods=['POST'])
+# def create_shop_item_master():
+#     data = request.get_json()
+#     try:
+#         if data:
+#             result = shop_item_master_collection.insert_one(data)
+#             return jsonify({"message": "ShopItemMaster created successfully", "shop_item_master_id": str(result.inserted_id)})
+#         else:
+#             return jsonify({"error": "Invalid JSON data"}, 400)
+#     except Exception as e:
+#         return jsonify({"error": str(e)}, 500)
 
 # Get ShopItemMaster Details
 # @shopapp.route('/api/shopitemmaster/<shop_item_master_id>', methods=['GET'])
