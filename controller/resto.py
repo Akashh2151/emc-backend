@@ -129,23 +129,23 @@ def get_general_master(general_master_id):
     else:
         return jsonify({"message": "GeneralMaster not found"}, 404)
 
-@shopapp.route('/api/generalmaster/update/<general_master_id>', methods=['PUT'])
-def update_general_master(general_master_id):
-    data = request.get_json()
-    try:
-        if data:
-            # Exclude the '_id' field from the update
-            data.pop('_id', None)
+# @shopapp.route('/api/generalmaster/update/<general_master_id>', methods=['PUT'])
+# def update_general_master(general_master_id):
+#     data = request.get_json()
+#     try:
+#         if data:
+#             # Exclude the '_id' field from the update
+#             data.pop('_id', None)
 
-            result = general_master_collection.update_one({"_id": ObjectId(general_master_id)}, {"$set": data})
-            if result.modified_count > 0:
-                return jsonify({"message": "GeneralMaster updated successfully"})
-            else:
-                return jsonify({"message": "GeneralMaster not found or no changes made"}, 404)
-        else:
-            return jsonify({"error": "Invalid JSON data"}, 400)
-    except Exception as e:
-        return jsonify({"error": str(e)}, 500)
+#             result = general_master_collection.update_one({"_id": ObjectId(general_master_id)}, {"$set": data})
+#             if result.modified_count > 0:
+#                 return jsonify({"message": "GeneralMaster updated successfully"})
+#             else:
+#                 return jsonify({"message": "GeneralMaster not found or no changes made"}, 404)
+#         else:
+#             return jsonify({"error": "Invalid JSON data"}, 400)
+#     except Exception as e:
+#         return jsonify({"error": str(e)}, 500)
 
 
 # @shopapp.route('/api/generalmaster/delete/<general_master_id>', methods=['DELETE'])
