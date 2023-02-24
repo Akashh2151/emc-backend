@@ -120,14 +120,14 @@ def create_general_master():
     result = general_master_collection.insert_one(data)
     return jsonify({"message": "GeneralMaster created successfully", "general_master_id": str(result.inserted_id)})
 
-@shopapp.route('/api/generalmaster/<general_master_id>', methods=['GET'])
-def get_general_master(general_master_id):
-    general_master = general_master_collection.find_one({"_id": ObjectId(general_master_id)})
-    if general_master:
-        general_master["_id"] = str(general_master["_id"])
-        return jsonify(general_master)
-    else:
-        return jsonify({"message": "GeneralMaster not found"}, 404)
+# @shopapp.route('/api/generalmaster/<general_master_id>', methods=['GET'])
+# def get_general_master(general_master_id):
+#     general_master = general_master_collection.find_one({"_id": ObjectId(general_master_id)})
+#     if general_master:
+#         general_master["_id"] = str(general_master["_id"])
+#         return jsonify(general_master)
+#     else:
+#         return jsonify({"message": "GeneralMaster not found"}, 404)
 
 # @shopapp.route('/api/generalmaster/update/<general_master_id>', methods=['PUT'])
 # def update_general_master(general_master_id):
