@@ -114,11 +114,11 @@ def delete_shop_master(shop_master_id):
 
 # # __________________________________-GeneralMaster-__________________________________
 
-@shopapp.route('/api/generalmaster/create', methods=['POST'])
-def create_general_master():
-    data = request.get_json()
-    result = general_master_collection.insert_one(data)
-    return jsonify({"message": "GeneralMaster created successfully", "general_master_id": str(result.inserted_id)})
+# @shopapp.route('/api/generalmaster/create', methods=['POST'])
+# def create_general_master():
+#     data = request.get_json()
+#     result = general_master_collection.insert_one(data)
+#     return jsonify({"message": "GeneralMaster created successfully", "general_master_id": str(result.inserted_id)})
 
 # @shopapp.route('/api/generalmaster/<general_master_id>', methods=['GET'])
 # def get_general_master(general_master_id):
