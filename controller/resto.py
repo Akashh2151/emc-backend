@@ -99,13 +99,13 @@ def update_shop_master(shop_master_id):
 
 
 
-@shopapp.route('/api/shopmasters/delete/<shop_master_id>', methods=['DELETE'])
-def delete_shop_master(shop_master_id):
-    result = shop_masters_collection.delete_one({"_id": ObjectId(shop_master_id)})
-    if result.deleted_count > 0:
-        return jsonify({"message": "ShopMaster deleted successfully"})
-    else:
-        return jsonify({"message": "ShopMaster not found"}, 404)
+# @shopapp.route('/api/shopmasters/delete/<shop_master_id>', methods=['DELETE'])
+# def delete_shop_master(shop_master_id):
+#     result = shop_masters_collection.delete_one({"_id": ObjectId(shop_master_id)})
+#     if result.deleted_count > 0:
+#         return jsonify({"message": "ShopMaster deleted successfully"})
+#     else:
+#         return jsonify({"message": "ShopMaster not found"}, 404)
 
 # # __________________________________-ShopMasters End-__________________________________
 
