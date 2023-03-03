@@ -79,23 +79,23 @@ def get_shop_master(shop_master_id):
     else:
         return jsonify({"message": "ShopMaster not found"}, 404)
 
-@shopapp.route('/api/shopmasters/update/<shop_master_id>', methods=['PUT'])
-def update_shop_master(shop_master_id):
-    data = request.get_json()
-    try:
-        if data:
-            # Exclude the '_id' field from the update
-            data.pop('_id', None)
+# @shopapp.route('/api/shopmasters/update/<shop_master_id>', methods=['PUT'])
+# def update_shop_master(shop_master_id):
+#     data = request.get_json()
+#     try:
+#         if data:
+#             # Exclude the '_id' field from the update
+#             data.pop('_id', None)
 
-            result = shop_masters_collection.update_one({"_id": ObjectId(shop_master_id)}, {"$set": data})
-            if result.modified_count > 0:
-                return jsonify({"message": "ShopMaster updated successfully"})
-            else:
-                return jsonify({"message": "ShopMaster not found or no changes made"}, 404)
-        else:
-            return jsonify({"error": "Invalid JSON data"}, 400)
-    except Exception as e:
-        return jsonify({"error": str(e)}, 500)
+#             result = shop_masters_collection.update_one({"_id": ObjectId(shop_master_id)}, {"$set": data})
+#             if result.modified_count > 0:
+#                 return jsonify({"message": "ShopMaster updated successfully"})
+#             else:
+#                 return jsonify({"message": "ShopMaster not found or no changes made"}, 404)
+#         else:
+#             return jsonify({"error": "Invalid JSON data"}, 400)
+#     except Exception as e:
+#         return jsonify({"error": str(e)}, 500)
 
 
 
