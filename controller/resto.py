@@ -8,13 +8,13 @@ from model.resto_model import resto_collection,resto_invoices,resto_item_master_
 restoapp=Blueprint('restoapp',__name__)
 
 
-# # ___________-resto-___________
+# ___________-resto-___________
 
-# @restoapp.route('/api/resto/create', methods=['POST'])
-# def create_resto():
-#     data = request.get_json()
-#     result = resto_collection.insert_one(data)
-#     return jsonify({"message": "Resto created successfully", "resto_id": str(result.inserted_id)})
+@restoapp.route('/api/resto/create', methods=['POST'])
+def create_resto():
+    data = request.get_json()
+    result = resto_collection.insert_one(data)
+    return jsonify({"message": "Resto created successfully", "resto_id": str(result.inserted_id)})
 
 
 
