@@ -18,15 +18,15 @@ def create_resto():
 
 
 
-# @restoapp.route('/api/resto/<resto_id>', methods=['GET'])
-# def get_resto(resto_id):
-#     resto = resto_collection.find_one({"_id": ObjectId(resto_id)})
-#     if resto:
-#         # Convert the ObjectId to a string
-#         resto["_id"] = str(resto["_id"])
-#         return jsonify(resto)
-#     else:
-#         return jsonify({"message": "Resto not found"}, 404)
+@restoapp.route('/api/resto/<resto_id>', methods=['GET'])
+def get_resto(resto_id):
+    resto = resto_collection.find_one({"_id": ObjectId(resto_id)})
+    if resto:
+        # Convert the ObjectId to a string
+        resto["_id"] = str(resto["_id"])
+        return jsonify(resto)
+    else:
+        return jsonify({"message": "Resto not found"}, 404)
 
 
 # @restoapp.route('/api/resto/update/<resto_id>', methods=['PUT'])
