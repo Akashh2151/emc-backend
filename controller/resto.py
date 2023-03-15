@@ -51,14 +51,14 @@ def update_resto(resto_id):
 
 
 
-# @restoapp.route('/api/resto/delete/<resto_id>', methods=['DELETE'])
-# def delete_resto(resto_id):
-#     result = resto_collection.delete_one({"_id": ObjectId(resto_id)})
-#     if result.deleted_count > 0:
-#         return jsonify({"message": "Resto deleted successfully"})
-#     else:
-#         return jsonify({"message": "Resto not found"}, 404)
-# # ___________-Resto End-___________
+@restoapp.route('/api/resto/delete/<resto_id>', methods=['DELETE'])
+def delete_resto(resto_id):
+    result = resto_collection.delete_one({"_id": ObjectId(resto_id)})
+    if result.deleted_count > 0:
+        return jsonify({"message": "Resto deleted successfully"})
+    else:
+        return jsonify({"message": "Resto not found"}, 404)
+# ___________-Resto End-___________
 
 
 
