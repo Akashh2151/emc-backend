@@ -62,13 +62,13 @@ def delete_resto(resto_id):
 
 
 
-# # ___________-RestoMasters-___________
+# ___________-RestoMasters-___________
 
-# @restoapp.route('/api/restomasters/create', methods=['POST'])
-# def create_resto_master():
-#     data = request.get_json()
-#     result = resto_masters_collection.insert_one(data)
-#     return jsonify({"message": "RestoMaster created successfully", "resto_master_id": str(result.inserted_id)})
+@restoapp.route('/api/restomasters/create', methods=['POST'])
+def create_resto_master():
+    data = request.get_json()
+    result = resto_masters_collection.insert_one(data)
+    return jsonify({"message": "RestoMaster created successfully", "resto_master_id": str(result.inserted_id)})
 
 # @restoapp.route('/api/shopmasters/<resto_master_id>', methods=['GET'])
 # def get_resto_master(resto_master_id):
