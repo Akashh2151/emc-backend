@@ -70,14 +70,14 @@ def create_resto_master():
     result = resto_masters_collection.insert_one(data)
     return jsonify({"message": "RestoMaster created successfully", "resto_master_id": str(result.inserted_id)})
 
-# @restoapp.route('/api/shopmasters/<resto_master_id>', methods=['GET'])
-# def get_resto_master(resto_master_id):
-#     resto_master = resto_masters_collection.find_one({"_id": ObjectId(resto_master_id)})
-#     if resto_master:
-#         resto_master["_id"] = str(resto_master["_id"])
-#         return jsonify(resto_master)
-#     else:
-#         return jsonify({"message": "RestoMaster not found"}, 404)
+@restoapp.route('/api/shopmasters/<resto_master_id>', methods=['GET'])
+def get_resto_master(resto_master_id):
+    resto_master = resto_masters_collection.find_one({"_id": ObjectId(resto_master_id)})
+    if resto_master:
+        resto_master["_id"] = str(resto_master["_id"])
+        return jsonify(resto_master)
+    else:
+        return jsonify({"message": "RestoMaster not found"}, 404)
 
 # @restoapp.route('/api/restomasters/update/<resto_master_id>', methods=['PUT'])
 # def update_resto_master(resto_master_id):
