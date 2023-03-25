@@ -99,15 +99,15 @@ def update_resto_master(resto_master_id):
 
 
 
-# @restoapp.route('/api/shopmasters/delete/<resto_master_id>', methods=['DELETE'])
-# def delete_resto_master(resto_master_id):
-#     result = resto_masters_collection.delete_one({"_id": ObjectId(resto_master_id)})
-#     if result.deleted_count > 0:
-#         return jsonify({"message": "RestoMaster deleted successfully"})
-#     else:
-#         return jsonify({"message": "RestoMaster not found"}, 404)
+@restoapp.route('/api/shopmasters/delete/<resto_master_id>', methods=['DELETE'])
+def delete_resto_master(resto_master_id):
+    result = resto_masters_collection.delete_one({"_id": ObjectId(resto_master_id)})
+    if result.deleted_count > 0:
+        return jsonify({"message": "RestoMaster deleted successfully"})
+    else:
+        return jsonify({"message": "RestoMaster not found"}, 404)
 
-# # ___________-RestoMasters End-___________
+# ___________-RestoMasters End-___________
 
 
 
