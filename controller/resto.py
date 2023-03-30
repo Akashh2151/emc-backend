@@ -112,13 +112,13 @@ def delete_resto_master(resto_master_id):
 
 
 
-# # ___________-GeneralMaster-___________
+# ___________-GeneralMaster-___________
 
-# @restoapp.route('/api/generalmaster/create', methods=['POST'])
-# def create_general_master():
-#     data = request.get_json()
-#     result = general_master_collection.insert_one(data)
-#     return jsonify({"message": "GeneralMaster created successfully", "general_master_id": str(result.inserted_id)})
+@restoapp.route('/api/generalmaster/create', methods=['POST'])
+def create_general_master():
+    data = request.get_json()
+    result = general_master_collection.insert_one(data)
+    return jsonify({"message": "GeneralMaster created successfully", "general_master_id": str(result.inserted_id)})
 
 # @restoapp.route('/api/generalmaster/<general_master_id>', methods=['GET'])
 # def get_general_master(general_master_id):
