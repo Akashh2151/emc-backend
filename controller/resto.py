@@ -163,18 +163,18 @@ def delete_general_master(general_master_id):
 
 # # ___________-RestoItemMaster -___________
 
-#  # Create RestoItemMaster
-# @restoapp.route('/api/restoitemmaster/create', methods=['POST'])
-# def create_resto_item_master():
-#     data = request.get_json()
-#     try:
-#         if data:
-#             result = resto_item_master_collection.insert_one(data)
-#             return jsonify({"message": "RestoItemMaster created successfully", "resto_item_master_id": str(result.inserted_id)})
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+ # Create RestoItemMaster
+@restoapp.route('/api/restoitemmaster/create', methods=['POST'])
+def create_resto_item_master():
+    data = request.get_json()
+    try:
+        if data:
+            result = resto_item_master_collection.insert_one(data)
+            return jsonify({"message": "RestoItemMaster created successfully", "resto_item_master_id": str(result.inserted_id)})
+        else:
+            return jsonify({"error": "Invalid JSON data"}, 400)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 # # Get RestoItemMaster Details
 # @restoapp.route('/api/restoitemmaster/<resto_item_master_id>', methods=['GET'])
