@@ -176,18 +176,18 @@ def create_resto_item_master():
     except Exception as e:
         return jsonify({"error": str(e)}, 500)
 
-# # Get RestoItemMaster Details
-# @restoapp.route('/api/restoitemmaster/<resto_item_master_id>', methods=['GET'])
-# def get_resto_item_master(resto_item_master_id):
-#     try:
-#         resto_item_master = resto_item_master_collection.find_one({"_id": ObjectId(resto_item_master_id)})
-#         if resto_item_master:
-#             resto_item_master["_id"] = str(resto_item_master["_id"])
-#             return jsonify(resto_item_master)
-#         else:
-#             return jsonify({"message": "RestoItemMaster not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# Get RestoItemMaster Details
+@restoapp.route('/api/restoitemmaster/<resto_item_master_id>', methods=['GET'])
+def get_resto_item_master(resto_item_master_id):
+    try:
+        resto_item_master = resto_item_master_collection.find_one({"_id": ObjectId(resto_item_master_id)})
+        if resto_item_master:
+            resto_item_master["_id"] = str(resto_item_master["_id"])
+            return jsonify(resto_item_master)
+        else:
+            return jsonify({"message": "RestoItemMaster not found"}, 404)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 # # Update RestoItemMaster Details
 # @restoapp.route('/api/restoitemmaster/update/<resto_item_master_id>', methods=['PUT'])
