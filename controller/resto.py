@@ -189,36 +189,36 @@ def get_resto_item_master(resto_item_master_id):
     except Exception as e:
         return jsonify({"error": str(e)}, 500)
 
-# # Update RestoItemMaster Details
-# @restoapp.route('/api/restoitemmaster/update/<resto_item_master_id>', methods=['PUT'])
-# def update_resto_item_master(resto_item_master_id):
-#     data = request.get_json()
-#     try:
-#         if data:
-#             # Exclude _id from the update data
-#             data.pop('_id', None)
-#             result = resto_item_master_collection.update_one({"_id": ObjectId(resto_item_master_id)}, {"$set": data})
-#             if result.modified_count > 0:
-#                 return jsonify({"message": "RestoItemMaster updated successfully"})
-#             else:
-#                 return jsonify({"message": "RestoItemMaster not found or no changes made"}, 404)
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# Update RestoItemMaster Details
+@restoapp.route('/api/restoitemmaster/update/<resto_item_master_id>', methods=['PUT'])
+def update_resto_item_master(resto_item_master_id):
+    data = request.get_json()
+    try:
+        if data:
+            # Exclude _id from the update data
+            data.pop('_id', None)
+            result = resto_item_master_collection.update_one({"_id": ObjectId(resto_item_master_id)}, {"$set": data})
+            if result.modified_count > 0:
+                return jsonify({"message": "RestoItemMaster updated successfully"})
+            else:
+                return jsonify({"message": "RestoItemMaster not found or no changes made"}, 404)
+        else:
+            return jsonify({"error": "Invalid JSON data"}, 400)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
     
 
-# # Delete RestoItemMaster
-# @restoapp.route('/api/restoitemmaster/delete/<resto_item_master_id>', methods=['DELETE'])
-# def delete_resto_item_master(resto_item_master_id):
-#     try:
-#         result = resto_item_master_collection.delete_one({"_id": ObjectId(resto_item_master_id)})
-#         if result.deleted_count > 0:
-#             return jsonify({"message": "RestoItemMaster deleted successfully"})
-#         else:
-#             return jsonify({"message": "RestoItemMaster not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# Delete RestoItemMaster
+@restoapp.route('/api/restoitemmaster/delete/<resto_item_master_id>', methods=['DELETE'])
+def delete_resto_item_master(resto_item_master_id):
+    try:
+        result = resto_item_master_collection.delete_one({"_id": ObjectId(resto_item_master_id)})
+        if result.deleted_count > 0:
+            return jsonify({"message": "RestoItemMaster deleted successfully"})
+        else:
+            return jsonify({"message": "RestoItemMaster not found"}, 404)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 # # ___________-RestoItemMaster End-___________
 
