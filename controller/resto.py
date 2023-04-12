@@ -238,18 +238,18 @@ def create_resto_payment_master():
     except Exception as e:
         return jsonify({"error": str(e)}, 500)
 
-# # Get RestoPaymentMaster Details
-# @restoapp.route('/api/restopaymentmaster/<payment_master_id>', methods=['GET'])
-# def get_resto_payment_master(payment_master_id):
-#     try:
-#         payment_master = resto_payment_master.find_one({"_id": ObjectId(payment_master_id)})
-#         if payment_master:
-#             payment_master["_id"] = str(payment_master["_id"])
-#             return jsonify(payment_master)
-#         else:
-#             return jsonify({"message": "RestoPaymentMaster not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# Get RestoPaymentMaster Details
+@restoapp.route('/api/restopaymentmaster/<payment_master_id>', methods=['GET'])
+def get_resto_payment_master(payment_master_id):
+    try:
+        payment_master = resto_payment_master.find_one({"_id": ObjectId(payment_master_id)})
+        if payment_master:
+            payment_master["_id"] = str(payment_master["_id"])
+            return jsonify(payment_master)
+        else:
+            return jsonify({"message": "RestoPaymentMaster not found"}, 404)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 # # Update RestoPaymentMaster Details
 # @restoapp.route('/api/restopaymentmaster/update/<payment_master_id>', methods=['PUT'])
