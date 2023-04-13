@@ -252,23 +252,23 @@ def get_resto_payment_master(payment_master_id):
         return jsonify({"error": str(e)}, 500)
 
 # # Update RestoPaymentMaster Details
-# @restoapp.route('/api/restopaymentmaster/update/<payment_master_id>', methods=['PUT'])
-# def update_resto_payment_master(payment_master_id):
-#     data = request.get_json()
-#     try:
-#         if data:
-#             # Exclude the '_id' field from the update
-#             data.pop('_id', None)
+@restoapp.route('/api/restopaymentmaster/update/<payment_master_id>', methods=['PUT'])
+def update_resto_payment_master(payment_master_id):
+    data = request.get_json()
+    try:
+        if data:
+            # Exclude the '_id' field from the update
+            data.pop('_id', None)
 
-#             result = resto_payment_master.update_one({"_id": ObjectId(payment_master_id)}, {"$set": data})
-#             if result.modified_count > 0:
-#                 return jsonify({"message": "RestoPaymentMaster updated successfully"})
-#             else:
-#                 return jsonify({"message": "RestoPaymentMaster not found or no changes made"}, 404)
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+            result = resto_payment_master.update_one({"_id": ObjectId(payment_master_id)}, {"$set": data})
+            if result.modified_count > 0:
+                return jsonify({"message": "RestoPaymentMaster updated successfully"})
+            else:
+                return jsonify({"message": "RestoPaymentMaster not found or no changes made"}, 404)
+        else:
+            return jsonify({"error": "Invalid JSON data"}, 400)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 
 # # Delete RestoPaymentMaster
