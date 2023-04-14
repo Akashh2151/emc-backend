@@ -271,17 +271,17 @@ def update_resto_payment_master(payment_master_id):
         return jsonify({"error": str(e)}, 500)
 
 
-# # Delete RestoPaymentMaster
-# @restoapp.route('/api/restopaymentmaster/delete/<payment_master_id>', methods=['DELETE'])
-# def delete_resto_payment_master(payment_master_id):
-#     try:
-#         result = resto_payment_master.delete_one({"_id": ObjectId(payment_master_id)})
-#         if result.deleted_count > 0:
-#             return jsonify({"message": "RestoPaymentMaster deleted successfully"})
-#         else:
-#             return jsonify({"message": "RestoPaymentMaster not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# Delete RestoPaymentMaster
+@restoapp.route('/api/restopaymentmaster/delete/<payment_master_id>', methods=['DELETE'])
+def delete_resto_payment_master(payment_master_id):
+    try:
+        result = resto_payment_master.delete_one({"_id": ObjectId(payment_master_id)})
+        if result.deleted_count > 0:
+            return jsonify({"message": "RestoPaymentMaster deleted successfully"})
+        else:
+            return jsonify({"message": "RestoPaymentMaster not found"}, 404)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
  
 
 # # ___________-RestoPaymentMaster End-___________
