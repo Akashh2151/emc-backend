@@ -289,18 +289,18 @@ def delete_resto_payment_master(payment_master_id):
 
 
 # # ___________-RestoInvoices _____________
-# # Create RestoInvoice
-# @restoapp.route('/api/restoinvoices/create', methods=['POST'])
-# def create_resto_invoice():
-#     data = request.get_json()
-#     try:
-#         if data:
-#             result = resto_invoices.insert_one(data)
-#             return jsonify({"message": "RestoInvoice created successfully", "invoice_id": str(result.inserted_id)})
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# Create RestoInvoice
+@restoapp.route('/api/restoinvoices/create', methods=['POST'])
+def create_resto_invoice():
+    data = request.get_json()
+    try:
+        if data:
+            result = resto_invoices.insert_one(data)
+            return jsonify({"message": "RestoInvoice created successfully", "invoice_id": str(result.inserted_id)})
+        else:
+            return jsonify({"error": "Invalid JSON data"}, 400)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 # # Get RestoInvoice Details
 # @restoapp.route('/api/restoinvoices/<invoice_id>', methods=['GET'])
