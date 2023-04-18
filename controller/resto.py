@@ -303,17 +303,17 @@ def create_resto_invoice():
         return jsonify({"error": str(e)}, 500)
 
 # # Get RestoInvoice Details
-# @restoapp.route('/api/restoinvoices/<invoice_id>', methods=['GET'])
-# def get_resto_invoice(invoice_id):
-#     try:
-#         invoice = resto_invoices.find_one({"_id": ObjectId(invoice_id)})
-#         if invoice:
-#             invoice["_id"] = str(invoice["_id"])
-#             return jsonify(invoice)
-#         else:
-#             return jsonify({"message": "RestoInvoice not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+@restoapp.route('/api/restoinvoices/<invoice_id>', methods=['GET'])
+def get_resto_invoice(invoice_id):
+    try:
+        invoice = resto_invoices.find_one({"_id": ObjectId(invoice_id)})
+        if invoice:
+            invoice["_id"] = str(invoice["_id"])
+            return jsonify(invoice)
+        else:
+            return jsonify({"message": "RestoInvoice not found"}, 404)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 # # Update RestoInvoice Details
 # @restoapp.route('/api/restoinvoices/update/<invoice_id>', methods=['PUT'])
