@@ -316,23 +316,23 @@ def get_resto_invoice(invoice_id):
         return jsonify({"error": str(e)}, 500)
 
 # # Update RestoInvoice Details
-# @restoapp.route('/api/restoinvoices/update/<invoice_id>', methods=['PUT'])
-# def update_resto_invoice(invoice_id):
-#     data = request.get_json()
-#     try:
-#         if data:
-#             # Exclude the '_id' field from the update
-#             data.pop('_id', None)
+@restoapp.route('/api/restoinvoices/update/<invoice_id>', methods=['PUT'])
+def update_resto_invoice(invoice_id):
+    data = request.get_json()
+    try:
+        if data:
+            # Exclude the '_id' field from the update
+            data.pop('_id', None)
 
-#             result = resto_invoices.update_one({"_id": ObjectId(invoice_id)}, {"$set": data})
-#             if result.modified_count > 0:
-#                 return jsonify({"message": "RestoInvoice updated successfully"})
-#             else:
-#                 return jsonify({"message": "RestoInvoice not found or no changes made"}, 404)
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+            result = resto_invoices.update_one({"_id": ObjectId(invoice_id)}, {"$set": data})
+            if result.modified_count > 0:
+                return jsonify({"message": "RestoInvoice updated successfully"})
+            else:
+                return jsonify({"message": "RestoInvoice not found or no changes made"}, 404)
+        else:
+            return jsonify({"error": "Invalid JSON data"}, 400)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 
 # # Delete RestoInvoice
