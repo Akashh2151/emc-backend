@@ -336,15 +336,15 @@ def update_resto_invoice(invoice_id):
 
 
 # # Delete RestoInvoice
-# @restoapp.route('/api/restopinvoices/delete/<invoice_id>', methods=['DELETE'])
-# def delete_resto_invoice(invoice_id):
-#     try:
-#         result = resto_invoices.delete_one({"_id": ObjectId(invoice_id)})
-#         if result.deleted_count > 0:
-#             return jsonify({"message": "RestoInvoice deleted successfully"})
-#         else:
-#             return jsonify({"message": "RestoInvoice not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+@restoapp.route('/api/restopinvoices/delete/<invoice_id>', methods=['DELETE'])
+def delete_resto_invoice(invoice_id):
+    try:
+        result = resto_invoices.delete_one({"_id": ObjectId(invoice_id)})
+        if result.deleted_count > 0:
+            return jsonify({"message": "RestoInvoice deleted successfully"})
+        else:
+            return jsonify({"message": "RestoInvoice not found"}, 404)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
 
 # # ___________-RestoInvoices End-___________
