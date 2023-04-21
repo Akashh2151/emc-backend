@@ -9,7 +9,7 @@ from pymongo import MongoClient
 # client = MongoClient("mongodb://localhost:27017")
 
 
-db = client["emc_project"]
+# db = client["emc_project"]
 resto_collection = db["resto"]
 general_master_collection = db["general_master"]
 resto_masters_collection = db["resto_masters"]
