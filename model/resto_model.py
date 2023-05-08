@@ -6,7 +6,7 @@ from pymongo import MongoClient
 
 # MongoDB Configuration
 client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
-client = MongoClient("mongodb://localhost:27017")
+# client = MongoClient("mongodb://localhost:27017")
 
 
 # db = client["emc_project"]
