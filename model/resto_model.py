@@ -11,7 +11,7 @@ client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0
 
 db = client["emc_project"]
 resto_collection = db["resto"]
-# general_master_collection = db["general_master"]
+general_master_collection = db["general_master"]
 # resto_masters_collection = db["resto_masters"]
 # resto_item_master_collection = db["resto_item_master"]
 # resto_payment_master = db["resto_payment_master"]
