@@ -9,9 +9,9 @@ app = Flask(__name__)
 forgetpassword_app = Blueprint('forgetpassword', __name__)
 
 # MongoDB Configuration
-client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
-db = client["emc_project"]
-collection = db["signup"]
+# client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
+# db = client["emc_project"]
+# collection = db["signup"]
 
 def generate_otp():
     otp = ''.join(random.choices(string.digits, k=6))
