@@ -19,23 +19,23 @@ collection = db["signup"]
 
 
 
-@forgetpassword_app.route('/send_otp', methods=['POST'])
-def send_otp():
-    try:
-        data = request.json
-        email = data.get('email')
-        user = collection.find_one({"email": email})
+# @forgetpassword_app.route('/send_otp', methods=['POST'])
+# def send_otp():
+#     try:
+#         data = request.json
+#         email = data.get('email')
+#         user = collection.find_one({"email": email})
 
-        if user:
-            otp = generate_otp()
-            session['otp'] = otp  # Store OTP in the session
-            message = f"Your OTP for password reset is: {otp}"
-            send_email("Password Reset OTP", email, message)
-            return jsonify({"message": "OTP sent successfully"}), 200
-        else:
-            return jsonify({"message": "User not found"}), 404
-    except Exception as e:
-        return jsonify({"message": "An error occurred"}), 500
+#         if user:
+#             otp = generate_otp()
+#             session['otp'] = otp  # Store OTP in the session
+#             message = f"Your OTP for password reset is: {otp}"
+#             send_email("Password Reset OTP", email, message)
+#             return jsonify({"message": "OTP sent successfully"}), 200
+#         else:
+#             return jsonify({"message": "User not found"}), 404
+#     except Exception as e:
+#         return jsonify({"message": "An error occurred"}), 500
 
 
 
