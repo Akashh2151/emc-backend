@@ -13,9 +13,9 @@ client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0
 db = client["emc_project"]
 collection = db["signup"]
 
-# def generate_otp():
-#     otp = ''.join(random.choices(string.digits, k=6))
-#     return otp
+def generate_otp():
+    otp = ''.join(random.choices(string.digits, k=6))
+    return otp
 
 
 
