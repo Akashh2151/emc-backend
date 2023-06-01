@@ -39,18 +39,18 @@ def send_otp():
 
 
 
-# @forgetpassword_app.route('/validate_otp', methods=['POST'])
-# def validate_otp():
-#     try:
-#         data = request.json
-#         entered_otp = data.get('otp')
+@forgetpassword_app.route('/validate_otp', methods=['POST'])
+def validate_otp():
+    try:
+        data = request.json
+        entered_otp = data.get('otp')
 
-#         if 'otp' in session and session['otp'] == entered_otp:
-#             return jsonify({"message": "OTP is valid"}), 200
-#         else:
-#             return jsonify({"message": "Invalid OTP"}), 400
-#     except Exception as e:
-#         return jsonify({"message": "An error occurred"}), 500
+        if 'otp' in session and session['otp'] == entered_otp:
+            return jsonify({"message": "OTP is valid"}), 200
+        else:
+            return jsonify({"message": "Invalid OTP"}), 400
+    except Exception as e:
+        return jsonify({"message": "An error occurred"}), 500
 
 
 
