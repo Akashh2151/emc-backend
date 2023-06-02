@@ -55,29 +55,29 @@ def validate_otp():
 
 
 
-# @forgetpassword_app.route('/change_password', methods=['POST'])
-# def change_password():
-#     try:
-#         data = request.json
-#         email = data.get('email')
-#         new_password = data.get('new_password')
-#         confirm_password = data.get('confirm_password')
-#         entered_otp = data.get('otp')
+@forgetpassword_app.route('/change_password', methods=['POST'])
+def change_password():
+    try:
+        data = request.json
+        email = data.get('email')
+        new_password = data.get('new_password')
+        confirm_password = data.get('confirm_password')
+        entered_otp = data.get('otp')
 
-#         if 'otp' in session and session['otp'] == entered_otp:
-#             if new_password != confirm_password:
-#                 session.pop('otp', None)
-#                 return jsonify({"message": "Password and confirmation do not match"}), 400
+        if 'otp' in session and session['otp'] == entered_otp:
+            if new_password != confirm_password:
+                session.pop('otp', None)
+                return jsonify({"message": "Password and confirmation do not match"}), 400
 
-#             hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
+            hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
 
-#             user = collection.find_one({"email": email})
-#             if user:
-#                 collection.update_one({"email": email}, {"$set": {"password": hashed_password}})
-#                 return jsonify({"message": "Password changed successfully"}), 200
-#             else:
-#                 return jsonify({"message": "User not found"}), 404
-#         else:
-#             return jsonify({"message": "Invalid OTP"}), 400
-#     except Exception as e:
-#         return jsonify({"message": "An error occurred"}), 500
+            user = collection.find_one({"email": email})
+            if user:
+                collection.update_one({"email": email}, {"$set": {"password": hashed_password}})
+                return jsonify({"message": "Password changed successfully"}), 200
+            else:
+                return jsonify({"message": "User not found"}), 404
+        else:
+            return jsonify({"message": "Invalid OTP"}), 400
+    except Exception as e:
+        return jsonify({"message": "An error occurred"}), 500
