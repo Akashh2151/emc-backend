@@ -2,10 +2,10 @@ import hashlib
 from model.signInsignup_model import AuthModel, SignupModel
 from flask import Blueprint, jsonify, request
 
-# auth_model = AuthModel()
-# signup_model = SignupModel()
+auth_model = AuthModel()
+signup_model = SignupModel()
 
-# signUp_bp = Blueprint('signUp', __name__)
+signUp_bp = Blueprint('signUp', __name__)
 
 @signUp_bp.route("/register", methods=["POST"])
 def register():
