@@ -28,34 +28,34 @@ signUp_bp = Blueprint('signUp', __name__)
 
 
 
-login_bp = Blueprint('login', __name__)
+# login_bp = Blueprint('login', __name__)
 
-@login_bp.route("/login", methods=["POST"])
-def login():
-    try:
-        data = request.get_json()
-        email = data.get("email")
-        password = data.get("password")
+# @login_bp.route("/login", methods=["POST"])
+# def login():
+#     try:
+#         data = request.get_json()
+#         email = data.get("email")
+#         password = data.get("password")
 
-        user = auth_model.login_user(email, password)
+#         user = auth_model.login_user(email, password)
 
-        if user:
-            # Hash the provided password for comparison
-            provided_password = password.encode('utf-8')
-            hashed_provided_password = hashlib.sha256(provided_password).hexdigest()
+#         if user:
+#             # Hash the provided password for comparison
+#             provided_password = password.encode('utf-8')
+#             hashed_provided_password = hashlib.sha256(provided_password).hexdigest()
 
-            # Compare the hashed provided password with the stored hashed password
-            if hashed_provided_password == user["password"]:
-                role = user["role"]  # Update to use the "role" directly from the user
-                response = {'message': 'Login successful'}
-                if "owner" in role:
-                    response["role_info"] = "Welcome Owner"
-                elif "managerOne" in role:
-                    response["role_info"] = "Welcome Manager"
-                elif "staffOne" in role:
-                    response["role_info"] = "Welcome Staff"
-                return jsonify(response)
+#             # Compare the hashed provided password with the stored hashed password
+#             if hashed_provided_password == user["password"]:
+#                 role = user["role"]  # Update to use the "role" directly from the user
+#                 response = {'message': 'Login successful'}
+#                 if "owner" in role:
+#                     response["role_info"] = "Welcome Owner"
+#                 elif "managerOne" in role:
+#                     response["role_info"] = "Welcome Manager"
+#                 elif "staffOne" in role:
+#                     response["role_info"] = "Welcome Staff"
+#                 return jsonify(response)
 
-        return jsonify({'error': 'Invalid email or password'}), 404
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+#         return jsonify({'error': 'Invalid email or password'}), 404
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
