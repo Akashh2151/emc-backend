@@ -7,24 +7,24 @@ signup_model = SignupModel()
 
 signUp_bp = Blueprint('signUp', __name__)
 
-# @signUp_bp.route("/register", methods=["POST"])
-# def register():
-#     try:
-#         data = request.get_json()
+@signUp_bp.route("/register", methods=["POST"])
+def register():
+    try:
+        data = request.get_json()
 
-#         # Check if the email already exists in the database
-#         existing_user = signup_model.find_user_by_email(data.get("email"))
-#         if existing_user:
-#             return jsonify({'error': 'Email already registered'}), 400
+        # Check if the email already exists in the database
+        existing_user = signup_model.find_user_by_email(data.get("email"))
+        if existing_user:
+            return jsonify({'error': 'Email already registered'}), 400
 
-#         result = signup_model.register_user(data)
+        result = signup_model.register_user(data)
 
-#         if "error" in result:
-#             return jsonify({'error': result['error']}), 400
+        if "error" in result:
+            return jsonify({'error': result['error']}), 400
 
-#         return jsonify({'message': 'Registration successful'})
-#     except Exception as e:
-#         return jsonify({'error': str(e)}), 500
+        return jsonify({'message': 'Registration successful'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 
