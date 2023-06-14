@@ -6,7 +6,7 @@ import hashlib
 # client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
 
 # Select the "emc_project" database
-db = client["emc_project"]
+# db = client["emc_project"]
 
 # Select the "signup" collection within the "emc_project" database
 collection = db["signup"]
