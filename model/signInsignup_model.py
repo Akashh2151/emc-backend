@@ -9,7 +9,7 @@ import hashlib
 # db = client["emc_project"]
 
 # Select the "signup" collection within the "emc_project" database
-collection = db["signup"]
+# collection = db["signup"]
 
 class AuthModel:
     def login_user(self, email, password):
