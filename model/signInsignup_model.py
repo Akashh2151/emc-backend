@@ -3,7 +3,7 @@ from datetime import datetime
 import hashlib
 
 # Initialize MongoDB connection
-# client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
+client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
 
 # Select the "emc_project" database
 # db = client["emc_project"]
