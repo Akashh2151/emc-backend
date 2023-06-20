@@ -9,7 +9,7 @@ client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0
 db = client["emc_project"]
 
 # Select the "signup" collection within the "emc_project" database
-# collection = db["signup"]
+collection = db["signup"]
 
 class AuthModel:
     def login_user(self, email, password):
