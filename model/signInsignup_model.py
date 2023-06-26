@@ -11,27 +11,27 @@ db = client["emc_project"]
 # Select the "signup" collection within the "emc_project" database
 collection = db["signup"]
 
-# class AuthModel:
-#     def login_user(self, email, password):
-#         try:
-#             # Find the user by email
-#             user = collection.find_one({"email": email})
+class AuthModel:
+    def login_user(self, email, password):
+        try:
+            # Find the user by email
+            user = collection.find_one({"email": email})
 
-#             # Check if the user exists
-#             if user:
-#                 # Hash the provided password using the same method as during registration
-#                 provided_password = password.encode('utf-8')  # Convert to bytes
-#                 hashed_provided_password = hashlib.sha256(provided_password).hexdigest()
+            # Check if the user exists
+            if user:
+                # Hash the provided password using the same method as during registration
+                provided_password = password.encode('utf-8')  # Convert to bytes
+                hashed_provided_password = hashlib.sha256(provided_password).hexdigest()
 
-#                 # Compare the hashed provided password with the stored hashed password
-#                 if hashed_provided_password == user["password"]:
-#                     return user
+                # Compare the hashed provided password with the stored hashed password
+                if hashed_provided_password == user["password"]:
+                    return user
 
-#             return None
-#         except Exception as e:
-#             # Handle the exception, log the error, and return an error response
-#             print(f"Error in login_user: {str(e)}")
-#             return None
+            return None
+        except Exception as e:
+            # Handle the exception, log the error, and return an error response
+            print(f"Error in login_user: {str(e)}")
+            return None
 
 # class SignupModel:
 #     def find_user_by_email(self, email):
