@@ -33,14 +33,14 @@ class AuthModel:
             print(f"Error in login_user: {str(e)}")
             return None
 
-# class SignupModel:
-#     def find_user_by_email(self, email):
-#         try:
-#             return collection.find_one({"email": email})
-#         except Exception as e:
-#             # Handle the exception, log the error, and return an error response
-#             print(f"Error in find_user_by_email: {str(e)}")
-#             return None
+class SignupModel:
+    def find_user_by_email(self, email):
+        try:
+            return collection.find_one({"email": email})
+        except Exception as e:
+            # Handle the exception, log the error, and return an error response
+            print(f"Error in find_user_by_email: {str(e)}")
+            return None
 
     # def register_user(self, auth_data):
     #     try:
