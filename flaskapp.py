@@ -8,7 +8,7 @@ from controller.resto import restoapp
 app = Flask(__name__)
 app.secret_key = '98c5bc0a178ff2d6c0c1471c6f3dc5e4'
 
-# app.register_blueprint(signUp_bp)
+app.register_blueprint(signUp_bp)
 # app.register_blueprint(login_bp)
 # app.register_blueprint(forgetpassword_app)
 # app.register_blueprint(shopapp)
