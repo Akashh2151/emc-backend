@@ -1,0 +1,346 @@
+{
+  "endPoint": "http://localhost:3000",
+  "shop": [
+    {
+      "title": "Dashboard",
+      "path": "/dashboard",
+      "status": "active",
+      "subMenu": [
+        {
+          "title": "Previous Orders",
+          "path": "/shop/prev-Orders",
+          "status": "active"
+        },
+        {
+          "title": "Total Sales",
+          "path": "/shop/totalSales",
+          "status": "active"
+        },
+        {
+          "title": "Pending Settlements",
+          "path": "/shop/pendingBills",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "title": "Sales",
+      "path": "/sales",
+      "status": "active",
+      "subMenu": [
+        {
+          "title": "Sales",
+          "path": "/shop/sales",
+          "status": "active"
+        },
+        {
+          "title": "Service",
+          "path": "/shop/services",
+          "status": "active"
+        },
+        {
+          "title": "Maintainance",
+          "path": "/shop/maintainance",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "title": "Inventory",
+      "path": "/inventory",
+      "status": "active",
+      "subMenu": [
+        {
+          "title": "Most Sold",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Item Name", "path": "itemName" },
+            { "title": "Qty Sold", "path": "soldQty" },
+            { "title": "Qty Remained", "path": "qtyInStock" }
+          ]
+        },
+        {
+          "title": "Expiry Management",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Item Name", "path": "itemName" },
+            { "title": "Expire On", "path": "expiry" },
+            { "title": "Qty Remained", "path": "qtyInStock" }
+          ]
+        },
+        {
+          "title": "Rack Management",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Item Name", "path": "itemName" },
+            { "title": "Placement", "path": "placement" },
+            { "title": "Qty Remained", "path": "qtyInStock" }
+          ]
+        },
+        {
+          "title": "Dead Stock",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Item Name", "path": "itemName" },
+            { "title": "Qty Sold", "path": "soldQty" },
+            { "title": "Qty Remained", "path": "qtyInStock" },
+            { "title": "Capial Invested", "path": "qtyInStock" }
+          ]
+        },
+        {
+          "title": "Return",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Item Name", "path": "itemName" },
+            { "title": "Return Qty", "path": "returnQty" },
+            { "title": "Qty Remained", "path": "qtyInStock" },
+            { "title": "Buy Price", "path": "qtyInStock" },
+            { "title": "Selling Price", "path": "qtyInStock" },
+            { "title": "Capial Invested", "path": "qtyInStock" },
+            { "title": "Statment", "path": "LossOrProfit" }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "items",
+      "path": "/items",
+      "status": "active",
+      "expiry": "inactive",
+      "barcode": "inactive",
+      "rack": "inactive",
+      "distributor": "active",
+      "retail": "inactive",
+      "wholesale": "inactive",
+      "category": [{ "title": "general", "subCategory": ["Sub Category"] }],
+      "units": [{ "name": "piece" }],
+      "subMenu": [
+        {
+          "title": "Most Sold",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Item Name", "path": "itemName" },
+            { "title": "Qty Sold", "path": "soldQty" },
+            { "title": "Qty Remained", "path": "qtyInStock" }
+          ]
+        },
+        {
+          "title": "Expiry Management",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Item Name", "path": "itemName" },
+            { "title": "Expire On", "path": "expiry" },
+            { "title": "Qty Remained", "path": "qtyInStock" }
+          ]
+        },
+        {
+          "title": "Rack Management",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Item Name", "path": "itemName" },
+            { "title": "Placement", "path": "placement" },
+            { "title": "Qty Remained", "path": "qtyInStock" }
+          ]
+        },
+        {
+          "title": "Dead Stock",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Item Name", "path": "itemName" },
+            { "title": "Qty Sold", "path": "soldQty" },
+            { "title": "Qty Remained", "path": "qtyInStock" },
+            { "title": "Capial Invested", "path": "qtyInStock" }
+          ]
+        },
+        {
+          "title": "Return",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Item Name", "path": "itemName" },
+            { "title": "Return Qty", "path": "returnQty" },
+            { "title": "Qty Remained", "path": "qtyInStock" },
+            { "title": "Buy Price", "path": "qtyInStock" },
+            { "title": "Selling Price", "path": "qtyInStock" },
+            { "title": "Capial Invested", "path": "qtyInStock" },
+            { "title": "Statment", "path": "LossOrProfit" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "title": "HRM",
+      "path": "/hrm",
+      "status": "inactive",
+      "subMenu": [
+        {
+          "title": "Customers",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Customer Name", "path": "customerName" },
+            { "title": "Mobile", "path": "customerMobile" },
+            { "title": "Last Purchase", "path": "lastPurchase" }
+          ]
+        },
+        {
+          "title": "Suppliers",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Supplier Name", "path": "supplierName" },
+            { "title": "Mobile", "path": "supplierMobile" },
+            { "title": "Credit", "path": "creditRemain" },
+            { "title": "Debit", "path": "debitRemain" }
+          ]
+        },
+        {
+          "title": "Staff",
+          "path": "/subReports",
+          "status": "active",
+          "fields": [
+            { "title": "Staff Name", "path": "staffName" },
+            { "title": "Mobile", "path": "staffMobile" },
+            { "title": "email", "path": "staffEmail" },
+            { "title": "Password", "path": "role" },
+            { "title": "Access", "path": "access" }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Accounts",
+      "path": "/accounts",
+      "status": "active",
+      "subMenu": [
+        { "title": "Settle Bills", "path": "/subReports", "status": "active" },
+        { "title": "Transactions", "path": "/subReports", "status": "active" },
+        { "title": "Credits", "path": "/subReports", "status": "active" },
+        { "title": "Debits", "path": "/subReports", "status": "active" },
+        { "title": "Reports", "path": "/subReports", "status": "active" }
+      ]
+    },
+    {
+      "title": "Masters",
+      "path": "/masters",
+      "status": "active",
+      "subMenu": [
+        { "title": "Menu Master", "path": "/subReports", "status": "active" },
+        { "title": "Sell Units", "path": "/subReports", "status": "active" },
+        { "title": "Invoices", "path": "/subReports", "status": "active" },
+        { "title": "Printers", "path": "/subReports", "status": "active" },
+        { "title": "Tax Slab", "path": "/subReports", "status": "active" },
+        { "title": "View Master", "path": "/subReports", "status": "active" }
+      ]
+    }
+  ],
+
+  "backend": [
+    {
+      "auth": {
+        "firstName": "Napster",
+        "lastName": "Matrix",
+        "email": "naiknaved9@gmail.com",
+        "mobile": "9890980948",
+        "password": "Hash(Salt(Password String))",
+        "userName": "set by using user",
+        "role": ["owner", "managerOne", "staffOne"],
+        "company": "Company Name set by owner",
+        "pilot": "mongo document _id string to target the database starting with owner_id",
+        "businessCategory": "Shop",
+        "bundle": "BUNDLE Given By Front End"
+      }
+    },
+    {
+      "masters": {
+        "billNo": { " startString": "ABC", "endString": "1000" },
+        "taxSlab": [{ "slab": "Tax 15%", "value": 10 }],
+        "sellUnits": [{ "unitName": "kg", "unitValue": "kg" }],
+        "users": [
+          {
+            "firstName": "Napster",
+            "lastName": "Matrix",
+            "email": "naiknaved9@gmail.com",
+            "mobile": "9890980948",
+            "password": "Hash(Salt(Password String))",
+            "role": ["managerOne"],
+            "company": "Company Name set by owner",
+            "pilot": "mongo document _id string to target the database starting with owner_id",
+            "businessCategory": "Shop"
+          }
+        ],
+        "payModa": [
+          { "payName": "PhonePe", "bankAttached": "Maharastra Bank" },
+          { "payName": "Paytm", "bankAttached": "SBI" }
+        ],
+        "staff": [
+          {
+            "firstName": "Napster",
+            "lastName": "Matrix",
+            "email": "naiknaved9@gmail.com",
+            "mobile": "9890980948",
+            "password": "Hash(Salt(Password String))",
+            "userName": "set by using user",
+            "role": ["managerOne"],
+            "company": "Company Name set by owner",
+            "pilot": "mongo document _id string to target the database starting with owner_id",
+            "businessCategory": "Shop",
+            "category": "staff"
+          }
+        ],
+        "banks": [
+          {
+            "bankName": "SBI",
+            "accountNumber": "bank account no",
+            "branch": "Karad",
+            "isfcCode": "asdasdds"
+          }
+        ],
+        "items": [
+          {
+            "itemName": "itemOne",
+            "category": "category",
+            "subCategory": "sub category"
+          }
+        ],
+        "itemCategory": [{ "name": "anything" }, { "name": "anything 2" }],
+        "itemSubCategory": [
+          { "name": "anything sub", "category": "category from itemCategory" }
+        ],
+        "paidStuff": [
+          {
+            "name": "expiry",
+            "value": "date may come",
+            "status": "active",
+            "validFrom": "Start Date",
+            "validTill": "end Data"
+          },
+          {
+            "name": "barCode",
+            "value": "date may come",
+            "status": "active",
+            "validFrom": "Start Date",
+            "validTill": "end Data"
+          },
+          {
+            "name": "rackManagement",
+            "value": "date may come",
+            "status": "active",
+            "validFrom": "Start Date",
+            "validTill": "end Data"
+          }
+        ]
+      }
+    }
+  ]
+}

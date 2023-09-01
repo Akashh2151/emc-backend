@@ -13,8 +13,9 @@ signup_model = SignupModel()
 @app.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
-    result = signup_model.register_user(data["auth"])
+    result = SignupModel().register_user(data)
     return jsonify(result)
+
 
 
 
@@ -24,15 +25,15 @@ def login():
     email = data.get("email")
     password = data.get("password")
     
-    user = auth_model.login_user(email, password)
+    user = AuthModel().login_user(email, password)
     if user:
-        role = user["auth"]["role"]
+        role = user.get("role")
         response = {'message': 'Login successful'}
-        if "owner" in role:
+        if role == "owner":
             response["role_info"] = "Welcome Owner"
-        elif "managerOne" in role:
+        elif role == "managerOne":
             response["role_info"] = "Welcome Manager"
-        elif "staffOne" in role:
+        elif role == "staffOne":
             response["role_info"] = "Welcome Staff"
         return jsonify(response)
     else:

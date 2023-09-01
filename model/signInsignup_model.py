@@ -11,37 +11,41 @@ collection = db["signup"]
 
 class AuthModel:
     def login_user(self, email, password):
-        user = collection.find_one({"auth.email": email})
+        user = collection.find_one({"email": email})
         
-        if user and check_password_hash(user["auth"]["password"], password):
+        if user and check_password_hash(user["password"], password):
             return user
         else:
             return None
 
 
 
+
+
 class SignupModel:
-    def register_user(self, auth_data):
+    def register_user(self, user_data):
         # Check if the email already exists
-        if collection.find_one({"auth.email": auth_data["email"]}):
+        if collection.find_one({"email": user_data["email"]}):
             return {'error': 'Email already registered'}
 
         # Hash the password
-        hashed_password = generate_password_hash(auth_data["password"], method='sha256')
+        hashed_password = generate_password_hash(user_data["password"], method='sha256')
 
-        # Create user document
+        # Create user document with new fields
         user = {
-            "auth": {
-                "firstName": auth_data["firstName"],
-                "lastName": auth_data["lastName"],
-                "email": auth_data["email"],
-                "password": hashed_password,
-                "userName": auth_data["userName"],
-                "role": auth_data["role"],
-                "company": auth_data["company"],
-                "businessCategory": auth_data["businessCategory"],
-                "bundle": auth_data["bundle"]
-            },
+            "firstName": user_data["firstName"],
+            "lastName": user_data["lastName"],
+            "email": user_data["email"],
+            "password": hashed_password,
+            "userName": user_data["userName"],
+            "role": user_data["role"],
+            "company": user_data["company"],
+            "businessCategory": user_data["businessCategory"],
+            "bundle": user_data["bundle"],
+            "emailverified": user_data.get("emailverified", False),  # Default to False
+            "locale": user_data.get("locale", ""),  # Default to an empty string
+            "picture": user_data.get("picture", ""),  # Default to an empty string
+            "expirydate": user_data.get("expirydate", None),  # Default to None
             "registrationDate": datetime.datetime.utcnow()
         }
 
