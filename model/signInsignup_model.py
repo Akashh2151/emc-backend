@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://akashdesai2151:2kLk4NDrwoi3i5L5@cluster0.szrjsrn.mongodb.net/?retryWrites=true&w=majority")
 db = client["emc_project"]
 collection = db["signup"]
 
