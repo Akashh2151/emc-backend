@@ -7,8 +7,15 @@ from datetime import datetime
 
 
 
-client = MongoClient("mongodb+srv://akashdesai2151:2kLk4NDrwoi3i5L5@cluster0.szrjsrn.mongodb.net/?retryWrites=true&w=majority")
+ 
+
+# Establish a connection to the MongoDB database on MongoDB Atlas
+client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
+
+# Select the "emc_project" database
 db = client["emc_project"]
+
+# Select the "signup" collection within the "emc_project" database
 collection = db["signup"]
 
 
