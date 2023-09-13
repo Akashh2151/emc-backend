@@ -12,7 +12,7 @@ app.register_blueprint(signUp_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(forgetpassword_app)
 app.register_blueprint(shopapp)
-# app.register_blueprint(restoapp)
+app.register_blueprint(restoapp)
 
 
 
