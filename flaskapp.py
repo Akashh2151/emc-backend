@@ -3,7 +3,7 @@ from controller.signInsignUp import signUp_bp # Import your blueprint
 from controller.signInsignUp import login_bp
 from controller.forgetpassword import forgetpassword_app
 from controller.shop import shopapp
-from controller.resto import restoapp
+# from controller.resto import restoapp
 
 app = Flask(__name__)
 app.secret_key = '98c5bc0a178ff2d6c0c1471c6f3dc5e4'
