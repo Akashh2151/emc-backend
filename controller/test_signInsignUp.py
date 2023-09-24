@@ -1,5 +1,6 @@
 import pytest
 from model.signInsignup_model import AuthModel, SignupModel
+from controller.signInsignUp import auth_model, signup_model
 
 # Initialize test instances of AuthModel and SignupModel with a test database
 @pytest.fixture
