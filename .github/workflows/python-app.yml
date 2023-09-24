@@ -19,34 +19,34 @@ jobs:
 
     - name: Check for Python 3.1 availability
       run: |
-        sudo apt-get update
-        if sudo apt-cache show python3.1 | grep -q "Package: python3.1"; then
-          echo "Python 3.1 is available."
-        else
-          echo "Python 3.1 is not available. Proceeding with Python 3.10."
+        python_version="3.1"
+        if [[ ! -x "$(command -v python${python_version})" ]]; then
+          echo "Python ${python_version} is not available. Proceeding with Python 3.10."
+          python_version="3.10"
         fi
+        echo "Using Python ${python_version}"
 
-    - name: Set up Python 3.10
+    - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.10
+        python-version: ${{ python_version }}
 
-    - name: Create and activate Python 3.10 virtual environment
+    - name: Create and activate Python virtual environment
       run: |
-        python -m venv venv310
-        source venv310/bin/activate
+        python -m venv venv
+        source venv/bin/activate
 
-    - name: Install Python 3.10 dependencies
+    - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Lint with flake8 (Python 3.10)
+    - name: Lint with flake8
       run: flake8 .
 
-    - name: Test with pytest (Python 3.10)
+    - name: Test with pytest
       run: pytest
 
-    - name: Deactivate Python 3.10 virtual environment
+    - name: Deactivate Python virtual environment
       run: deactivate
