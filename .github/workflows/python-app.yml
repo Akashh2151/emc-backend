@@ -29,7 +29,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest
-        if test -f requirements.txt; then pip install -r requirements.txt;  # Corrected the conditional statement
+        if (Test-Path -Path "requirements.txt") { pip install -r requirements.txt }
 
     - name: Activate virtual environment
       run: |
