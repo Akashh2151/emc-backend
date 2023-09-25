@@ -20,7 +20,7 @@ jobs:
       run: |
         python -m pip cache purge
 
-    - name: Set up Python 3.1
+    - name: Set up Python 3.1 
       uses: actions/setup-python@v2
       with:
         python-version: 3.1
