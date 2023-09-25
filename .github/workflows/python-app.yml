@@ -31,10 +31,12 @@ jobs:
         pip install flake8 pytest
         if (Test-Path -Path "requirements.txt") { pip install -r requirements.txt }
 
+
     - name: Create and Activate virtual environment
       run: |
         python -m venv myenv  # Replace 'myenv' with the name you want for your virtual environment
-        source myenv/Scripts/activate  # Replace 'myenv' with your virtual environment's name
+        myenv\Scripts\activate  # Replace 'myenv' with your virtual environment's name
+
 
 
     - name: Run pytest
