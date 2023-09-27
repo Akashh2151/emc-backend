@@ -2,7 +2,7 @@ from flask import Flask
 from controller.signInsignUp import signUp_bp # Import your blueprint
 from controller.signInsignUp import login_bp
 from controller.forgetpassword import forgetpassword_app
-from controller.shop import shopapp
+# from controller.shop import shopapp
 # from controller.resto import restoapp
 
 app = Flask(__name__)
