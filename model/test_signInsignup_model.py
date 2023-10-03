@@ -1,6 +1,7 @@
 import pytest
 from model.signInsignup_model import AuthModel, SignupModel
 from datetime import datetime
+from werkzeug.urls import url_quote
 
 # Initialize test instances of AuthModel and SignupModel with a test database
 @pytest.fixture
@@ -48,6 +49,10 @@ def test_signup_model(signup_model_instance):
         "expirydate": None,
         "registrationDate": datetime.utcnow()
     }
+    
+    # Example of using url_quote
+    auth_data["email"] = url_quote(auth_data["email"])
+    
     result = signup_model_instance.register_user(auth_data)
     assert "error" not in result  # Assuming the registration is successful
 
@@ -68,6 +73,10 @@ def test_signup_model(signup_model_instance):
         "expirydate": None,
         "registrationDate": datetime.utcnow()
     }
+    
+    # Example of using url_quote
+    existing_user_data["email"] = url_quote(existing_user_data["email"])
+    
     result = signup_model_instance.register_user(existing_user_data)
     assert "error" in result  # Assuming the email is already registered
 

@@ -3,3 +3,5 @@ gunicorn==20.0.4
 wfastcgi==3.0.0
 pymongo==4.5.0
 pytest
+
+Werkzeug==2.0.2
