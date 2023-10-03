@@ -24,7 +24,7 @@ def test_signup_model(signup_model_instance):
 # You can also write integration tests for your Flask routes using a test client
 @pytest.fixture
 def test_client():
-    from your_flask_app import app  # Replace with your Flask app import
+    from flaskapp import app  # Replace with your Flask app import
     app.config['TESTING'] = True
     return app.test_client()
 
