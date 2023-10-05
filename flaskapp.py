@@ -16,9 +16,9 @@ app.register_blueprint(restoapp)
 
 
 
-@app.route('/')
-def hello_world():
-    return 'Hello World Again'
+# @app.route('/')
+# def hello_world():
+#     return 'Hello World Again'
 
 
 
