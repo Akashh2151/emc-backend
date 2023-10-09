@@ -1,15 +1,8 @@
-# Initialize MongoDB connection
-# import datetime
 from pymongo import MongoClient
-from werkzeug.security import check_password_hash,generate_password_hash
+# from flask_bcrypt import Bcrypt
 from datetime import datetime
-
-
-
-
- 
-
-# Establish a connection to the MongoDB database on MongoDB Atlas
+import hashlib
+# Initialize MongoDB connection
 client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
 
 # Select the "emc_project" database
@@ -18,41 +11,41 @@ db = client["emc_project"]
 # Select the "signup" collection within the "emc_project" database
 collection = db["signup"]
 
+# Initialize Flask-Bcrypt
+# bcrypt = Bcrypt()
 
 class AuthModel:
     def login_user(self, email, password):
         # Find the user by email
         user = collection.find_one({"email": email})
 
-        # Check if the user exists and the provided password matches
-        if user and check_password_hash(user["password"], password):
-            return user
-        else:
-            return None
+        # Check if the user exists
+        if user:
+            # Hash the provided password using the same method as during registration
+            provided_password = password.encode('utf-8')  # Convert to bytes
+            hashed_provided_password = hashlib.sha256(provided_password).hexdigest()
 
+            # Compare the hashed provided password with the stored hashed password
+            if hashed_provided_password == user["password"]:
+                return user
 
-
-
-# Import statements...
+        return None
+    
+    
 
 class SignupModel:
-    
     def find_user_by_email(self, email):
         return collection.find_one({"email": email})
-
+    
     def register_user(self, auth_data):
         # Check if the email already exists
         existing_user = self.find_user_by_email(auth_data["email"])
         if existing_user:
             return {'error': 'Email already registered'}
-    
-    def register_user(self, auth_data):
-        # Check if the email already exists
-        if collection.find_one({"auth.email": auth_data["email"]}):
-            return {'error': 'Email already registered'}
 
-        # Hash the password
-        hashed_password = generate_password_hash(auth_data["password"], method='scrypt')
+        # Hash the password using SHA-256
+        password = auth_data["password"].encode('utf-8')  # Convert to bytes
+        hashed_password = hashlib.sha256(password).hexdigest()
 
         # Add registrationDate field with the current date and time
         auth_data["registrationDate"] = datetime.utcnow()
@@ -62,7 +55,7 @@ class SignupModel:
             "firstName": auth_data["firstName"],
             "lastName": auth_data["lastName"],
             "email": auth_data["email"],
-            "password": hashed_password,
+            "password": hashed_password,  # Store the hashed password
             "userName": auth_data["userName"],
             "role": auth_data["role"],
             "company": auth_data["company"],
@@ -83,4 +76,5 @@ class SignupModel:
 
         # Return the user data including the generated ObjectId as a string
         user['_id'] = user_id
+
         return user
