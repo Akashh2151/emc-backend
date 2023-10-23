@@ -26,6 +26,8 @@ def register():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+
 login_bp = Blueprint('login', __name__)
 
 @login_bp.route("/login", methods=["POST"])
