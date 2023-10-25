@@ -8,6 +8,107 @@ from model.shop_model import shop_collection,shop_invoices,shop_item_master_coll
 shopapp=Blueprint('shopapp',__name__)
 
 
+# __________________________________-shop-__________________________________
+
+@shopapp.route('/api/shop/create', methods=['POST'])
+def create_shop():
+    data = request.get_json()
+    result = shop_collection.insert_one(data)
+    return jsonify({"message": "Shop created successfully", "shop_id": str(result.inserted_id)})
+
+
+
+@shopapp.route('/api/shop/<shop_id>', methods=['GET'])
+def get_shop(shop_id):
+    shop = shop_collection.find_one({"_id": ObjectId(shop_id)})
+    if shop:
+        # Convert the ObjectId to a string
+        shop["_id"] = str(shop["_id"])
+        return jsonify(shop)
+    else:
+        return jsonify({"message": "Shop not found"}, 404)
+
+
+@shopapp.route('/api/shop/update/<shop_id>', methods=['PUT'])
+def update_shop(shop_id):
+    data = request.get_json()
+    try:
+        if data:
+            # Exclude the '_id' field from the update
+            data.pop('_id', None)
+
+            result = shop_collection.update_one({"_id": ObjectId(shop_id)}, {"$set": data})
+            if result.modified_count > 0:
+                return jsonify({"message": "Shop updated successfully"})
+            else:
+                return jsonify({"message": "Shop not found or no changes made"}, 404)
+        else:
+            return jsonify({"error": "Invalid JSON data"}, 400)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
+
+
+
+
+
+@shopapp.route('/api/shop/delete/<shop_id>', methods=['DELETE'])
+def delete_shop(shop_id):
+    result = shop_collection.delete_one({"_id": ObjectId(shop_id)})
+    if result.deleted_count > 0:
+        return jsonify({"message": "Shop deleted successfully"})
+    else:
+        return jsonify({"message": "Shop not found"}, 404)
+# __________________________________-shop End-__________________________________
+
+
+
+# __________________________________-ShopMasters-__________________________________
+
+@shopapp.route('/api/shopmasters/create', methods=['POST'])
+def create_shop_master():
+    data = request.get_json()
+    result = shop_masters_collection.insert_one(data)
+    return jsonify({"message": "ShopMaster created successfully", "shop_master_id": str(result.inserted_id)})
+
+@shopapp.route('/api/shopmasters/<shop_master_id>', methods=['GET'])
+def get_shop_master(shop_master_id):
+    shop_master = shop_masters_collection.find_one({"_id": ObjectId(shop_master_id)})
+    if shop_master:
+        shop_master["_id"] = str(shop_master["_id"])
+        return jsonify(shop_master)
+    else:
+        return jsonify({"message": "ShopMaster not found"}, 404)
+
+@shopapp.route('/api/shopmasters/update/<shop_master_id>', methods=['PUT'])
+def update_shop_master(shop_master_id):
+    data = request.get_json()
+    try:
+        if data:
+            # Exclude the '_id' field from the update
+            data.pop('_id', None)
+
+            result = shop_masters_collection.update_one({"_id": ObjectId(shop_master_id)}, {"$set": data})
+            if result.modified_count > 0:
+                return jsonify({"message": "ShopMaster updated successfully"})
+            else:
+                return jsonify({"message": "ShopMaster not found or no changes made"}, 404)
+        else:
+            return jsonify({"error": "Invalid JSON data"}, 400)
+    except Exception as e:
+        return jsonify({"error": str(e)}, 500)
+
+
+
+@shopapp.route('/api/shopmasters/delete/<shop_master_id>', methods=['DELETE'])
+def delete_shop_master(shop_master_id):
+    result = shop_masters_collection.delete_one({"_id": ObjectId(shop_master_id)})
+    if result.deleted_count > 0:
+        return jsonify({"message": "ShopMaster deleted successfully"})
+    else:
+        return jsonify({"message": "ShopMaster not found"}, 404)
+
+# __________________________________-ShopMasters End-__________________________________
+
 
 
 
