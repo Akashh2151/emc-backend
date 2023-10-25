@@ -39,3 +39,4 @@ Step 4: Running Your Flask App Locally
 You can now run your Flask app locally to make sure everything is set up correctly. In your terminal, execute the following command:
 
 python flaskapp.py
+

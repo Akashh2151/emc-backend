@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 from bson.objectid import ObjectId
 from model.shop_model import shop_collection,shop_invoices,shop_item_master_collection,shop_masters_collection,shop_payment_master,general_master_collection
 
-
+# shopapp blue print
 shopapp=Blueprint('shopapp',__name__)
 
 # __________________________________-shop-__________________________________
@@ -45,6 +45,7 @@ def update_shop(shop_id):
             return jsonify({"error": "Invalid JSON data"}, 400)
     except Exception as e:
         return jsonify({"error": str(e)}, 500)
+
 
 
 
