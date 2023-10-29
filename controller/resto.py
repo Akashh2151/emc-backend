@@ -18,15 +18,15 @@ def create_shop():
 
 
 
-# @shopapp.route('/api/shop/<shop_id>', methods=['GET'])
-# def get_shop(shop_id):
-#     shop = shop_collection.find_one({"_id": ObjectId(shop_id)})
-#     if shop:
-#         # Convert the ObjectId to a string
-#         shop["_id"] = str(shop["_id"])
-#         return jsonify(shop)
-#     else:
-#         return jsonify({"message": "Shop not found"}, 404)
+@shopapp.route('/api/shop/<shop_id>', methods=['GET'])
+def get_shop(shop_id):
+    shop = shop_collection.find_one({"_id": ObjectId(shop_id)})
+    if shop:
+        # Convert the ObjectId to a string
+        shop["_id"] = str(shop["_id"])
+        return jsonify(shop)
+    else:
+        return jsonify({"message": "Shop not found"}, 404)
 
 
 # @shopapp.route('/api/shop/update/<shop_id>', methods=['PUT'])
