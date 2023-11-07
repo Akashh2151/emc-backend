@@ -1,15 +1,12 @@
 from pymongo import MongoClient
 
 
-
-
-
 # MongoDB Configuration
-client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
-# client = MongoClient("mongodb://localhost:27017")
+# client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
+client = MongoClient("mongodb://localhost:27017")
 
 
-db = client["emc_project"]
+db = client["emc_project2151"]
 resto_collection = db["resto"]
 general_master_collection = db["general_master"]
 resto_masters_collection = db["resto_masters"]
