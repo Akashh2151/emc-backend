@@ -1,6 +1,7 @@
 import re
 import hashlib
 import datetime
+import uuid
 from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 import jwt
@@ -73,6 +74,7 @@ def login():
                 payload = {
                     'user_id': str(user.id),
                     'sub': '1', 
+                    'jti': str(uuid.uuid4()),  # Generate a unique identifier
                     # 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=100),
                     'role': user.role  # Include the 'role' claim here
