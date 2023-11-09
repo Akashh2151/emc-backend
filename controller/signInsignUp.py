@@ -85,7 +85,7 @@ def login():
                     'jti': str(uuid.uuid4()),  # Generate a unique identifier
                     'identity': user.email, 
                     # 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
-                    'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=20),
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=50),
                     'role': user.role , # Include the 'role' claim here
                     'type': 'access',
                     'fresh': True
