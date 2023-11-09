@@ -1,61 +1,108 @@
+import re
 import hashlib
-from model.signInsignup_model import AuthModel, SignupModel
-from flask import Blueprint, jsonify, request
+import datetime
+from flask import Blueprint, current_app, request, jsonify
+from flask_jwt_extended import get_jwt, jwt_required
+import jwt
+from model.signInsignup_model import User
+from security.security import email_regex,password_regex
 
-auth_model = AuthModel()
-signup_model = SignupModel()
-
+ 
 signUp_bp = Blueprint('signUp', __name__)
-
-@signUp_bp.route("/register", methods=["POST"])
+@signUp_bp.route('/register', methods=['POST'])
 def register():
     try:
-        data = request.get_json()
-
-        # Check if the email already exists in the database
-        existing_user = signup_model.find_user_by_email(data.get("email"))
+        data = request.json
+        name = data.get('name')
+        email = data.get('email')
+        password = data.get('password')
+        role = data.get('role')  # Get the role from the request
+        
+        # Check if the email is already registered
+        existing_user = User.objects(email=email).first()
         if existing_user:
-            return jsonify({'error': 'Email already registered'}), 400
+            response = { "Body": None,"status": "error","statusCode": 400,"message": 'Email already registered'}
+            return jsonify(response), 400
 
-        result = signup_model.register_user(data)
+        if not name or not email or not password:
+            response = {"Body": None,"status": "error","statusCode": 400,"message": 'Name, email, and password are required'}
+            return jsonify(response), 400
 
-        if "error" in result:
-            return jsonify({'error': result['error']}), 400
+        if not re.match(email_regex, email):
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Invalid email format'}
+            return jsonify(response), 400
 
-        return jsonify({'message': 'Registration successful'})
+        if not re.match(password_regex, password):
+            response = {"Body": None,"status": "error","statusCode": 400,"message": 'Password must have at least 8 characters'}
+            return jsonify(response), 400
+
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
+
+        user = User(name=name, email=email, password=password_hash,role=role)
+        user.save()
+
+        response = {"Body": None,"status": "success","statusCode": 200,"message": 'Registration successful'}
+        return jsonify(response), 200
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        response = { "Body": None,"status": "error","statusCode": 500,"message": str(e)}
+        return jsonify(response), 500
+
+
+
+
 
 
 
 login_bp = Blueprint('login', __name__)
 
-@login_bp.route("/login", methods=["POST"])
+@login_bp.route('/login', methods=['POST'])
 def login():
     try:
-        data = request.get_json()
-        email = data.get("email")
-        password = data.get("password")
+        data = request.json
+        email = data.get('email')
+        password = data.get('password')
 
-        user = auth_model.login_user(email, password)
+        user = User.objects(email=email).first()
 
         if user:
-            # Hash the provided password for comparison
-            provided_password = password.encode('utf-8')
-            hashed_provided_password = hashlib.sha256(provided_password).hexdigest()
+            provided_password_hash = hashlib.sha256(password.encode()).hexdigest()
 
-            # Compare the hashed provided password with the stored hashed password
-            if hashed_provided_password == user["password"]:
-                role = user["role"]  # Update to use the "role" directly from the user
-                response = {'message': 'Login successful'}
-                if "owner" in role:
-                    response["role_info"] = "Welcome Owner"
-                elif "managerOne" in role:
-                    response["role_info"] = "Welcome Manager"
-                elif "staffOne" in role:
-                    response["role_info"] = "Welcome Staff"
-                return jsonify(response)
+            if provided_password_hash == user.password:
+                payload = {
+                    'user_id': str(user.id),
+                    'sub': '1', 
+                    # 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=100),
+                    'role': user.role  # Include the 'role' claim here
+                }
+                token = jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
 
-        return jsonify({'error': 'Invalid email or password'}), 404
+                return jsonify({'message': 'Login successful', 'access_token': token}), 200
+
+        return jsonify({'error': 'Invalid email or password'}), 401
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+    
+    
+    
+@login_bp.route('/role_login', methods=['GET'])
+@jwt_required()
+def role_login():
+    try:
+        jwt_token = get_jwt()
+        user_role = jwt_token.get('role')
+
+        if user_role == 'admin':
+            return jsonify({'status_code': 200,'message': 'success','role': 'admin'}), 200
+        elif user_role == 'user':
+            return jsonify({'status_code': 200,'message': 'success','role': 'user'}), 200
+        else:
+            return jsonify({'status_code': 403,'message': 'Permission denied'}), 403
+    except UnicodeDecodeError as e:
+        # Handle the specific error when the token payload cannot be decoded
+        return jsonify({'status_code': 400,'error': 'Invalid token payload'}), 400
+    except Exception as e:
+        return jsonify({'status_code': 500,'error': str(e)}), 500
