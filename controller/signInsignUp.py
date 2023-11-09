@@ -90,7 +90,7 @@ def login():
     
     
 @login_bp.route('/role_login', methods=['GET'])
-@jwt_required()
+@jwt_required
 def role_login():
     try:
         jwt_token = get_jwt_identity()
