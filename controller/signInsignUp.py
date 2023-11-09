@@ -98,11 +98,10 @@ def login():
 @jwt_required
 def role_login():
     try:
-        jwt_token = get_jwt_identity()
-        if jwt_token is None:
-            return jsonify({'status_code': 401, 'error': 'Unauthorized'}), 401
+        token = request.headers.get('Authorization').split()[1]
+        decoded_token = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
 
-        user_role = jwt_token.get('role')
+        user_role = decoded_token.get('role')
 
         if user_role == 'admin':
             return jsonify({'status_code': 200, 'message': 'success', 'role': 'admin'}), 200
