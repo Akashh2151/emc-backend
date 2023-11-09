@@ -79,7 +79,8 @@ def login():
                     # 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=100),
                     'role': user.role , # Include the 'role' claim here
-                    'type': 'access'
+                    'type': 'access',
+                    'fresh': True
                 }
                 token = jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
 
