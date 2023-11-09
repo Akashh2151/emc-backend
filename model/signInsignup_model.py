@@ -39,6 +39,7 @@ class User(Document):
     email = EmailField(unique=True, required=True)
     password = StringField(required=True, max_length=100)
     role = StringField(required=True, choices=("user", "admin")) 
+    
     # age = IntField()
     # is_active = BooleanField(default=True)
 

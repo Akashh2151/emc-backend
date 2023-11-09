@@ -5,8 +5,10 @@ from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import get_jwt, jwt_required
 import jwt
 from model.signInsignup_model import User
-from security.security import email_regex,password_regex
 
+
+email_regex = r'^\S+@\S+\.\S+$'
+password_regex = r'^.{8,}$'
  
 signUp_bp = Blueprint('signUp', __name__)
 @signUp_bp.route('/register', methods=['POST'])
