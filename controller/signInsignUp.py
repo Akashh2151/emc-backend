@@ -64,7 +64,15 @@ def login():
         data = request.json
         email = data.get('email')
         password = data.get('password')
+        
+        # Validate the presence of 'name', 'email', and 'password'
+        if email is None:
+                   return jsonify({'error': 'Email is required', 'status_code': 400}), 400
 
+        if password is None:
+                  return jsonify({'error': 'Password is required', 'status_code': 400}), 400
+
+ 
         user = User.objects(email=email).first()
 
         if user:
@@ -77,7 +85,7 @@ def login():
                     'jti': str(uuid.uuid4()),  # Generate a unique identifier
                     'identity': user.email, 
                     # 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
-                    'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=100),
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=20),
                     'role': user.role , # Include the 'role' claim here
                     'type': 'access',
                     'fresh': True
