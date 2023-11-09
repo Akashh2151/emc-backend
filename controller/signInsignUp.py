@@ -97,13 +97,13 @@ def role_login():
         user_role = jwt_token.get('role')
 
         if user_role == 'admin':
-            return jsonify({'status_code': 200,'message': 'success','role': 'admin'}), 200
+            return jsonify({'status_code': 200, 'message': 'success', 'role': 'admin'}), 200
         elif user_role == 'user':
-            return jsonify({'status_code': 200,'message': 'success','role': 'user'}), 200
+            return jsonify({'status_code': 200, 'message': 'success', 'role': 'user'}), 200
         else:
-            return jsonify({'status_code': 403,'message': 'Permission denied'}), 403
+            return jsonify({'status_code': 403, 'message': 'Permission denied'}), 403
     except UnicodeDecodeError as e:
         # Handle the specific error when the token payload cannot be decoded
-        return jsonify({'status_code': 400,'error': 'Invalid token payload'}), 400
+        return jsonify({'status_code': 400, 'error': 'Invalid token payload'}), 400
     except Exception as e:
-        return jsonify({'status_code': 500,'error': str(e)}), 500
+        return jsonify({'status_code': 500, 'error': str(e)}), 500
