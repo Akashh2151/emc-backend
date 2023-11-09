@@ -10,7 +10,7 @@ Before you begin, it's a good practice to create a virtual environment for your 
 python -m venv venv
 venv\Scripts\activate
 
-..
+...
 
 # On macOS and Linux
 python -m venv venv
