@@ -1,6 +1,7 @@
 import secrets
 from flask import Flask
 from flask_jwt_extended import JWTManager
+# from flask_jwt_extended import JWTManager
 from controller.signInsignUp import signUp_bp # Import your blueprint
 from controller.signInsignUp import login_bp
 # from controller.forgetpassword import forgetpassword_app
