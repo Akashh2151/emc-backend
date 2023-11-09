@@ -8,15 +8,10 @@ app = Flask(__name__)
 
 from mongoengine import connect
 # Replace the values with your username, password, and cluster name
-# db_uri = "mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority"
+db_uri = "mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority"
 # Replace the value with your database name
-# connect(host=db_uri, db="emc_project2151")
+connect(host=db_uri, db="emc_project2151")
 
-
-connect(
-    db='emc_project2151',
-    host='mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/test?retryWrites=true&w=majority',
-)
 
 # app.config['MONGODB_SETTINGS'] = {
 #     'db': 'emc_project2151',  # Use the specified MongoDB database
@@ -43,8 +38,7 @@ class User(Document):
     name = StringField(required=True, max_length=100)
     email = EmailField(unique=True, required=True)
     password = StringField(required=True, max_length=100)
-    role = StringField(required=True, choices=("user", "admin"))
-
+    role = StringField(required=True, choices=("user", "admin")) 
     
     # age = IntField()
     # is_active = BooleanField(default=True)
