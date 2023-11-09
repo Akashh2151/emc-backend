@@ -75,6 +75,7 @@ def login():
                     'user_id': str(user.id),
                     'sub': '1', 
                     'jti': str(uuid.uuid4()),  # Generate a unique identifier
+                    'identity': user.email, 
                     # 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=100),
                     'role': user.role  # Include the 'role' claim here
