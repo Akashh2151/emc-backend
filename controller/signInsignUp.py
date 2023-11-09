@@ -2,7 +2,7 @@ import re
 import hashlib
 import datetime
 from flask import Blueprint, current_app, request, jsonify
-from flask_jwt_extended import get_jwt, jwt_required
+from flask_jwt_extended import get_jwt_identity, jwt_required
 import jwt
 from model.signInsignup_model import User
 
@@ -93,7 +93,7 @@ def login():
 @jwt_required()
 def role_login():
     try:
-        jwt_token = get_jwt()
+        jwt_token = get_jwt_identity()
         user_role = jwt_token.get('role')
 
         if user_role == 'admin':
