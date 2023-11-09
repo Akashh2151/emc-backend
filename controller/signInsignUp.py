@@ -99,6 +99,9 @@ def login():
 def role_login():
     try:
         jwt_token = get_jwt_identity()
+        if jwt_token is None:
+            return jsonify({'status_code': 401, 'error': 'Unauthorized'}), 401
+
         user_role = jwt_token.get('role')
 
         if user_role == 'admin':
