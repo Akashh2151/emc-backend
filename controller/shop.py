@@ -1,357 +1,757 @@
-# import json
-# from flask import Blueprint, request, jsonify
-# # from pymongo import MongoClient
-# from bson.objectid import ObjectId
+import json
+from bson import InvalidDocument
+from flask import Blueprint, request, jsonify
+# from pymongo import MongoClient
+from bson.objectid import ObjectId
+from pydantic import ValidationError
 # from model.shop_model import shop_collection,shop_invoices,shop_item_master_collection,shop_masters_collection,shop_payment_master,general_master_collection
+from model.shop_model import BankDetails, GeneralMaster, Invoice, InvoiceItem, PaymentMaster, PaymentModeDetails, PaymentSlab, Product, SellMaster
+from mongoengine.queryset import QuerySet
+# shopapp blue print
+from mongoengine import EmbeddedDocument
+shopapp=Blueprint('shopapp',__name__)
 
-# # shopapp blue print
-# shopapp=Blueprint('shopapp',__name__)
+ 
+
+ 
+# Mock data for MenuMaster and ItemMaster
+# menu_masters = []
+# item_masters = []
 
 
-# # __________________________________-shop-__________________________________
+# @app.route('/api/menu_masters', methods=['POST'])
+# def create_menu_master():
+#     new_menu_master = request.json
+#     menu_masters.append(new_menu_master)
+#     return jsonify(new_menu_master), 201
 
-# @shopapp.route('/api/shop/create', methods=['POST'])
-# def create_shop():
-#     data = request.get_json()
-#     result = shop_collection.insert_one(data)
-#     return jsonify({"message": "Shop created successfully", "shop_id": str(result.inserted_id)})
+# @app.route('/api/menu_masters', methods=['GET'])
+# def get_all_menu_masters():
+#     return jsonify(menu_masters)
 
 
-
-# @shopapp.route('/api/shop/<shop_id>', methods=['GET'])
-# def get_shop(shop_id):
-#     shop = shop_collection.find_one({"_id": ObjectId(shop_id)})
-#     if shop:
-#         # Convert the ObjectId to a string
-#         shop["_id"] = str(shop["_id"])
-#         return jsonify(shop)
+# @app.route('/api/menu_masters/<int:index>', methods=['GET'])
+# def get_menu_master(index):
+#     if 0 <= index < len(menu_masters):
+#         return jsonify(menu_masters[index])
 #     else:
-#         return jsonify({"message": "Shop not found"}, 404)
+#         return jsonify({"error": "Index out of range"}), 404
 
-
-# @shopapp.route('/api/shop/update/<shop_id>', methods=['PUT'])
-# def update_shop(shop_id):
-#     data = request.get_json()
-#     try:
-#         if data:
-#             # Exclude the '_id' field from the update
-#             data.pop('_id', None)
-
-#             result = shop_collection.update_one({"_id": ObjectId(shop_id)}, {"$set": data})
-#             if result.modified_count > 0:
-#                 return jsonify({"message": "Shop updated successfully"})
-#             else:
-#                 return jsonify({"message": "Shop not found or no changes made"}, 404)
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
-
-
-
-
-
-# @shopapp.route('/api/shop/delete/<shop_id>', methods=['DELETE'])
-# def delete_shop(shop_id):
-#     result = shop_collection.delete_one({"_id": ObjectId(shop_id)})
-#     if result.deleted_count > 0:
-#         return jsonify({"message": "Shop deleted successfully"})
+# @app.route('/api/menu_masters/<int:index>', methods=['PUT'])
+# def update_menu_master(index):
+#     if 0 <= index < len(menu_masters):
+#         menu_masters[index] = request.json
+#         return jsonify(menu_masters[index])
 #     else:
-#         return jsonify({"message": "Shop not found"}, 404)
-# # __________________________________-shop End-__________________________________
+#         return jsonify({"error": "Index out of range"}), 404
 
 
-
-# # __________________________________-ShopMasters-__________________________________
-
-# @shopapp.route('/api/shopmasters/create', methods=['POST'])
-# def create_shop_master():
-#     data = request.get_json()
-#     result = shop_masters_collection.insert_one(data)
-#     return jsonify({"message": "ShopMaster created successfully", "shop_master_id": str(result.inserted_id)})
-
-# @shopapp.route('/api/shopmasters/<shop_master_id>', methods=['GET'])
-# def get_shop_master(shop_master_id):
-#     shop_master = shop_masters_collection.find_one({"_id": ObjectId(shop_master_id)})
-#     if shop_master:
-#         shop_master["_id"] = str(shop_master["_id"])
-#         return jsonify(shop_master)
+# @app.route('/api/menu_masters/<int:index>', methods=['DELETE'])
+# def delete_menu_master(index):
+#     if 0 <= index < len(menu_masters):
+#         deleted_menu_master = menu_masters.pop(index)
+#         return jsonify(deleted_menu_master)
 #     else:
-#         return jsonify({"message": "ShopMaster not found"}, 404)
-
-# @shopapp.route('/api/shopmasters/update/<shop_master_id>', methods=['PUT'])
-# def update_shop_master(shop_master_id):
-#     data = request.get_json()
-#     try:
-#         if data:
-#             # Exclude the '_id' field from the update
-#             data.pop('_id', None)
-
-#             result = shop_masters_collection.update_one({"_id": ObjectId(shop_master_id)}, {"$set": data})
-#             if result.modified_count > 0:
-#                 return jsonify({"message": "ShopMaster updated successfully"})
-#             else:
-#                 return jsonify({"message": "ShopMaster not found or no changes made"}, 404)
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+#         return jsonify({"error": "Index out of range"}), 404
 
 
+# ______________________________________________________________________________________________________
+#iteam masters
+# full validation
+# CREATE
+@shopapp.route('/item_masters/create', methods=['POST'])
+def create_item_master():
+    try:
+        data = request.json
+        category = data.get('category')
+        subCategory = data.get('subCategory')
+        taxIndividual_status = data.get('taxIndividual_status')
+        taxIndividual_value = data.get('taxIndividual_value')
+        barcode_status = data.get('barcode_status')
+        barcode_value = data.get('barcode_value')
+        rackManagement_status = data.get('rackManagement_status')
+        rackManagement_value=data.get('rackManagement_value')
+        deadStock_status = data.get('deadStock_status')
+        deadStock_value = data.get('deadStock_value')
 
-# @shopapp.route('/api/shopmasters/delete/<shop_master_id>', methods=['DELETE'])
-# def delete_shop_master(shop_master_id):
-#     result = shop_masters_collection.delete_one({"_id": ObjectId(shop_master_id)})
-#     if result.deleted_count > 0:
-#         return jsonify({"message": "ShopMaster deleted successfully"})
-#     else:
-#         return jsonify({"message": "ShopMaster not found"}, 404)
+        if None in [category, subCategory, taxIndividual_status, taxIndividual_value,
+                    barcode_status, barcode_value, rackManagement_status,rackManagement_value, deadStock_status, deadStock_value]:
+            return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
 
-# # __________________________________-ShopMasters End-__________________________________
+        itemmaster = Product(category=category, subCategory=subCategory,
+                             taxIndividual_status=taxIndividual_status, taxIndividual_value=taxIndividual_value,
+                             barcode_status=barcode_status, barcode_value=barcode_value,
+                             rackManagement_status=rackManagement_status,
+                             deadStock_status=deadStock_status, deadStock_value=deadStock_value,rackManagement_value=rackManagement_value)
+        itemmaster.save()
 
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item master successfully created'}
+        return jsonify(response)
 
-
-
-# # __________________________________-GeneralMaster-__________________________________
-
-# @shopapp.route('/api/generalmaster/create', methods=['POST'])
-# def create_general_master():
-#     data = request.get_json()
-#     result = general_master_collection.insert_one(data)
-#     return jsonify({"message": "GeneralMaster created successfully", "general_master_id": str(result.inserted_id)})
-
-# @shopapp.route('/api/generalmaster/<general_master_id>', methods=['GET'])
-# def get_general_master(general_master_id):
-#     general_master = general_master_collection.find_one({"_id": ObjectId(general_master_id)})
-#     if general_master:
-#         general_master["_id"] = str(general_master["_id"])
-#         return jsonify(general_master)
-#     else:
-#         return jsonify({"message": "GeneralMaster not found"}, 404)
-
-# @shopapp.route('/api/generalmaster/update/<general_master_id>', methods=['PUT'])
-# def update_general_master(general_master_id):
-#     data = request.get_json()
-#     try:
-#         if data:
-#             # Exclude the '_id' field from the update
-#             data.pop('_id', None)
-
-#             result = general_master_collection.update_one({"_id": ObjectId(general_master_id)}, {"$set": data})
-#             if result.modified_count > 0:
-#                 return jsonify({"message": "GeneralMaster updated successfully"})
-#             else:
-#                 return jsonify({"message": "GeneralMaster not found or no changes made"}, 404)
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
-
-
-# @shopapp.route('/api/generalmaster/delete/<general_master_id>', methods=['DELETE'])
-# def delete_general_master(general_master_id):
-#     result = general_master_collection.delete_one({"_id": ObjectId(general_master_id)})
-#     if result.deleted_count > 0:
-#         return jsonify({"message": "GeneralMaster deleted successfully"})
-#     else:
-#         return jsonify({"message": "GeneralMaster not found"}, 404)
-
-# # __________________________________-GeneralMaster End-__________________________________
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
 
 
 
+# READ
+@shopapp.route('/item_masters/<string:item_id>', methods=['GET'])
+def get_item_master(item_id):
+    try:
+        # Convert the string item_id to ObjectId
+        object_id = ObjectId(item_id)
+        itemmaster = Product.objects(id=object_id).first()
 
-# # __________________________________-ShopItemMaster -__________________________________
+        if itemmaster:
+            response = {
+                "id": str(itemmaster.id),  # Convert ObjectId to string
+                "category": itemmaster.category,
+                "subCategory": itemmaster.subCategory,
+                "taxIndividual_status": itemmaster.taxIndividual_status,
+                "taxIndividual_value": itemmaster.taxIndividual_value,
+                "barcode_status": itemmaster.barcode_status,
+                "barcode_value": itemmaster.barcode_value,
+                "rackManagement_status": itemmaster.rackManagement_status,
+                "deadStock_status": itemmaster.deadStock_status,
+                "deadStock_value": itemmaster.deadStock_value
+            }
+            return jsonify({"status_code": 200, "message": "Success", "data": response}), 200
+        else:
+            return jsonify({'error': 'Item master not found', 'status_code': 404}), 404
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
 
-#  # Create ShopItemMaster
-# @shopapp.route('/api/shopitemmaster/create', methods=['POST'])
-# def create_shop_item_master():
-#     data = request.get_json()
-#     try:
-#         if data:
-#             result = shop_item_master_collection.insert_one(data)
-#             return jsonify({"message": "ShopItemMaster created successfully", "shop_item_master_id": str(result.inserted_id)})
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
 
-# # Get ShopItemMaster Details
-# @shopapp.route('/api/shopitemmaster/<shop_item_master_id>', methods=['GET'])
-# def get_shop_item_master(shop_item_master_id):
-#     try:
-#         shop_item_master = shop_item_master_collection.find_one({"_id": ObjectId(shop_item_master_id)})
-#         if shop_item_master:
-#             shop_item_master["_id"] = str(shop_item_master["_id"])
-#             return jsonify(shop_item_master)
-#         else:
-#             return jsonify({"message": "ShopItemMaster not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
 
-# # Update ShopItemMaster Details
-# @shopapp.route('/api/shopitemmaster/update/<shop_item_master_id>', methods=['PUT'])
-# def update_shop_item_master(shop_item_master_id):
-#     data = request.get_json()
-#     try:
-#         if data:
-#             # Exclude _id from the update data
-#             data.pop('_id', None)
-#             result = shop_item_master_collection.update_one({"_id": ObjectId(shop_item_master_id)}, {"$set": data})
-#             if result.modified_count > 0:
-#                 return jsonify({"message": "ShopItemMaster updated successfully"})
-#             else:
-#                 return jsonify({"message": "ShopItemMaster not found or no changes made"}, 404)
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# UPDATE
+@shopapp.route('/item_masters/update/<string:item_id>', methods=['PUT'])
+def update_item_master(item_id):
+    try:
+        # Convert the string item_id to ObjectId
+        object_id = ObjectId(item_id)
+        itemmaster = Product.objects(id=object_id).first()
+
+        if itemmaster:
+            data = request.json
+
+            # Validate that all fields are present in the request
+            required_fields = ['category', 'subCategory', 'taxIndividual_status', 'taxIndividual_value',
+                                'barcode_status', 'barcode_value', 'rackManagement_status',
+                                'deadStock_status', 'deadStock_value']
+
+            if not all(field in data for field in required_fields):
+                return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
+
+            for key, value in data.items():
+                setattr(itemmaster, key, value)
+
+            itemmaster.save()
+
+            response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item master updated'}
+            return jsonify(response)
+
+        else:
+            return jsonify({'error': 'Item master not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+# DELETE
+@shopapp.route('/item_masters/delete/<string:item_id>', methods=['DELETE'])
+def delete_item_master(item_id):
+    try:
+        # Convert the string item_id to ObjectId
+        object_id = ObjectId(item_id)
+        itemmaster = Product.objects(id=object_id).first()
+
+        if itemmaster:
+            itemmaster.delete()
+            response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item master deleted'}
+            return jsonify(response)
+        else:
+            return jsonify({'error': 'Item master not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+# ______________________________________________________________________________________________________
+# sellmasters
+# full validation
+# CREATE
+@shopapp.route('/api/sellmasters/create', methods=['POST'])
+def create_sellmaster():
+    try:
+        data = request.json
+        showName = data.get('showName')
+        status = data.get('status')
+        sellUnits = data.get('sellUnits')
+        printers = data.get('printers')
+        sellType = data.get('sellType')
+
+        if None in [showName, status, sellUnits, printers, sellType]:
+            return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
+
+        sellmaster = SellMaster(showName=showName,status=status,sellUnits=sellUnits,printers=printers,sellType=sellType)
+        sellmaster.save()
+
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'SellMaster created'}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
+# READ
+@shopapp.route('/api/sellmasters/<string:sellmaster_id>', methods=['GET'])
+def get_sellmaster(sellmaster_id):
+    try:
+        object_id = ObjectId(sellmaster_id)
+        sellmaster = SellMaster.objects(id=object_id).first()
+
+        if sellmaster:
+            response = {
+                "id": str(sellmaster.id),
+                "showName": sellmaster.showName,
+                "status": sellmaster.status,
+                "sellUnits": sellmaster.sellUnits,
+                "printers": sellmaster.printers,
+                "sellType": sellmaster.sellType
+            }
+            return jsonify({"status_code": 200, "message": "Success", "data": response}), 200
+        else:
+            return jsonify({'error': 'SellMaster not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
     
 
-# # Delete ShopItemMaster
-# @shopapp.route('/api/shopitemmaster/delete/<shop_item_master_id>', methods=['DELETE'])
-# def delete_shop_item_master(shop_item_master_id):
-#     try:
-#         result = shop_item_master_collection.delete_one({"_id": ObjectId(shop_item_master_id)})
-#         if result.deleted_count > 0:
-#             return jsonify({"message": "ShopItemMaster deleted successfully"})
-#         else:
-#             return jsonify({"message": "ShopItemMaster not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
 
-# # __________________________________-ShopItemMaster End-__________________________________
+# UPDATE
+@shopapp.route('/api/sellmasters/update/<string:sellmaster_id>', methods=['PUT'])
+def update_sellmaster(sellmaster_id):
+    try:
+        object_id = ObjectId(sellmaster_id)
+        sellmaster = SellMaster.objects(id=object_id).first()
 
+        # Validate that all fields are present in the request
+        required_fields = ['showName', 'status', 'sellUnits', 'printers', 'sellType']
 
-# # __________________________________-ShopPaymentMaster-__________________________________
+        data = request.json
 
-# # Create ShopPaymentMaster
-# @shopapp.route('/api/shoppaymentmaster/create', methods=['POST'])
-# def create_shop_payment_master():
-#     data = request.get_json()
-#     try:
-#         if data:
-#             result = shop_payment_master.insert_one(data)
-#             return jsonify({"message": "ShopPaymentMaster created successfully", "payment_master_id": str(result.inserted_id)})
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+        if not all(field in data for field in required_fields):
+            return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
 
-# # Get ShopPaymentMaster Details
-# @shopapp.route('/api/shoppaymentmaster/<payment_master_id>', methods=['GET'])
-# def get_shop_payment_master(payment_master_id):
-#     try:
-#         payment_master = shop_payment_master.find_one({"_id": ObjectId(payment_master_id)})
-#         if payment_master:
-#             payment_master["_id"] = str(payment_master["_id"])
-#             return jsonify(payment_master)
-#         else:
-#             return jsonify({"message": "ShopPaymentMaster not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+        if sellmaster:
+            # Update each field individually, filtering out null values
+            for key, value in data.items():
+                if value is not None:
+                    setattr(sellmaster, key, value)
 
-# # Update ShopPaymentMaster Details
-# @shopapp.route('/api/shoppaymentmaster/update/<payment_master_id>', methods=['PUT'])
-# def update_shop_payment_master(payment_master_id):
-#     data = request.get_json()
-#     try:
-#         if data:
-#             # Exclude the '_id' field from the update
-#             data.pop('_id', None)
+            sellmaster.save()
 
-#             result = shop_payment_master.update_one({"_id": ObjectId(payment_master_id)}, {"$set": data})
-#             if result.modified_count > 0:
-#                 return jsonify({"message": "ShopPaymentMaster updated successfully"})
-#             else:
-#                 return jsonify({"message": "ShopPaymentMaster not found or no changes made"}, 404)
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+            response = {"Body": None, "status": "success", "statusCode": 200, "message": 'SellMaster updated'}
+            return jsonify(response)
+        else:
+            return jsonify({'error': 'SellMaster not found', 'status_code': 404}), 404
+
+    except (ValidationError, InvalidDocument) as e:
+        return jsonify({'error': str(e), 'status_code': 400}), 400
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
 
 
-# # Delete ShopPaymentMaster
-# @shopapp.route('/api/shoppaymentmaster/delete/<payment_master_id>', methods=['DELETE'])
-# def delete_shop_payment_master(payment_master_id):
-#     try:
-#         result = shop_payment_master.delete_one({"_id": ObjectId(payment_master_id)})
-#         if result.deleted_count > 0:
-#             return jsonify({"message": "ShopPaymentMaster deleted successfully"})
-#         else:
-#             return jsonify({"message": "ShopPaymentMaster not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+
+# DELETE
+@shopapp.route('/api/sellmasters/delete/<string:sellmaster_id>', methods=['DELETE'])
+def delete_sellmaster(sellmaster_id):
+    try:
+        object_id = ObjectId(sellmaster_id)
+        sellmaster = SellMaster.objects(id=object_id).first()
+
+        if sellmaster:
+            sellmaster.delete()
+            response = {"Body": None, "status": "success", "statusCode": 200, "message": 'SellMaster deleted'}
+            return jsonify(response)
+        else:
+            return jsonify({'error': 'SellMaster not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+# ___________________________________________________________________________________________________________________________________________
+# GeneralMaster 
+@shopapp.route('/general_masters/create', methods=['POST'])
+def create_general_master():
+    try:
+        data = request.json
+        billId_startString = data.get('billId_startString')
+        billId_endString = data.get('billId_endString')
+        language = data.get('language')
+        theme = data.get('theme')
+        shopName = data.get('shopName')
+        sources = data.get('sources')
+        shopAddress = data.get('shopAddress')
+        role_title = data.get('role_title')
+        role_accessTo = data.get('role_accessTo')
+        name = data.get('name')
+        userPic = data.get('userPic')
+        businessSummaryStatus = data.get('businessSummaryStatus')
+        businessSummary_businessURL = data.get('businessSummary_businessURL')
+        businessSummary_businessName = data.get('businessSummary_businessName')
+        businessSummary_businessAddress = data.get('businessSummary_businessAddress')
+        businessSummary_businessMobile = data.get('businessSummary_businessMobile')
+        businessSummary_businessEmail = data.get('businessSummary_businessEmail')
+        businessSummary_businessDescription = data.get('businessSummary_businessDescription')
+        orderTypes_showName = data.get('orderTypes_showName')
+        orderTypes_properties = data.get('orderTypes_properties')
+
+        if None in [billId_startString, billId_endString, language, theme, shopName, sources, shopAddress,
+                    role_title, role_accessTo, name, userPic, businessSummaryStatus,
+                    businessSummary_businessURL, businessSummary_businessName, businessSummary_businessAddress,
+                    businessSummary_businessMobile, businessSummary_businessEmail, businessSummary_businessDescription,
+                    orderTypes_showName, orderTypes_properties]:
+            return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
+
+        general_master = GeneralMaster(
+            billId_startString=billId_startString,
+            billId_endString=billId_endString,
+            language=language,
+            theme=theme,
+            shopName=shopName,
+            sources=sources,
+            shopAddress=shopAddress,
+            role_title=role_title,
+            role_accessTo=role_accessTo,
+            name=name,
+            userPic=userPic,
+            businessSummaryStatus=businessSummaryStatus,
+            businessSummary_businessURL=businessSummary_businessURL,
+            businessSummary_businessName=businessSummary_businessName,
+            businessSummary_businessAddress=businessSummary_businessAddress,
+            businessSummary_businessMobile=businessSummary_businessMobile,
+            businessSummary_businessEmail=businessSummary_businessEmail,
+            businessSummary_businessDescription=businessSummary_businessDescription,
+            orderTypes_showName=orderTypes_showName,
+            orderTypes_properties=orderTypes_properties
+        )
+        general_master.save()
+
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'General Master successfully created'}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
+# READ
+@shopapp.route('/general_masters/<string:general_master_id>', methods=['GET'])
+def get_general_master(general_master_id):
+    try:
+        # Convert the string general_master_id to ObjectId
+        object_id = ObjectId(general_master_id)
+        general_master = GeneralMaster.objects(id=object_id).first()
+
+        if general_master:
+            response = {
+                "id": str(general_master.id),  # Convert ObjectId to string
+                "billId_startString": general_master.billId_startString,
+                "billId_endString": general_master.billId_endString,
+                "language": general_master.language,
+                "theme": general_master.theme,
+                "shopName": general_master.shopName,
+                "sources": general_master.sources,
+                "shopAddress": general_master.shopAddress,
+                "role_title": general_master.role_title,
+                "role_accessTo": general_master.role_accessTo,
+                "name": general_master.name,
+                "userPic": general_master.userPic,
+                "businessSummaryStatus": general_master.businessSummaryStatus,
+                "businessSummary_businessURL": general_master.businessSummary_businessURL,
+                "businessSummary_businessName": general_master.businessSummary_businessName,
+                "businessSummary_businessAddress": general_master.businessSummary_businessAddress,
+                "businessSummary_businessMobile": general_master.businessSummary_businessMobile,
+                "businessSummary_businessEmail": general_master.businessSummary_businessEmail,
+                "businessSummary_businessDescription": general_master.businessSummary_businessDescription,
+                "orderTypes_showName": general_master.orderTypes_showName,
+                "orderTypes_properties": general_master.orderTypes_properties
+            }
+            return jsonify({"status_code": 200, "message": "Success", **response}), 200
+        else:
+            return jsonify({'error': 'General Master not found', 'status_code': 404}), 404
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
+# UPDATE
+@shopapp.route('/general_masters/update/<string:general_master_id>', methods=['PUT'])
+def update_general_master(general_master_id):
+    try:
+        # Convert the string general_master_id to ObjectId
+        object_id = ObjectId(general_master_id)
+        general_master = GeneralMaster.objects(id=object_id).first()
+
+        if general_master:
+            data = request.json
+
+            # Validate that all fields are present in the request
+            required_fields = [
+                'billId_startString', 'billId_endString', 'language', 'theme', 'shopName',
+                'sources', 'shopAddress', 'role_title', 'role_accessTo', 'name', 'userPic',
+                'businessSummaryStatus', 'businessSummary_businessURL', 'businessSummary_businessName',
+                'businessSummary_businessAddress', 'businessSummary_businessMobile', 'businessSummary_businessEmail',
+                'businessSummary_businessDescription', 'orderTypes_showName', 'orderTypes_properties'
+            ]
+
+            if not all(field in data for field in required_fields):
+                return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
+
+            for key, value in data.items():
+                setattr(general_master, key, value)
+
+            general_master.save()
+
+            response = {"Body": None, "status": "success", "statusCode": 200, "message": 'General Master updated'}
+            return jsonify(response)
+
+        else:
+            return jsonify({'error': 'General Master not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
+# DELETE
+@shopapp.route('/general_masters/delete/<string:general_id>', methods=['DELETE'])
+def delete_general_master(general_id):
+    try:
+        # Convert the string general_id to ObjectId
+        object_id = ObjectId(general_id)
+        general_master = GeneralMaster.objects(id=object_id).first()
+
+        if general_master:
+            general_master.delete()
+            response = {"Body": None, "status": "success", "statusCode": 200, "message": 'GeneralMaster deleted'}
+            return jsonify(response)
+        else:
+            return jsonify({'error': 'GeneralMaster not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+# _______________________________________________________________________________________________________________________________________________ 
+#PaymentMaster
+# CREATE
+@shopapp.route('/payment_masters/create', methods=['POST'])
+def create_payment_master():
+    try:
+        data = request.json
+        taxSlab_showName = data.get('taxSlab_showName')
+        taxSlab_properties = data.get('taxSlab_properties')
+        banks_showName = data.get('banks_showName')
+        banks_properties = data.get('banks_properties')
+        paymentModes_showName = data.get('paymentModes_showName')
+        paymentModes_properties = data.get('paymentModes_properties')
+
+        if None in [taxSlab_showName, taxSlab_properties, banks_showName, banks_properties,
+                    paymentModes_showName, paymentModes_properties]:
+            return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
+
+        payment_master = PaymentMaster(
+            taxSlab_showName=taxSlab_showName,
+            taxSlab_properties=taxSlab_properties,
+            banks_showName=banks_showName,
+            banks_properties=banks_properties,
+            paymentModes_showName=paymentModes_showName,
+            paymentModes_properties=paymentModes_properties
+        )
+        payment_master.save()
+
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Payment Master successfully created'}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
  
-
-# # __________________________________-ShopPaymentMaster End-__________________________________
-
-
-
-# # __________________________________-ShopInvoices __________________________________
-# # Create ShopInvoice
-# @shopapp.route('/api/shopinvoices/create', methods=['POST'])
-# def create_shop_invoice():
-#     data = request.get_json()
-#     try:
-#         if data:
-#             result = shop_invoices.insert_one(data)
-#             return jsonify({"message": "ShopInvoice created successfully", "invoice_id": str(result.inserted_id)})
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+# Convert EmbeddedDocumentField to dictionary for serialization
+def convert_embedded_fields(embedded_field):
+    if isinstance(embedded_field, list):
+        return [convert_embedded_fields(item) for item in embedded_field]
+    elif isinstance(embedded_field, QuerySet):
+        return convert_embedded_fields(list(embedded_field))
+    elif isinstance(embedded_field, EmbeddedDocument):
+        return embedded_field.to_mongo()
+    return embedded_field
 
 
+@shopapp.route('/payment_masters/<string:payment_master_id>', methods=['GET'])
+def get_payment_master(payment_master_id):
+    try:
+        object_id = ObjectId(payment_master_id)
+        payment_master = PaymentMaster.objects(id=object_id).first()
 
-# # Get ShopInvoice Details
-# @shopapp.route('/api/shopinvoices/<invoice_id>', methods=['GET'])
-# def get_shop_invoice(invoice_id):
-#     try:
-#         invoice = shop_invoices.find_one({"_id": ObjectId(invoice_id)})
-#         if invoice:
-#             invoice["_id"] = str(invoice["_id"])
-#             return jsonify(invoice)
-#         else:
-#             return jsonify({"message": "ShopInvoice not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
+        if payment_master:
+            response = {
+                "id": str(payment_master.id),
+                "taxSlab_showName": payment_master.taxSlab_showName,
+                "taxSlab_properties": convert_embedded_fields(payment_master.taxSlab_properties),
+                "banks_showName": payment_master.banks_showName,
+                "banks_properties": convert_embedded_fields(payment_master.banks_properties),
+                "paymentModes_showName": payment_master.paymentModes_showName,
+                "paymentModes_properties": convert_embedded_fields(payment_master.paymentModes_properties),
+            }
+            return jsonify({"status_code": 200, "message": "Success", **response}), 200
+        else:
+            return jsonify({'error': 'Payment Master not found', 'status_code': 404}), 404
 
-
-# # Update ShopInvoice Details
-# @shopapp.route('/api/shopinvoices/update/<invoice_id>', methods=['PUT'])
-# def update_shop_invoice(invoice_id):
-#     data = request.get_json()
-#     try:
-#         if data:
-#             # Exclude the '_id' field from the update
-#             data.pop('_id', None)
-
-#             result = shop_invoices.update_one({"_id": ObjectId(invoice_id)}, {"$set": data})
-#             if result.modified_count > 0:
-#                 return jsonify({"message": "ShopInvoice updated successfully"})
-#             else:
-#                 return jsonify({"message": "ShopInvoice not found or no changes made"}, 404)
-#         else:
-#             return jsonify({"error": "Invalid JSON data"}, 400)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
-
-
-# # Delete ShopInvoice
-# @shopapp.route('/api/shopinvoices/delete/<invoice_id>', methods=['DELETE'])
-# def delete_shop_invoice(invoice_id):
-#     try:
-#         result = shop_invoices.delete_one({"_id": ObjectId(invoice_id)})
-#         if result.deleted_count > 0:
-#             return jsonify({"message": "ShopInvoice deleted successfully"})
-#         else:
-#             return jsonify({"message": "ShopInvoice not found"}, 404)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}, 500)
-
-# # __________________________________-ShopInvoices End-__________________________________
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
 
 
 
- 
+# UPDATE
+# Update route definition
+# Update route definition
+@shopapp.route('/payment_masters/update/<string:payment_master_id>', methods=['PUT'])
+def update_payment_master(payment_master_id):
+    try:
+        # Retrieve PaymentMaster document by ID
+        object_id = ObjectId(payment_master_id)
+        payment_master = PaymentMaster.objects(id=object_id).first()
+
+        # Check if PaymentMaster document exists
+        if payment_master:
+            data = request.json
+
+            # Validate required fields
+            required_fields = [
+                'taxSlab_showName', 'taxSlab_properties', 'banks_showName', 'banks_properties',
+                'paymentModes_showName', 'paymentModes_properties'
+            ]
+
+            if not all(field in data for field in required_fields):
+                return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
+
+            # Update common fields
+            common_fields = [
+                'taxSlab_showName', 'taxSlab_properties', 'banks_showName', 'banks_properties',
+                'paymentModes_showName', 'paymentModes_properties'
+            ]
+
+            for field in common_fields:
+                if field in data and data[field] is not None and data[field] != "":
+                    setattr(payment_master, field, data[field])
+                elif field not in data:
+                    return jsonify({'error': f'Missing value for key: {field}', 'status_code': 400}), 400
+
+            # Update taxSlab_properties if not None or empty
+            if data.get('taxSlab_showName') is not None and data.get('taxSlab_showName') != "":
+                payment_master.taxSlab_showName = data.get('taxSlab_showName', '')
+
+            payment_master.taxSlab_properties = [
+                PaymentSlab(**slab_data) for slab_data in data.get('taxSlab_properties', []) if slab_data.get('slabName') is not None and slab_data.get('slabName') != ""
+            ]
+
+            # Update banks_properties if not None or empty
+            if data.get('banks_showName') is not None and data.get('banks_showName') != "":
+                payment_master.banks_showName = data.get('banks_showName', '')
+
+            payment_master.banks_properties = [
+                BankDetails(**bank_data) for bank_data in data.get('banks_properties', []) if bank_data.get('bankName') is not None and bank_data.get('bankName') != ""
+            ]
+
+            # Update paymentModes_properties if not None or empty
+            if data.get('paymentModes_showName') is not None and data.get('paymentModes_showName') != "":
+                payment_master.paymentModes_showName = data.get('paymentModes_showName', '')
+
+            payment_master.paymentModes_properties = [
+                PaymentModeDetails(**mode_data) for mode_data in data.get('paymentModes_properties', []) if mode_data.get('modeName') is not None and mode_data.get('modeName') != ""
+            ]
+
+            # Save the updated PaymentMaster document
+            payment_master.save()
+
+            response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Payment Master updated'}
+            return jsonify(response)
+
+        else:
+            return jsonify({'error': 'Payment Master not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
+
+# DELETE
+@shopapp.route('/payment_masters/delete/<string:payment_id>', methods=['DELETE'])
+def delete_payment_master(payment_id):
+    try:
+        object_id = ObjectId(payment_id)
+        payment_master = PaymentMaster.objects(id=object_id).first()
+
+        if payment_master:
+            payment_master.delete()
+            response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Payment Master deleted'}
+            return jsonify(response)
+        else:
+            return jsonify({'error': 'Payment Master not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+    
+    
+# ____________________________________________________________________________________________________________________________________    
+# Invoices Table
+# CREATE
+@shopapp.route('/invoices/create', methods=['POST'])
+def create_invoice():
+    try:
+        data = request.json
+        items_data = data.get('items', [])
+        item_list = [InvoiceItem(**item_data) for item_data in items_data]
+
+        invoice = Invoice(
+            billId=data.get('billId'),
+            customer=data.get('customer'),
+            billDate=data.get('billDate'),
+            items=item_list,
+            savings=data.get('savings'),
+            status=data.get('status'),
+            count=data.get('count'),
+            orderType=data.get('orderType'),
+            taxedAmount=data.get('taxedAmount'),
+            taxedP=data.get('taxedP'),
+            discountedAmount=data.get('discountedAmount'),
+            discountedP=data.get('discountedP'),
+            grandTotal=data.get('grandTotal'),
+            credit=data.get('credit'),
+            paidAmount=data.get('paidAmount'),
+            returnedAmount=data.get('returnedAmount'),
+            paidIn=data.get('paidIn'),
+            paymentMode=data.get('paymentMode'),
+            remarks=data.get('remarks')
+        )
+
+        invoice.save()
+
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Invoice successfully created'}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+    
+    
+
+# READ
+@shopapp.route('/invoices/<string:invoice_id>', methods=['GET'])
+def get_invoice(invoice_id):
+    try:
+        # Convert the string invoice_id to ObjectId
+        object_id = ObjectId(invoice_id)
+        invoice = Invoice.objects(id=object_id).first()
+
+        if invoice:
+            response = {
+                "billId": invoice.billId,
+                "customer": invoice.customer,
+                "billDate": invoice.billDate,
+                "items": [
+                    {
+                        "itemName": item.itemName,
+                        "quantity": item.quantity,
+                        "price": item.price,
+                        "total": item.total
+                    } for item in invoice.items
+                ],
+                "savings": invoice.savings,
+                "status": invoice.status,
+                "count": invoice.count,
+                "orderType": invoice.orderType,
+                "taxedAmount": invoice.taxedAmount,
+                "taxedP": invoice.taxedP,
+                "discountedAmount": invoice.discountedAmount,
+                "discountedP": invoice.discountedP,
+                "grandTotal": invoice.grandTotal,
+                "credit": invoice.credit,
+                "paidAmount": invoice.paidAmount,
+                "returnedAmount": invoice.returnedAmount,
+                "paidIn": invoice.paidIn,
+                "paymentMode": invoice.paymentMode,
+                "remarks": invoice.remarks
+            }
+            return jsonify({"status_code": 200, "message": "Success", "data": response}), 200
+        else:
+            return jsonify({'error': 'Invoice not found', 'status_code': 404}), 404
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
+ # UPDATE
+@shopapp.route('/invoices/update/<string:invoice_id>', methods=['PUT'])
+def update_invoice(invoice_id):
+    try:
+        # Convert the string invoice_id to ObjectId
+        object_id = ObjectId(invoice_id)
+        invoice = Invoice.objects(id=object_id).first()
+
+        if invoice:
+            data = request.json
+
+            # Validate that all fields are present in the request
+            required_fields = ['billId', 'customer', 'billDate', 'items', 'savings', 'status', 'count',
+                                'orderType', 'taxedAmount', 'taxedP', 'discountedAmount', 'discountedP',
+                                'grandTotal', 'credit', 'paidAmount', 'returnedAmount', 'paidIn',
+                                'paymentMode', 'remarks']
+
+            if not all(field in data for field in required_fields):
+                return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
+
+            # Update fields
+            for key, value in data.items():
+                if key == 'items':
+                    # If updating 'items', convert each item dictionary to InvoiceItem instance
+                    updated_items = [InvoiceItem(**item) for item in value]
+                    setattr(invoice, key, updated_items)
+                else:
+                    setattr(invoice, key, value)
+
+            # Save the updated invoice document
+            invoice.save()
+
+            response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Invoice updated'}
+            return jsonify(response)
+
+        else:
+            return jsonify({'error': 'Invoice not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
+# DELETE
+@shopapp.route('/invoices/delete/<string:invoice_id>', methods=['DELETE'])
+def delete_invoice(invoice_id):
+    try:
+        # Convert the string invoice_id to ObjectId
+        object_id = ObjectId(invoice_id)
+        invoice = Invoice.objects(id=object_id).first()
+
+        if invoice:
+            invoice.delete()
+            response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Invoice deleted'}
+            return jsonify(response)
+
+        else:
+            return jsonify({'error': 'Invoice not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+# __________________________________________________________________________________________________________________________

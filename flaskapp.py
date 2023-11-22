@@ -4,8 +4,9 @@ from flask_jwt_extended import JWTManager
 # from flask_jwt_extended import JWTManager
 from controller.signInsignUp import signUp_bp # Import your blueprint
 from controller.signInsignUp import login_bp
+from flask_cors import CORS
 # from controller.forgetpassword import forgetpassword_app
-# from controller.shop import shopapp
+from controller.shop import shopapp
 # from controller.resto import restoapp
 # from security.errors import expired_token_callback
 
@@ -18,7 +19,7 @@ app.config['SECRET_KEY'] = '98c5bc0a178ff2d6c0c1471c6f3dc5e4'
 app.register_blueprint(signUp_bp)
 app.register_blueprint(login_bp)
 # app.register_blueprint(forgetpassword_app)
-# app.register_blueprint(shopapp)
+app.register_blueprint(shopapp)
 # app.register_blueprint(restoapp)
 
 
@@ -36,6 +37,9 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False  # Set your token expiration as n
 # Initialize the Flask-JWT-Extended extension
 jwt = JWTManager(app)
 
+# Enable CORS for all routes
+CORS(app)
+CORS(app, origins=['http://localhost:3000', 'https://my-digital-ocean-app.com'])
 
 
 
