@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response, make_response
 from flask_jwt_extended import JWTManager
 from controller.signInsignUp import signUp_bp  
 from controller.signInsignUp import login_bp
@@ -37,6 +37,16 @@ jwt = JWTManager(app)
 # Enable CORS for all routes
 CORS(app, origins=['http://localhost:3000', 'https://my-digital-ocean-app.com'], supports_credentials=True)
 
+
+
+@app.route('/')
+def hello_world():
+    resp = make_response('Hello World Again')
+    
+    # Set the cookie with SameSite=None and Secure flag
+    resp.set_cookie('my_cookie', 'cookie_value', secure=True, samesite='None')
+    
+    return resp
 
 
 @app.route('/')
