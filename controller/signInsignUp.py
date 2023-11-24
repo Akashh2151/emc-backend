@@ -90,7 +90,7 @@ def register():
 #         user.save()
 
 #         # Store additional JSON data in UserData collection
-#         user_data = UserData(user=user, data=json_data)
+#         user_data = User(user=user, data=json_data)
 #         user_data.save()
 
 #         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Registration successful'}
@@ -108,7 +108,7 @@ def register():
 #         user = User.objects.get(id=user_id)
 
 #         # Find associated JSON data in UserData collection
-#         user_data = UserData.objects(user=user).first()
+#         user_data = User.objects(user=user).first()
 
 #         if user_data:
 #             # Include only JSON data in the response

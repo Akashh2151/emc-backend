@@ -6,20 +6,20 @@ from flask_mongoengine import MongoEngine
 
 app = Flask(__name__)
 
-from mongoengine import connect,disconnect
+from mongoengine import connect
 # # Replace the values with your username, password, and cluster name
-# db_uri = "mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority"
-# # Replace the value with your database name
-# connect(host=db_uri, db="emc_project2151")
+db_uri = "mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority"
+# Replace the value with your database name
+connect(host=db_uri, db="emc_project2151")
 
 
 
-disconnect()
+# disconnect()
 
-local_db_uri = "mongodb://localhost:27017"
-local_db_name = "emc_project_local"
-db = MongoEngine()
-connect(host=local_db_uri, db=local_db_name)
+# local_db_uri = "mongodb://localhost:27017"
+# local_db_name = "emc_project_local"
+# db = MongoEngine()
+# connect(host=local_db_uri, db=local_db_name)
 
 
 # app.config['MONGODB_SETTINGS'] = {
