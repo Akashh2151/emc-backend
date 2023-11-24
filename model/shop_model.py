@@ -56,8 +56,14 @@ def validate_non_empty(value):
     elif isinstance(value, (int, float)):
         # You can customize this part based on your requirements for numeric fields
         pass
-    
 
+
+# Define MenuMaster document
+class MenuMaster(Document):
+    showName = StringField(required=True,null=False)
+    path = StringField(required=True,null=False)
+
+    
 class Product(Document):
     category = StringField(required=True, null=False, validation=validate_non_empty)
     subCategory = ListField(StringField(required=True, null=False), required=True, null=False)

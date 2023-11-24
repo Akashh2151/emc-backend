@@ -5,54 +5,108 @@ from flask import Blueprint, request, jsonify
 from bson.objectid import ObjectId
 from pydantic import ValidationError
 # from model.shop_model import shop_collection,shop_invoices,shop_item_master_collection,shop_masters_collection,shop_payment_master,general_master_collection
-from model.shop_model import BankDetails, GeneralMaster, Invoice, InvoiceItem, PaymentMaster, PaymentModeDetails, PaymentSlab, Product, SellMaster
+from model.shop_model import BankDetails, GeneralMaster, Invoice, InvoiceItem, MenuMaster, PaymentMaster, PaymentModeDetails, PaymentSlab, Product, SellMaster
 from mongoengine.queryset import QuerySet
 # shopapp blue print
 from mongoengine import EmbeddedDocument
 shopapp=Blueprint('shopapp',__name__)
 
- 
+# ______________________________________________________________________________________________________
+#  menu master
+# CREATE
+@shopapp.route('/api/menumasters/create', methods=['POST'])
+def create_menumaster():
+    try:
+        data = request.json
+        showName = data.get('showName')
+        path = data.get('path')
 
- 
-# Mock data for MenuMaster and ItemMaster
-# menu_masters = []
-# item_masters = []
+        if not all([showName, path]):
+            return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
 
+        existing_menumaster = MenuMaster.objects(showName=showName).first()
+        if existing_menumaster:
+            return jsonify({'error': 'MenuMaster with the same showName already exists', 'status_code': 400}), 400
 
-# @app.route('/api/menu_masters', methods=['POST'])
-# def create_menu_master():
-#     new_menu_master = request.json
-#     menu_masters.append(new_menu_master)
-#     return jsonify(new_menu_master), 201
+        menumaster = MenuMaster(showName=showName, path=path)
+        menumaster.save()
 
-# @app.route('/api/menu_masters', methods=['GET'])
-# def get_all_menu_masters():
-#     return jsonify(menu_masters)
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'MenuMaster created'}
+        return jsonify(response)
 
-
-# @app.route('/api/menu_masters/<int:index>', methods=['GET'])
-# def get_menu_master(index):
-#     if 0 <= index < len(menu_masters):
-#         return jsonify(menu_masters[index])
-#     else:
-#         return jsonify({"error": "Index out of range"}), 404
-
-# @app.route('/api/menu_masters/<int:index>', methods=['PUT'])
-# def update_menu_master(index):
-#     if 0 <= index < len(menu_masters):
-#         menu_masters[index] = request.json
-#         return jsonify(menu_masters[index])
-#     else:
-#         return jsonify({"error": "Index out of range"}), 404
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
 
 
-# @app.route('/api/menu_masters/<int:index>', methods=['DELETE'])
-# def delete_menu_master(index):
-#     if 0 <= index < len(menu_masters):
-#         deleted_menu_master = menu_masters.pop(index)
-#         return jsonify(deleted_menu_master)
-#     else:
-#         return jsonify({"error": "Index out of range"}), 404
+# READ
+@shopapp.route('/api/menumasters/<string:menumaster_id>', methods=['GET'])
+def get_menumaster(menumaster_id):
+    try:
+        object_id = ObjectId(menumaster_id)
+        menumaster = MenuMaster.objects(id=object_id).first()
+
+        if menumaster:
+            response = {
+                "id": str(menumaster.id),
+                "showName": menumaster.showName,
+                "path": menumaster.path
+            }
+            return jsonify({"status_code": 200, "message": "Success", "data": response}), 200
+        else:
+            return jsonify({'error': 'MenuMaster not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+# UPDATE
+@shopapp.route('/api/menumasters/update/<string:menumaster_id>', methods=['PUT'])
+def update_menumaster(menumaster_id):
+    try:
+        object_id = ObjectId(menumaster_id)
+        menumaster = MenuMaster.objects(id=object_id).first()
+
+        if not menumaster:
+            return jsonify({'error': 'MenuMaster not found', 'status_code': 404}), 404
+
+        data = request.json
+
+        # Validate that at least one field is present in the request
+        if not any(field in data for field in ['showName', 'path']):
+            return jsonify({'error': 'At least one field (showName or path) is required', 'status_code': 400}), 400
+
+        # Update each field individually, filtering out null values
+        for key, value in data.items():
+            if value is not None:
+                setattr(menumaster, key, value)
+
+        menumaster.save()
+
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'MenuMaster updated'}
+        return jsonify(response)
+
+    except (ValidationError, InvalidDocument) as e:
+        return jsonify({'error': str(e), 'status_code': 400}), 400
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+# DELETE
+@shopapp.route('/api/menumasters/delete/<string:menumaster_id>', methods=['DELETE'])
+def delete_menumaster(menumaster_id):
+    try:
+        object_id = ObjectId(menumaster_id)
+        menumaster = MenuMaster.objects(id=object_id).first()
+
+        if menumaster:
+            menumaster.delete()
+            response = {"Body": None, "status": "success", "statusCode": 200, "message": 'MenuMaster deleted'}
+            return jsonify(response)
+        else:
+            return jsonify({'error': 'MenuMaster not found', 'status_code': 404}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
 
 
 # ______________________________________________________________________________________________________
@@ -154,6 +208,7 @@ def update_item_master(item_id):
 
     except Exception as e:
         return jsonify({'error': str(e), 'status_code': 500}), 500
+
 
 
 # DELETE
