@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, EmailField, IntField, BooleanField,ReferenceField,DictField
+from mongoengine import Document, StringField, EmailField, IntField, BooleanField,ReferenceField,DictField,ListField
 from flask import Flask
 from flask_mongoengine import MongoEngine
 # from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,20 +6,29 @@ from flask_mongoengine import MongoEngine
 
 app = Flask(__name__)
 
-from mongoengine import connect
-# # Replace the values with your username, password, and cluster name
-db_uri = "mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority"
-# Replace the value with your database name
+from mongoengine import connect,disconnect
+db_uri = "mongodb+srv://akashh2151:aOSefZ@cluster0.25xmos0.mongodb.net/emc_project2151?retryWrites=true&w=majority"
 connect(host=db_uri, db="emc_project2151")
+disconnect()
+# Replace the values with your username, password, and cluster name
+
+# Replace the value with your database name
 
 
 
-# disconnect()
+# disconnect(alias='default')
 
 # local_db_uri = "mongodb://localhost:27017"
 # local_db_name = "emc_project_local"
 # db = MongoEngine()
-# connect(host=local_db_uri, db=local_db_name)
+# connect(host=local_db_uri, db=local_db_name,alias='new_alias')
+
+
+# Disconnect from the existing default connection
+# disconnect(alias='default')
+
+# Optionally, you can establish a new connection with a different alias
+# connect(host='mongodb://localhost:27017', db='emc_backend', alias='new_alias')
 
 
 # app.config['MONGODB_SETTINGS'] = {
@@ -44,10 +53,16 @@ connect(host=db_uri, db="emc_project2151")
 #     password = db.StringField( required=True)
 #  _________________________________________________________________________________________  
 class User(Document):
-    name = StringField(required=True, max_length=100)
+    username = StringField(required=True, max_length=100)
     email = EmailField(unique=True, required=True)
     password = StringField(required=True, max_length=100)
     role = StringField(required=True, choices=("user", "admin")) 
+    name=StringField(required=True, max_length=100)
+    mobilenumber = StringField(max_length=15)  # Assuming a reasonable max length for a phone number
+    businessname = StringField(max_length=100)
+    businesstype = StringField(max_length=100)
+    shopbundale = DictField()
+    restobundale = ListField(DictField()) # Assuming it's optional
     
     
 # json bundle sending model      

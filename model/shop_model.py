@@ -28,14 +28,14 @@ from pymongo import MongoClient
 # Replace the value with your database name
 # connect(host=db_uri, db="emc_project2151")
 
-
+# ___________________________________________________________________________________________________________________
 from mongoengine import connect
 # disconnect
 # Replace the values with your username, password, and cluster name
 db_uri = "mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority"
 # Replace the value with your database name
 connect(host=db_uri, db="emc_project2151")
-connect(host=db_uri, db="emc_project2151")
+# connect(host=db_uri, db="emc_project2151")
 
 # Disconnect existing connections
 # disconnect()
@@ -44,7 +44,7 @@ connect(host=db_uri, db="emc_project2151")
 # local_db_name = "emc_project_local"
 # connect(host=local_db_uri, db=local_db_name)
 
-
+# _______________________________________________________________________________________________________________________
 # def validate_non_empty(value):
 #     if not value.strip():  # Check if the string is empty after stripping whitespace
 #         raise ValidationError("Field cannot be empty.")

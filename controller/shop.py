@@ -91,6 +91,7 @@ def update_menumaster(menumaster_id):
         return jsonify({'error': str(e), 'status_code': 500}), 500
 
 
+
 # DELETE
 @shopapp.route('/api/menumasters/delete/<string:menumaster_id>', methods=['DELETE'])
 def delete_menumaster(menumaster_id):

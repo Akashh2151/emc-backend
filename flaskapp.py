@@ -43,6 +43,7 @@ CORS(app, origins=['http://localhost:3000', 'https://my-digital-ocean-app.com'])
 # def hello_world():
 #     return 'Hello'
 
+
 @app.route('/')
 def hello_world():
       return jsonify({'message': 'Login successful'}), 200
