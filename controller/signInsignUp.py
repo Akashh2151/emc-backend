@@ -806,6 +806,7 @@ def register_step2():
             return jsonify(response), 400
 
 
+
         # Perform additional validation if needed
         if businesstype == "resto" or businesstype == "shop":
             password_hash = hashlib.sha256(password.encode()).hexdigest()
