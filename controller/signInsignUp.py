@@ -970,17 +970,9 @@ def login():
 
 
 
-# @login_bp.route('/businesstypes', methods=['GET'])
-# def get_all_businesstypes():
-#     try:
-#         # Retrieve all unique businesstypes from the User model
-#         unique_businesstypes = User.objects.distinct('businesstype')
-
-#         return jsonify({'businesstypes': unique_businesstypes, 'status_code': 200})
-
-#     except Exception as e:
-#         return jsonify({'error': str(e), 'status_code': 500}), 500
-
+ 
+ 
+ 
 
 
 
