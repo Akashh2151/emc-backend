@@ -676,91 +676,6 @@ resto_data = [
 
 #  signinblueprint
 signUp_bp = Blueprint('signUp', __name__)
-# @signUp_bp.route('/register', methods=['POST'])
-# def register():
-#     try:
-#         data = request.json
-#         username = data.get('username')
-#         email = data.get('email')
-#         password = data.get('password')
-#         role = data.get('role')  # Get the role from the request
-#         session['username']=username
-#         session['email']=email
-#         session['password']=password
-#         session['role']=role        
-#         print("email:",email)
-#         print("password:",password)
-#         print("username:",username)
-#         # Check if the email is already registered
-#         existing_user = User.objects(email=email).first()
-#         if existing_user:
-#             response = { "Body": None,"status": "error","statusCode": 400,"message": 'Email already registered'}
-#             return jsonify(response), 400
-
-#         if not username or not email or not password:
-#             response = {"Body": None,"status": "error","statusCode": 400,"message": 'Name, email, and password are required'}
-#             return jsonify(response), 400
-
-#         if not re.match(email_regex, email):
-#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Invalid email format'}
-#             return jsonify(response), 400
-
-#         if not re.match(password_regex, password):
-#             response = {"Body": None,"status": "error","statusCode": 400,"message": 'Password must have at least 8 characters'}
-#             return jsonify(response), 400
-
-#         password_hash = hashlib.sha256(password.encode()).hexdigest()
-
-#         user = User(username=username, email=email, password=password_hash,role=role)
-#         user.save()
-
-#         response = {"Body": None,"status": "success","statusCode": 200,"message": 'Registration successful'}
-#         return jsonify(response), 200
-
-#     except Exception as e:
-#         response = { "Body": None,"status": "error","statusCode": 500,"message": str(e)}
-#         return jsonify(response), 500
-    
-    
-    
-# @signUp_bp.route('/getregister',methods=['POST'])
-# def cloneregister():
-#     try:
-#         data=request.json
-#         name=data.get('name')
-#         mobilenumber=data.get('mobilenumber')
-#         businessname=data.get('businessname')
-#         businesstype=data.get('businesstype')
-        
-#         if not name or not mobilenumber or not businessname or not businesstype:
-#             return jsonify({"error":"name mobilenumber businessname businesstype is requred"})
-        
-#         if "username" and "email" and "password" and "role" in session and request.method=="POST":
-#             user=User(name=name,mobilenumber=mobilenumber,businessname=businessname,businesstype=businesstype)
-#             user.save()
-#             response={"Body":None,"Status":"Success","StatusCode":200,"message": 'Registration successful'}
-            
-            
-#             # username=session['username']
-#             # email=session['email']
-#             # password=session['password']
-#             # role=session['role']
-#             # return jsonify({"session name ":username,"email":email,"password":password,"role":role})
-            
-#     #    data=request.json
-#     #    name=data.get('name')
-#     #    mobilenumber=data.get('mobilenumber')
-#     #    if request.method == 'POST':
-           
-          
-       
-       
-#     except Exception as e:
-#         response = {'Body':None,"status":"error","statuscode":500,"message":str(e)}
-#         return jsonify(response)
-
-
-
 # Step 1: Register user with basic information
 @signUp_bp.route('/register/step1', methods=['POST'])
 def register_step1():
@@ -848,83 +763,6 @@ def register_step2():
     
     
 
-    
-    
-    
-    
-    
-    
-# __________________________________________________________________________________________________________________________
-# sending json  bundale ragister api
-
-# @signUp_bp.route('/register', methods=['POST'])
-# def register():
-#     try:
-#         data = request.json
-#         name = data.get('name')
-#         email = data.get('email')
-#         password = data.get('password')
-#         role = data.get('role')
-#         json_data = data.get('json_data')
-
-#         # Check if the email is already registered
-#         existing_user = User.objects(email=email).first()
-#         if existing_user:
-#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Email already registered'}
-#             return jsonify(response), 400
-
-#         if not name or not email or not password:
-#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Name, email, and password are required'}
-#             return jsonify(response), 400
-
-#         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Invalid email format'}
-#             return jsonify(response), 400
-
-#         if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$", password):
-#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Password must have at least 8 characters, one uppercase letter, and one digit'}
-#             return jsonify(response), 400
-
-#         password_hash = hashlib.sha256(password.encode()).hexdigest()
-
-#         user = User(name=name, email=email, password=password_hash, role=role)
-#         user.save()
-
-#         # Store additional JSON data in UserData collection
-#         user_data = User(user=user, data=json_data)
-#         user_data.save()
-
-#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Registration successful'}
-#         return jsonify(response), 200
-
-#     except Exception as e:
-#         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
-#         return jsonify(response), 500
-    
-    
-# @signUp_bp.route('/user/<user_id>', methods=['GET'])
-# def get_user_json_data(user_id):
-#     try:
-#         # Find the user by user_id
-#         user = User.objects.get(id=user_id)
-
-#         # Find associated JSON data in UserData collection
-#         user_data = User.objects(user=user).first()
-
-#         if user_data:
-#             # Include only JSON data in the response
-#             response = user_data.data
-#             return jsonify(response), 200
-#         else:
-#             response = {"Body": None, "status": "error", "statusCode": 404, "message": 'User data not found'}
-#             return jsonify(response), 404
-
-#     except Exception as e:
-#         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
-#         return jsonify(response), 500
-
-# __________________________________________________________________________________________________________________________
-
 
 login_bp = Blueprint('login', __name__)
 @login_bp.route('/login', methods=['POST'])
@@ -962,11 +800,15 @@ def login():
 
                     # Include user businesstype in the response body based on its value
                     if user.businesstype == 'resto':
-                        return jsonify({'Body': resto_data,
+                        encoded_resto_data = jwt.encode({'resto_data': resto_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
+                        return jsonify({'Body': encoded_resto_data,
                                         'message': 'Login successful', 'access_token': token, 'status_code': 200})
                     elif user.businesstype == 'shop':
-                        return jsonify({'Body': shop_data,
+                        encoded_shop_data = jwt.encode({'shop_data': shop_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
+                        return jsonify({'Body': encoded_shop_data,
                                         'message': 'Login successful', 'access_token': token, 'status_code': 200})
+                    else:
+                        return jsonify({'error': 'Invalid password'}), 401
                 else:
                     return jsonify({'error': 'Invalid password'}), 401
             else:
@@ -976,12 +818,6 @@ def login():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-
-
- 
- 
- 
 
 
 
@@ -1007,60 +843,4 @@ def role_login():
     except Exception as e:
         return jsonify({'status_code': 500, 'error': str(e)}), 500
 
-
-
-
-
-
-# @login_bp.route('/login', methods=['POST'])
-# @jwt_required(optional=True)  # Use optional=True to allow both authenticated and unauthenticated requests
-# def login():
-#     try:
-#         if request.method == 'POST':
-#             data = request.json
-#             email = data.get('email')
-#             password = data.get('password')
-            
-#             # Validate the presence of 'name', 'email', and 'password'
-#             if email is None:
-#                 return jsonify({'error': 'Email is required', 'status_code': 400}), 400
-
-#             if password is None:
-#                 return jsonify({'error': 'Password is required', 'status_code': 400}), 400
-
-#             user = User.objects(email=email).first()
-
-#             if user:
-#                 provided_password_hash = hashlib.sha256(password.encode()).hexdigest()
-
-#                 if provided_password_hash == user.password:
-#                     payload = {
-#                         'user_id': str(user.id),
-#                         'sub': '1', 
-#                         'jti': str(uuid.uuid4()),  # Generate a unique identifier
-#                         'identity': user.email, 
-#                         'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=50),
-#                         'role': user.role,  # Include the 'role' claim here
-#                         'type': 'access',
-#                         'fresh': True
-#                     }
-#                     token = jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
-
-#                     return jsonify({'message': 'Login successful', 'access_token': token}), 200
-
-#             return jsonify({'error': 'Invalid email or password'}), 401
-
-#         elif request.method == 'GET':
-#             # Handle the logic for the role based on the authenticated user
-#             current_user = get_jwt_identity()
-#             current_user_role = get_jwt_claims().get('role')
-
-#             if current_user_role == 'admin':
-#                 return jsonify({'status_code': 200, 'message': 'success', 'role': 'admin'}), 200
-#             elif current_user_role == 'user':
-#                 return jsonify({'status_code': 200, 'message': 'success', 'role': 'user'}), 200
-#             else:
-#                 return jsonify({'status_code': 403, 'message': 'Permission denied'}), 403
-
-#     except Exception as e:
-#         return jsonify({'error': str(e)}), 500
+ 
