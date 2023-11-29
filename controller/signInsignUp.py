@@ -669,6 +669,8 @@ resto_data = [
     }
 ]
 
+
+# signinblueprint
 signUp_bp = Blueprint('signUp', __name__)
 # @signUp_bp.route('/register', methods=['POST'])
 # def register():
