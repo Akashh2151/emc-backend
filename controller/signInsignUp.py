@@ -770,6 +770,11 @@ def register_step1():
         email = data.get('email')
         password = data.get('password')
         role = data.get('role')
+    
+        if not username or not email or not password or not role:
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'username, email, password , and role are required'}
+            return jsonify(response), 400
+
 
         # Store the data in the session
         session['username'] = username
