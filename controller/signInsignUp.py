@@ -962,10 +962,12 @@ def login():
 
                     # Include user businesstype in the response body based on its value
                     if user.businesstype == 'resto':
-                        return jsonify({'Body': resto_data,
+                        encoded_resto_data = jwt.encode({'resto_data': resto_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
+                        return jsonify({'Body': encoded_resto_data,
                                         'message': 'Login successful', 'access_token': token, 'status_code': 200})
                     elif user.businesstype == 'shop':
-                        return jsonify({'Body': shop_data,
+                        encoded_shop_data = jwt.encode({'shop_data': shop_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
+                        return jsonify({'Body': encoded_shop_data,
                                         'message': 'Login successful', 'access_token': token, 'status_code': 200})
                 else:
                     return jsonify({'error': 'Invalid password'}), 401
