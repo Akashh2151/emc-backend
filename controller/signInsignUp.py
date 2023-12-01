@@ -12,336 +12,335 @@ from model.signInsignup_model import  User
 email_regex = r'^\S+@\S+\.\S+$' 
 password_regex = r'^.{8,}$'
 
-shop_data = {
-    "shop": [
-        {
-            "masters": [
-                {
-                    "menuMaster": [
-                        {
-                            "showName": "Masters",
-                            "path": "/masters",
-                            "subMenu": [
-                                {
-                                    "showName": "General Master",
-                                    "connectedTo": "generalMaster",
-                                    "path": "/masters/general"
-                                },
-                                {
-                                    "showName": "Item Master",
-                                    "connectedTo": "itemMaster",
-                                    "path": "/masters/items"
-                                },
-                                {
-                                    "showName": "Payments Master",
-                                    "connectedTo": "paymentMaster",
-                                    "path": "/masters/payments"
-                                },
-                                {
-                                    "showName": "Menu Master",
-                                    "connectedTo": "menuMaster",
-                                    "path": "/masters/menu"
-                                }
-                            ]
-                        },
-                        {
-                            "showName": "Items",
-                            "path": "/items",
-                            "connectedTo": "itemMaster",
-                            "subMenu": [
-                                {
-                                    "showName": "Manage Items",
-                                    "path": "/items/manage"
-                                },
-                                {
-                                    "showName": "Create",
-                                    "path": "/items/create"
-                                }
-                            ]
-                        },
-                        {
-                            "showName": "My Shop",
-                            "path": "/boards",
-                            "connectedTo": "generalMaster",
-                            "subMenu": [
-                                {
-                                    "showName": "Sales",
-                                    "path": "/boards/sales"
-                                },
-                                {
-                                    "showName": "Service",
-                                    "path": "/boards/service"
-                                }
-                            ]
-                        }
-                    ],
-                    "sellMaster": [
-                        {
-                            "showName": "Sells Master",
-                            "status": "Active/Inactive",
-                            "sellUnits": ["kg", "gm", "/pc"],
-                            "printers": ["Printer 1", "Printer 2"],
-                            "sellType": ["EndCustomer", "Retailer", "Wholesaler"]
-                        },
-                        {
-                            "showName": "Service Master",
-                            "status": "Active/Inactive",
-                            "sellUnits": ["/pc"],
-                            "printers": ["Printer 1", "Printer 2"],
-                            "sellType": ["EndCustomer", "Retailer", "Wholesaler"]
-                        }
-                    ],
-                    "generalMaster": [
-                        {
-                            "billId": {
-                                "startString": "ABC",
-                                "endString": 1000
+shop_data =  [
+    {
+        "shop": [
+            {
+                "masters": [
+                    {
+                        "menuMaster": [
+                            {
+                                "showName": "Masters",
+                                "path": "/masters",
+                                "subMenu": [
+                                    {
+                                        "showName": "General Master",
+                                        "connectedTo": "generalMaster",
+                                        "path": "/masters/general"
+                                    },
+                                    {
+                                        "showName": "Food Master",
+                                        "connectedTo": "itemMaster",
+                                        "path": "/masters/foods"
+                                    },
+                                    {
+                                        "showName": "Payments Master",
+                                        "connectedTo": "paymentMaster",
+                                        "path": "/masters/payments"
+                                    },
+                                    {
+                                        "showName": "Menu Master",
+                                        "connectedTo": "menuMaster",
+                                        "path": "/masters/menu"
+                                    }
+                                ]
+                            },
+                            {
+                                "showName": "Foods",
+                                "path": "/foods",
+                                "subMenu": [
+                                    {
+                                        "showName": "Manage Foods",
+                                        "path": "/foods/manage"
+                                    },
+                                    {
+                                        "showName": "Create",
+                                        "path": "/foods/create"
+                                    }
+                                ]
+                            },
+                            {
+                                "showName": "My Restaurant",
+                                "path": "/boards",
+                                "subMenu": [
+                                    {
+                                        "showName": "Sales",
+                                        "path": "/boards/sales"
+                                    },
+                                    {
+                                        "showName": "KOT",
+                                        "path": "/boards/kot"
+                                    }
+                                ]
                             }
-                        },
-                        {
-                            "language": "En"
-                        },
-                        {
-                            "theme": "dark/light/any color"
-                        },
-                        {
-                            "shopName": "Customer Defined Name"
-                        },
-                        {
-                            "sources": ["source 1 ", "source 2"]
-                        },
-                        {
-                            "shopAddress": "shops address which will be used while selling goods"
-                        },
-                        {
-                            "role": {
-                                "title": "owner",
-                                "accessTo": ["shop1", "shop2", "list of shops"]
+                        ],
+                        "sellMaster": [
+                            {
+                                "showName": "Sells Master",
+                                "status": "Active/Inactive",
+                                "sellUnits": ["kg", "gm", "/pc"],
+                                "printers": ["Printer 1", "Printer 2"],
+                                "sellType": ["EndCustomer", "Retailer", "Wholesaler"]
+                            },
+                            {
+                                "showName": "Service Master",
+                                "status": "Active/Inactive",
+                                "sellUnits": ["/pc"],
+                                "printers": ["Printer 1", "Printer 2"],
+                                "sellType": ["EndCustomer", "Retailer", "Wholesaler"]
                             }
-                        },
-                        {
-                            "name": "Customers Full Name"
-                        },
-                        {
-                            "userPic": "path to user picture"
-                        },
-                        {
-                            "businessSummaryStatus": "active"
-                        },
-                        {
-                            "businessSummary": [
-                                {
-                                    "businessURL": "/business-name"
-                                },
-                                {
-                                    "businessName": "cusomers Business Name"
-                                },
-                                {
-                                    "businessAddress": "cusomers Business Name"
-                                },
-                                {
-                                    "businessMobile": ["9890980947", "9890980948"]
-                                },
-                                {
-                                    "businessEmail": "cusomers Email Id"
-                                },
-                                {
-                                    "businessDescription": "Long Text Added by customer about their business"
+                        ],
+                        "generalMaster": [
+                            {
+                                "billId": {
+                                    "startString": "RESTO",
+                                    "endString": 1000
                                 }
-                            ]
-                        },
-                        {
-                            "orderTypes": {
-                                "showName": "How You Deliver Your Orders",
-                                "properties": ["online", "offline", "walkin"]
-                            }
-                        }
-                    ],
-                    "itemMaster": [
-                        {
-                            "category": [
-                                {
-                                    "showName": "Category",
-                                    "title": "category 1",
-                                    "accessTo": ["SUB CATEGORY 1", "SUB CATEGORY 2"]
+                            },
+                            {
+                                "language": "En"
+                            },
+                            {
+                                "theme": "dark/light/any color"
+                            },
+                            {
+                                "shopName": "Customer Defined Name"
+                            },
+                            {
+                                "sources": ["source 1 ", "source 2"]
+                            },
+                            {
+                                "shopAddress": "resto address which will be used while serving foods"
+                            },
+                            {
+                                "role": {
+                                    "title": "owner",
+                                    "accessTo": ["shop1", "shop2", "list of shops"]
                                 }
-                            ]
-                        },
-                        {
-                            "subCategory": [
-                                {
-                                    "showName": "Sub Category",
-                                    "properties": ["sub category 1 ", "sub category 2"]
-                                }
-                            ]
-                        },
-                        {
-                            "taxIndividual": {
-                                "showName": "Apply tax to indiviual item",
-                                "properties": {
-                                    "status": "active",
-                                    "value": "false"
+                            },
+                            {
+                                "name": "Customers Full Name"
+                            },
+                            {
+                                "userPic": "path to user picture"
+                            },
+                            {
+                                "businessSummaryStatus": "active"
+                            },
+                            {
+                                "businessSummary": [
+                                    {
+                                        "businessURL": "/resto-name"
+                                    },
+                                    {
+                                        "businessName": "cusomers Resto Name"
+                                    },
+                                    {
+                                        "businessAddress": "cusomers Resto Name"
+                                    },
+                                    {
+                                        "businessMobile": ["9890980947", "9890980948"]
+                                    },
+                                    {
+                                        "businessEmail": "cusomers Email Id"
+                                    },
+                                    {
+                                        "businessDescription": "Long Text Added by customer about their resto"
+                                    }
+                                ]
+                            },
+                            {
+                                "orderTypes": {
+                                    "showName": "How You Serve Your Foods",
+                                    "properties": ["online", "parcel", "walkin", "dine"]
                                 }
                             }
-                        },
-                        {
-                            "barcode": {
-                                "showName": "Add Barcode to items",
-                                "properties": {
-                                    "status": "active",
-                                    "value": "false"
+                        ],
+                        "itemMaster": [
+                            {
+                                "category": [
+                                    {
+                                        "showName": "Food Category",
+                                        "accessTo": ["SUB CATEGORY 1", "SUB CATEGORY 2"]
+                                    }
+                                ]
+                            },
+                            {
+                                "subCategory": [
+                                    {
+                                        "showName": "Food Sub Category",
+                                        "properties": ["sub category 1 ", "sub category 2"]
+                                    }
+                                ]
+                            },
+                            {
+                                "taxIndividual": {
+                                    "showName": "Apply tax to indiviual food",
+                                    "properties": {
+                                        "status": "active",
+                                        "value": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "barcode": {
+                                    "showName": "Add Barcode to foods",
+                                    "properties": {
+                                        "status": "active",
+                                        "value": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "rackManagement": {
+                                    "showName": "Add rack management",
+                                    "properties": {
+                                        "status": "active",
+                                        "value": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "deadStock": {
+                                    "showName": "Manage my dead stocks",
+                                    "properties": {
+                                        "status": "active",
+                                        "value": "false"
+                                    }
                                 }
                             }
-                        },
-                        {
-                            "rackManagement": {
-                                "showName": "Add rack management",
-                                "properties": {
-                                    "status": "active",
-                                    "value": "false"
+                        ],
+                        "paymentMaster": [
+                            {
+                                "taxSlab": [
+                                    {
+                                        "showName": "Tax Slabs",
+                                        "properties": [
+                                            {
+                                                "slabName": "tax 18",
+                                                "slabValue": 18
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "banks": [
+                                    {
+                                        "showName": "Your Banks",
+                                        "properties": [
+                                            {
+                                                "name": "tax 18",
+                                                "branch": "SBI Karad",
+                                                "ifscCode": "esasdasd",
+                                                "accNumber": "asdasdasdads",
+                                                "startingBalance": 2000,
+                                                "currentBalance": 3000
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "paymentModes": [
+                                    {
+                                        "showName": "Your Payment Modes",
+                                        "properties": [
+                                            {
+                                                "name": "PhonePe ",
+                                                "bankAttahed": "SBI Karad"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "subCategory": [
+                                    {
+                                        "showName": "Sub Category",
+                                        "properties": ["sub category 1 ", "sub category 2"]
+                                    }
+                                ]
+                            },
+                            {
+                                "taxIndividual": {
+                                    "showName": "Apply tax to indiviual item",
+                                    "properties": {
+                                        "status": "active",
+                                        "value": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "barcode": {
+                                    "showName": "Add Barcode to items",
+                                    "properties": {
+                                        "status": "active",
+                                        "value": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "rackManagement": {
+                                    "showName": "Add rack management",
+                                    "properties": {
+                                        "status": "active",
+                                        "value": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "deadStock": {
+                                    "showName": "Manage my dead stocks",
+                                    "properties": {
+                                        "status": "active",
+                                        "value": "false"
+                                    }
                                 }
                             }
-                        },
-                        {
-                            "deadStock": {
-                                "showName": "Manage my dead stocks",
-                                "properties": {
-                                    "status": "active",
-                                    "value": "false"
-                                }
+                        ]
+                    }
+                ],
+                "invoices": [
+                    {
+                        "billId": "Number",
+                        "customer": "mongo ID",
+                        "billDate": "Date",
+                        "itemList": [
+                            {
+                                "itemName": "String",
+                                "itemMrp": "Number",
+                                "itemDisc": "Number",
+                                "itemDiscP": "Number",
+                                "itemPrice": "Number",
+                                "itemQty": "Number",
+                                "subTotal": "Number",
+                                "endUserRate": "Number",
+                                "retailerRate": "Number",
+                                "wholesalerRate": "Number"
                             }
-                        }
-                    ],
-                    "paymentMaster": [
-                        {
-                            "taxSlab": [
-                                {
-                                    "showName": "Tax Slabs",
-                                    "properties": [
-                                        {
-                                            "slabName": "tax 18",
-                                            "slabValue": 18
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "banks": [
-                                {
-                                    "showName": "Your Banks",
-                                    "properties": [
-                                        {
-                                            "name": "tax 18",
-                                            "branch": "SBI Karad",
-                                            "ifscCode": "esasdasd",
-                                            "accNumber": "asdasdasdads",
-                                            "startingBalance": 2000,
-                                            "currentBalance": 3000
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "paymentModes": [
-                                {
-                                    "showName": "Your Payment Modes",
-                                    "properties": [
-                                        {
-                                            "name": "PhonePe ",
-                                            "bankAttahed": "SBI Karad"
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "subCategory": [
-                                {
-                                    "showName": "Sub Category",
-                                    "properties": ["sub category 1 ", "sub category 2"]
-                                }
-                            ]
-                        },
-                        {
-                            "taxIndividual": {
-                                "showName": "Apply tax to indiviual item",
-                                "properties": {
-                                    "status": "active",
-                                    "value": "false"
-                                }
-                            }
-                        },
-                        {
-                            "barcode": {
-                                "showName": "Add Barcode to items",
-                                "properties": {
-                                    "status": "active",
-                                    "value": "false"
-                                }
-                            }
-                        },
-                        {
-                            "rackManagement": {
-                                "showName": "Add rack management",
-                                "properties": {
-                                    "status": "active",
-                                    "value": "false"
-                                }
-                            }
-                        },
-                        {
-                            "deadStock": {
-                                "showName": "Manage my dead stocks",
-                                "properties": {
-                                    "status": "active",
-                                    "value": "false"
-                                }
-                            }
-                        }
-                    ]
-                }
-            ],
-            "invoices": [
-                {
-                    "billId": "Number",
-                    "customer": "mongo ID",
-                    "billDate": "Date",
-                    "itemList": [
-                        {
-                            "itemName": "String",
-                            "itemMrp": "Number",
-                            "itemDisc": "Number",
-                            "itemDiscP": "Number",
-                            "itemPrice": "Number",
-                            "itemQty": "Number",
-                            "subTotal": "Number",
-                            "endUserRate": "Number",
-                            "retailerRate": "Number",
-                            "wholesalerRate": "Number"
-                        }
-                    ],
-                    "savings": "Number",
-                    "status": "String",
-                    "count": "Number",
-                    "orderType": "String",
-                    "taxedAmount": "Number",
-                    "taxedP": "Number",
-                    "discountedAmount": "Number",
-                    "discountedP": "Number",
-                    "grandTotal": "Number",
-                    "Credit": "Number",
-                    "paidAmount": "Number",
-                    "returnedAmount": "Number",
-                    "paidIn": "Number",
-                    "paymentMode": "String",
-                    "remarks": "String"
-                }
-            ]
-        }
-    ]
-}
+                        ],
+                        "savings": "Number",
+                        "status": "String",
+                        "count": "Number",
+                        "orderType": "String",
+                        "taxedAmount": "Number",
+                        "taxedP": "Number",
+                        "discountedAmount": "Number",
+                        "discountedP": "Number",
+                        "grandTotal": "Number",
+                        "Credit": "Number",
+                        "paidAmount": "Number",
+                        "returnedAmount": "Number",
+                        "paidIn": "Number",
+                        "paymentMode": "String",
+                        "remarks": "String"
+                    }
+                ]
+            }
+        ]
+    }
+]
 #  New resto data to be added
 resto_data = [
     {
@@ -676,91 +675,6 @@ resto_data = [
 
 #  signinblueprint
 signUp_bp = Blueprint('signUp', __name__)
-# @signUp_bp.route('/register', methods=['POST'])
-# def register():
-#     try:
-#         data = request.json
-#         username = data.get('username')
-#         email = data.get('email')
-#         password = data.get('password')
-#         role = data.get('role')  # Get the role from the request
-#         session['username']=username
-#         session['email']=email
-#         session['password']=password
-#         session['role']=role        
-#         print("email:",email)
-#         print("password:",password)
-#         print("username:",username)
-#         # Check if the email is already registered
-#         existing_user = User.objects(email=email).first()
-#         if existing_user:
-#             response = { "Body": None,"status": "error","statusCode": 400,"message": 'Email already registered'}
-#             return jsonify(response), 400
-
-#         if not username or not email or not password:
-#             response = {"Body": None,"status": "error","statusCode": 400,"message": 'Name, email, and password are required'}
-#             return jsonify(response), 400
-
-#         if not re.match(email_regex, email):
-#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Invalid email format'}
-#             return jsonify(response), 400
-
-#         if not re.match(password_regex, password):
-#             response = {"Body": None,"status": "error","statusCode": 400,"message": 'Password must have at least 8 characters'}
-#             return jsonify(response), 400
-
-#         password_hash = hashlib.sha256(password.encode()).hexdigest()
-
-#         user = User(username=username, email=email, password=password_hash,role=role)
-#         user.save()
-
-#         response = {"Body": None,"status": "success","statusCode": 200,"message": 'Registration successful'}
-#         return jsonify(response), 200
-
-#     except Exception as e:
-#         response = { "Body": None,"status": "error","statusCode": 500,"message": str(e)}
-#         return jsonify(response), 500
-    
-    
-    
-# @signUp_bp.route('/getregister',methods=['POST'])
-# def cloneregister():
-#     try:
-#         data=request.json
-#         name=data.get('name')
-#         mobilenumber=data.get('mobilenumber')
-#         businessname=data.get('businessname')
-#         businesstype=data.get('businesstype')
-        
-#         if not name or not mobilenumber or not businessname or not businesstype:
-#             return jsonify({"error":"name mobilenumber businessname businesstype is requred"})
-        
-#         if "username" and "email" and "password" and "role" in session and request.method=="POST":
-#             user=User(name=name,mobilenumber=mobilenumber,businessname=businessname,businesstype=businesstype)
-#             user.save()
-#             response={"Body":None,"Status":"Success","StatusCode":200,"message": 'Registration successful'}
-            
-            
-#             # username=session['username']
-#             # email=session['email']
-#             # password=session['password']
-#             # role=session['role']
-#             # return jsonify({"session name ":username,"email":email,"password":password,"role":role})
-            
-#     #    data=request.json
-#     #    name=data.get('name')
-#     #    mobilenumber=data.get('mobilenumber')
-#     #    if request.method == 'POST':
-           
-          
-       
-       
-#     except Exception as e:
-#         response = {'Body':None,"status":"error","statuscode":500,"message":str(e)}
-#         return jsonify(response)
-
-
-
 # Step 1: Register user with basic information
 @signUp_bp.route('/register/step1', methods=['POST'])
 def register_step1():
@@ -774,7 +688,7 @@ def register_step1():
         if not username or not email or not password or not role:
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'username, email, password , and role are required'}
             return jsonify(response), 400
-
+        
 
         # Store the data in the session
         session['username'] = username
@@ -783,6 +697,7 @@ def register_step1():
         session['role'] = role
         session['shop_data'] = shop_data
         session['resto_data']=resto_data
+
 
         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Step 1 successful'}
         return jsonify(response), 200
@@ -846,85 +761,6 @@ def register_step2():
         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
         return jsonify(response), 500
     
-    
-
-    
-    
-    
-    
-    
-    
-# __________________________________________________________________________________________________________________________
-# sending json  bundale ragister api
-
-# @signUp_bp.route('/register', methods=['POST'])
-# def register():
-#     try:
-#         data = request.json
-#         name = data.get('name')
-#         email = data.get('email')
-#         password = data.get('password')
-#         role = data.get('role')
-#         json_data = data.get('json_data')
-
-#         # Check if the email is already registered
-#         existing_user = User.objects(email=email).first()
-#         if existing_user:
-#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Email already registered'}
-#             return jsonify(response), 400
-
-#         if not name or not email or not password:
-#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Name, email, and password are required'}
-#             return jsonify(response), 400
-
-#         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Invalid email format'}
-#             return jsonify(response), 400
-
-#         if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$", password):
-#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Password must have at least 8 characters, one uppercase letter, and one digit'}
-#             return jsonify(response), 400
-
-#         password_hash = hashlib.sha256(password.encode()).hexdigest()
-
-#         user = User(name=name, email=email, password=password_hash, role=role)
-#         user.save()
-
-#         # Store additional JSON data in UserData collection
-#         user_data = User(user=user, data=json_data)
-#         user_data.save()
-
-#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Registration successful'}
-#         return jsonify(response), 200
-
-#     except Exception as e:
-#         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
-#         return jsonify(response), 500
-    
-    
-# @signUp_bp.route('/user/<user_id>', methods=['GET'])
-# def get_user_json_data(user_id):
-#     try:
-#         # Find the user by user_id
-#         user = User.objects.get(id=user_id)
-
-#         # Find associated JSON data in UserData collection
-#         user_data = User.objects(user=user).first()
-
-#         if user_data:
-#             # Include only JSON data in the response
-#             response = user_data.data
-#             return jsonify(response), 200
-#         else:
-#             response = {"Body": None, "status": "error", "statusCode": 404, "message": 'User data not found'}
-#             return jsonify(response), 404
-
-#     except Exception as e:
-#         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
-#         return jsonify(response), 500
-
-# __________________________________________________________________________________________________________________________
-
 
 login_bp = Blueprint('login', __name__)
 @login_bp.route('/login', methods=['POST'])
@@ -962,7 +798,7 @@ def login():
 
                     # Include user businesstype in the response body based on its value
                     if user.businesstype == 'resto':
-                        encoded_resto_data = jwt.encode({'resto_data': resto_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
+                        encoded_resto_data = jwt.encode({'resto_data':resto_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
                         return jsonify({'Body': encoded_resto_data,
                                         'message': 'Login successful', 'access_token': token, 'status_code': 200})
                     elif user.businesstype == 'shop':
