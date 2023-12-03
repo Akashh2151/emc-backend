@@ -57,11 +57,11 @@ class User(Document):
     email = EmailField(unique=True, required=True)
     password = StringField(required=True, max_length=100)
     role = StringField(required=True, choices=("user", "admin")) 
-    name=StringField(required=True, max_length=100)
+    name=StringField( max_length=100)
     mobilenumber = StringField(max_length=15)  # Assuming a reasonable max length for a phone number
     businessname = StringField(max_length=100)
     businesstype = StringField(max_length=100)
-    shopbundale = DictField()
+    shopbundale = ListField(DictField())
     restobundale = ListField(DictField()) # Assuming it's optional
     
     
