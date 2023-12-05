@@ -120,11 +120,11 @@ def register_step2():
             user.shopbundale = None
             user.restobundale = None
             if businessType == "shop":
-                user.shopbundale = shop_data
+                user.shopBundale = shop_data
                 response=jwt.encode({'bundale':shop_data},current_app.config['SECRET_KEY'],algorithm='HS256')
             elif businessType == "resto":
                 response=jwt.encode({'bundale':resto_data},current_app.config['SECRET_KEY'],algorithm='HS256')
-                user.restobundale = resto_data
+                user.restoBundale = resto_data
         # Save the updated user to the database
         user.save()
         

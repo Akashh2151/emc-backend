@@ -1,7 +1,5 @@
 
 
-
-
 shop_data =  [
     {
         "shop": [

@@ -14,14 +14,14 @@ disconnect()
 
 
 class User(Document):
-    username = StringField(required=True, max_length=100)
+    userName = StringField(required=True, max_length=100)
     email = EmailField(unique=True, required=True)
     password = StringField(required=True, max_length=100)
     role = StringField(required=True, choices=("user", "admin")) 
-    name=StringField( max_length=100)
-    mobilenumber = StringField(max_length=15)  # Assuming a reasonable max length for a phone number
-    businessname = StringField(max_length=100)
-    businesstype = StringField(max_length=100)
-    shopbundale = ListField(DictField())
-    restobundale = ListField(DictField()) # Assuming it's optional
+    name = StringField(max_length=100)
+    mobileNumber = StringField(max_length=15)
+    businessName = StringField(max_length=100)
+    businessType = StringField(max_length=100)
+    shopBundle = ListField(DictField())
+    restoBundle = ListField(DictField())
     
