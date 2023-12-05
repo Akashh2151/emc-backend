@@ -3,7 +3,7 @@ import datetime
 import re
 import uuid
 from bson import ObjectId
-from flask import Blueprint, current_app, request, jsonify
+from flask import Blueprint, current_app, request, jsonify, session
 from flask_jwt_extended import jwt_required
 import jwt
 from model.signInsignup_model import  User
@@ -24,15 +24,15 @@ def register_step1():
         role = data.get('role')
         
         userpassword=hashlib.sha256(password.encode()).hexdigest()
+
+ 
         # Check if the email is already registered
         if User.objects(email=email).first():
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Email is already registered'}
             return jsonify(response), 400
         
-        # required_fild=[userName,email,password,role]
-        # if not all(fild in data for fild in required_fild):
-        #     response={'Body':None,"status":'error',"statusCode":400,"message":"All fild required"} 
-        #     return jsonify(response),400
+
+ 
             
         if not userName or not email or not password or not role:
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'userName, email, password, and role are required'}
@@ -84,12 +84,6 @@ def register_step2():
         if not name or not mobileNumber or not businessName or not businessType:
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'userName, name, mobile number, business name, and business type are required'}
             return jsonify(response), 400
-       
-        # required_fild=[name,mobileNumber,businessName,businessType]
-        # if not all(fild in data for fild in required_fild):
-        #     response={'Body':None,"status":'error',"statusCode":400,"message":"All fild required"} 
-        #     return jsonify(response),400
-            
 
         # Get the user ID from the headers
         user_id_from_header = request.headers.get('id')
@@ -113,18 +107,20 @@ def register_step2():
         user.mobileNumber = mobileNumber
         user.businessName = businessName
         user.businessType = businessType
+      
+        
 
         # Perform additional validation if needed
         if businessType == "resto" or businessType == "shop":
             # Remove existing bundles if present
-            user.shopbundale = None
-            user.restobundale = None
+            user.shopBundle = None
+            user.restoBundle = None
             if businessType == "shop":
-                user.shopBundale = shop_data
+                user.shopBundle = shop_data
                 response=jwt.encode({'bundale':shop_data},current_app.config['SECRET_KEY'],algorithm='HS256')
             elif businessType == "resto":
+                user.restoBundle = resto_data
                 response=jwt.encode({'bundale':resto_data},current_app.config['SECRET_KEY'],algorithm='HS256')
-                user.restoBundale = resto_data
         # Save the updated user to the database
         user.save()
         
@@ -158,7 +154,8 @@ def login():
             # Check if the provided businessType matches the user's businessType
             if user.businessType == businessType:
                 provided_password_hash = hashlib.sha256(password.encode()).hexdigest()
-
+                # userpassword=hashlib.sha256(password.encode()).hexdigest()
+                print(user.password)
                 if provided_password_hash == user.password:
                     payload = {
                         'user_id': str(user.id),
@@ -182,7 +179,7 @@ def login():
                         return jsonify({'Body': encoded_shop_data,
                                         'message': 'Login successful', 'access_token': token, 'status_code': 200})
                 else:
-                    return jsonify(f'{provided_password_hash}'), 401
+                    return jsonify({'error':'password is worgn'}), 401
             else:
                 return jsonify({'error': 'Invalid businessType'}), 401
 

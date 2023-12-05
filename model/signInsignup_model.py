@@ -24,4 +24,5 @@ class User(Document):
     businessType = StringField(max_length=100)
     shopBundle = ListField(DictField())
     restoBundle = ListField(DictField())
+    # encoded_data = StringField(max_length=500) 
     
