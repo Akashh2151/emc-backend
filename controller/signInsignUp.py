@@ -29,10 +29,10 @@ def register_step1():
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Email is already registered'}
             return jsonify(response), 400
         
-        required_fild=[username,email,password,role]
-        if not all(fild in data for fild in required_fild):
-            response={'Body':None,"status":'error',"statusCode":400,"message":"All fild required"} 
-            return jsonify(response),400
+        # required_fild=[username,email,password,role]
+        # if not all(fild in data for fild in required_fild):
+        #     response={'Body':None,"status":'error',"statusCode":400,"message":"All fild required"} 
+        #     return jsonify(response),400
             
         if not username or not email or not password or not role:
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'username, email, password, and role are required'}
@@ -85,10 +85,10 @@ def register_step2():
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Username, name, mobile number, business name, and business type are required'}
             return jsonify(response), 400
        
-        required_fild=[name,mobilenumber,businessname,businesstype]
-        if not all(fild in data for fild in required_fild):
-            response={'Body':None,"status":'error',"statusCode":400,"message":"All fild required"} 
-            return jsonify(response),400
+        # required_fild=[name,mobilenumber,businessname,businesstype]
+        # if not all(fild in data for fild in required_fild):
+        #     response={'Body':None,"status":'error',"statusCode":400,"message":"All fild required"} 
+        #     return jsonify(response),400
             
 
         # Get the user ID from the headers
