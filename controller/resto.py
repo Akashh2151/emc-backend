@@ -12,8 +12,6 @@ restoapp=Blueprint('restoapp',__name__)
 
 
 
-
-
 # _______________________________________________________________________________________________________________________________________
 # CREATE
 @restoapp.route('/api/menumasters/create', methods=['POST'])

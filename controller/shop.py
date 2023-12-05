@@ -212,6 +212,7 @@ def update_item_master(item_id):
 
 
 
+
 # DELETE
 @shopapp.route('/item_masters/delete/<string:item_id>', methods=['DELETE'])
 def delete_item_master(item_id):
