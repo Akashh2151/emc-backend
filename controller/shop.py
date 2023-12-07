@@ -5,11 +5,108 @@ from flask import Blueprint, request, jsonify
 from bson.objectid import ObjectId
 from pydantic import ValidationError
 # from model.shop_model import shop_collection,shop_invoices,shop_item_master_collection,shop_masters_collection,shop_payment_master,general_master_collection
-from model.shop_model import BankDetails, GeneralMaster, Invoice, InvoiceItem, MenuMaster, PaymentMaster, PaymentModeDetails, PaymentSlab, Product, SellMaster
+from model.shop_model import BankDetails, GeneralMaster, Invoice, InvoiceItem, MenuMaster, PaymentMaster, PaymentModeDetails, PaymentSlab, Product, SellMaster, userinfo
 from mongoengine.queryset import QuerySet
 # shopapp blue print
 from mongoengine import EmbeddedDocument
 shopapp=Blueprint('shopapp',__name__)
+
+
+
+@shopapp.route('/userinfo',methods=['POST'])
+def crete_user():
+    try:
+        data=request.json
+        name =data.get('name')
+        shopName=data.get('shopName')
+        address =data.get('address')
+        mobile = data.get('mobile')
+        photos=data.get('photos')
+        profilePic=data.get('profilePic')
+
+        if not name or not shopName or not address or not mobile or not photos or not profilePic:
+            response={'Body':None,'error':'all filds are required','status_code':400,}
+            return jsonify(response)
+        user=userinfo(name=name,shopName=shopName,address=address,mobile=mobile,photos=photos,profilePic=profilePic)
+        
+        user.save()
+
+        userId=str(user.id)
+    
+        response = {"Body":{'userid': userId}, "status": "success", "statusCode": 200, "message": 'Item master successfully created'}
+        return jsonify(response)
+    
+    except Exception as e:
+          return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+@shopapp.route('/userinfo/<user_id>', methods=['GET'])
+def get_user(user_id):
+    try:
+        user = userinfo.objects.get(id=user_id)
+        user_data = {
+            'name': user.name,
+            'shopName': user.shopName,
+            'address': user.address,
+            'mobile': user.mobile,
+            'photos': user.photos,
+            'profilePic': user.profilePic
+        }
+
+        response = {'Body': user_data, 'status': 'success', 'statusCode': 200}
+        return jsonify(response)
+
+    except userinfo.DoesNotExist:
+        response = {'Body': None, 'error': 'User not found', 'status_code': 404}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+@shopapp.route('/userinfo/<user_id>', methods=['PUT'])
+def update_user(user_id):
+    try:
+        data = request.json
+        user = userinfo.objects.get(id=user_id)
+
+        user.name = data.get('name', user.name)
+        user.shopName = data.get('shopName', user.shopName)
+        user.address = data.get('address', user.address)
+        user.mobile = data.get('mobile', user.mobile)
+        user.photos = data.get('photos', user.photos)
+        user.profilePic = data.get('profilePic', user.profilePic)
+
+        user.save()
+
+        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'User successfully updated'}
+        return jsonify(response)
+
+    except userinfo.DoesNotExist:
+        response = {'Body': None, 'error': 'User not found', 'status_code': 404}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
+@shopapp.route('/userinfo/<user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        user = userinfo.objects.get(id=user_id)
+        user.delete()
+
+        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'User successfully deleted'}
+        return jsonify(response)
+
+    except userinfo.DoesNotExist:
+        response = {'Body': None, 'error': 'User not found', 'status_code': 404}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500          
+
 
 # ______________________________________________________________________________________________________
 #  menu master

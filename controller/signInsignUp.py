@@ -11,7 +11,7 @@ from configurations.configuration import shop_data,resto_data
 from security.security import email_regex,password_regex
 
 
- 
+
 signUp_bp = Blueprint('signUp', __name__)
 # Step 1: Register user with basic information
 @signUp_bp.route('/register/step1', methods=['POST'])
@@ -31,8 +31,6 @@ def register_step1():
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Email is already registered'}
             return jsonify(response), 400
         
-
- 
             
         if not userName or not email or not password or not role:
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'userName, email, password, and role are required'}

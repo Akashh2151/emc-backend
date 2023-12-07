@@ -9,11 +9,11 @@ from pymongo import MongoClient
 
 # MongoDB Configuration
 # client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
-client = MongoClient("mongodb://localhost:27017")
+# client = MongoClient("mongodb://localhost:27017")
 
 
-db = client["emc_project2151"]
-shop_collection = db["shop"]
+# db = client["emc_project2151"]
+# shop_collection = db["shop"]
 # general_master_collection = db["general_master"]
 # shop_masters_collection = db["shop_masters"]
 # shop_item_master_collection = db["shop_item_master"]
@@ -57,6 +57,13 @@ def validate_non_empty(value):
         # You can customize this part based on your requirements for numeric fields
         pass
 
+class userinfo(Document):
+    name =StringField(required=True,null=False)
+    shopName=StringField(required=True,null=False)
+    address =StringField(required=True,null=False,validation=validate_non_empty)
+    mobile =StringField(required=True,null=False,max_length=12)
+    photos=ListField(URLField(required=True,null=False,validation=validate_non_empty))
+    profilePic=URLField(required=True,null=False,validation=validate_non_empty)
 
 # Define MenuMaster document
 class MenuMaster(Document):

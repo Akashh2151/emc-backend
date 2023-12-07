@@ -2,9 +2,8 @@
 
 shop_data =  [
     {
-        "shop": [
-            {
-                "masters": [
+
+     "masters": [
                     {
                         "menuMaster": [
                             {
@@ -327,8 +326,7 @@ shop_data =  [
                 ]
             }
         ]
-    }
-]
+
 #  New resto data to be added
 resto_data = [
     {
