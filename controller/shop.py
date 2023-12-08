@@ -1,30 +1,16 @@
-from base64 import b64encode
-from io import BytesIO
-import json
 import mimetypes
-import uuid
-from click import get_app_dir
 from flask import request
 from bson import InvalidDocument
 from flask import Blueprint, request, jsonify
-# from pymongo import MongoClient
 from bson.objectid import ObjectId
-# from firebase_admin import initialize_app, storage
 from firebase_admin import credentials, initialize_app, storage
 from werkzeug.utils import secure_filename
-# from httplib2 import Credentials
 from pydantic import ValidationError
-import requests
-# from model.shop_model import shop_collection,shop_invoices,shop_item_master_collection,shop_masters_collection,shop_payment_master,general_master_collection
 from model.shop_model import BankDetails, GeneralMaster, Invoice, InvoiceItem, MenuMaster, PaymentMaster, PaymentModeDetails, PaymentSlab, Product, SellMaster, userinfo
 from mongoengine.queryset import QuerySet
-# from firebase import Firebase
-# shopapp blue print
 from mongoengine import EmbeddedDocument
 shopapp=Blueprint('shopapp',__name__)
 newfrom=Blueprint('newfrom',__name__)
-
-
 
  
 # Firebase configuration
@@ -161,61 +147,7 @@ def upload_image(user_id):
 
     return jsonify({'message': 'Profile photo updated successfully', 'url': cloud_url}), 200
 
-
  
-
-# @newfrom.route('/upload/<string:user_id>', methods=['POST'])
-# def upload_image(user_id):
-#     try:
-#         # Retrieve user from the database using user_id
-#         user = userinfo.objects.get(id=user_id)
-#     except userinfo.DoesNotExist:
-#         return jsonify({'error': 'User not found'}), 404
-
-#     # Check if the user_id from the URL matches the one from form data
-#     if str(user.id) != user_id:
-#         return jsonify({'error': 'User ID mismatch'}), 400
-
-#     # Check if the request contains an image file
-#     if 'image' not in request.files:
-#         return jsonify({'error': 'No image provided'}), 400
-
-#     image = request.files['image']
-
-#     # Check if the image size is greater than 2MB
-#     if len(image.read()) > 2 * 1024 * 1024:
-#         return jsonify({'error': 'Image size exceeds 2MB'}), 400
-
-#     # Reset the file pointer after reading
-#     image.seek(0)
-
-#     # Define the desired filename format (e.g., "profilepic1.jpg")
-#     filename_format = f"profilepic{user.id}.jpg"
-
-#     # Set the content type based on the file extension
-#     content_type, _ = mimetypes.guess_type(filename_format)
-#     if not content_type:
-#         content_type = 'application/octet-stream'  # Set a default content type if unable to guess
-
-#     # Store the image on Firebase Storage with the predefined filename
-#     firebase_path = f"profilePic/{filename_format}"
-#     blob = storage_client.blob(firebase_path)
-#     blob.upload_from_file(image, content_type=content_type)
-
-#     # Generate a URL for the stored image
-#     cloud_url = blob.public_url
-
-#     # Update the user's profilePic field in the database
-#     user.profilePic = cloud_url
-#     user.save()
-
-#     return jsonify({'message': 'Profile photo updated successfully', 'url': cloud_url}), 200
-
-
-
-
-
-
 
 
 @newfrom.route('/userinfo/<user_id>', methods=['GET'])

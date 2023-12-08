@@ -1,7 +1,5 @@
-import json
 from bson import InvalidDocument
 from flask import Blueprint, request, jsonify
-# from pymongo import MongoClient
 from bson.objectid import ObjectId
 from pydantic import ValidationError
 from model.resto_model import BillId, BusinessSummary, GeneralMaster, OrderTypes, RestoSellMaster, Role, resto_collection,resto_invoices,resto_item_master_collection,resto_masters_collection,resto_payment_master,general_master_collection
