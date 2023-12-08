@@ -21,7 +21,7 @@
 #     try:
 #         data = request.json
 #         email = data.get('email')
-#         user = collection.find_one({"email": email})
+#         user = .find_one({"email": email})
 
 #         if user:
 #             otp = generate_otp()
@@ -33,6 +33,7 @@
 #             return jsonify({"message": "User not found"}), 404
 #     except Exception as e:
 #         return jsonify({"message": "An error occurred"}), 500
+
 
 
 

@@ -4,6 +4,7 @@ from controller.signInsignUp import signUp_bp
 from controller.signInsignUp import login_bp
 from flask_cors import CORS
 from controller.shop import shopapp
+from controller.shop import newfrom
  
 
 app = Flask(__name__)
@@ -13,6 +14,7 @@ app.config['SECRET_KEY'] = '98c5bc0a178ff2d6c0c1471c6f3dc5e4'
 app.register_blueprint(signUp_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(shopapp)
+app.register_blueprint(newfrom)
  
 
 
