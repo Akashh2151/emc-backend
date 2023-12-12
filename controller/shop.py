@@ -114,6 +114,7 @@ def delete_menumaster(menumaster_id):
 #iteam masters
 # full validation
 # CREATE
+# CREATE
 @shopapp.route('/item_masters/create', methods=['POST'])
 def create_item_master():
     try:
@@ -125,26 +126,26 @@ def create_item_master():
         barcode_status = data.get('barcode_status')
         barcode_value = data.get('barcode_value')
         rackManagement_status = data.get('rackManagement_status')
-        rackManagement_value=data.get('rackManagement_value')
+        rackManagement_value = data.get('rackManagement_value')
         deadStock_status = data.get('deadStock_status')
         deadStock_value = data.get('deadStock_value')
 
         if None in [category, subCategory, taxIndividual_status, taxIndividual_value,
-                    barcode_status, barcode_value, rackManagement_status,rackManagement_value, deadStock_status, deadStock_value]:
+                    barcode_status, barcode_value, rackManagement_status, rackManagement_value, deadStock_status, deadStock_value]:
             return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
 
         itemmaster = Product(category=category, subCategory=subCategory,
                              taxIndividual_status=taxIndividual_status, taxIndividual_value=taxIndividual_value,
                              barcode_status=barcode_status, barcode_value=barcode_value,
                              rackManagement_status=rackManagement_status,
-                             deadStock_status=deadStock_status, deadStock_value=deadStock_value,rackManagement_value=rackManagement_value)
+                             deadStock_status=deadStock_status, deadStock_value=deadStock_value, rackManagement_value=rackManagement_value)
         itemmaster.save()
 
         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item master successfully created'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'error': str(e), 'status_code': 500}), 500
+        return jsonify({'error': str(e), 'status_code': 400}), 400
 
 
 
@@ -398,6 +399,7 @@ def create_general_master():
 
     except Exception as e:
         return jsonify({'error': str(e), 'status_code': 500}), 500
+
 
 
 
