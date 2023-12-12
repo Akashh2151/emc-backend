@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\Shree\Documents\bbbbbbbbbbbbbbbb\emc-backend\autopilot
+set VIRTUAL_ENV=C:\Users\EMC\Desktop\full\New folder (2)\my project\emc-backend-main\emc-backend-main\autopilot
 
 if not defined PROMPT set PROMPT=$P$G
 

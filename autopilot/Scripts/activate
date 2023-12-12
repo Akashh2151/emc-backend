@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\Shree\Documents\bbbbbbbbbbbbbbbb\emc-backend\autopilot"
+VIRTUAL_ENV="C:\Users\EMC\Desktop\full\New folder (2)\my project\emc-backend-main\emc-backend-main\autopilot"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

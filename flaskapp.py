@@ -5,7 +5,7 @@ from controller.signInsignUp import login_bp
 from flask_cors import CORS
 from controller.shop import shopapp
 from controller.shop import newfrom
- 
+from controller.rating import rating
 
 app = Flask(__name__)
 
@@ -15,6 +15,7 @@ app.register_blueprint(signUp_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(shopapp)
 app.register_blueprint(newfrom)
+app.register_blueprint(rating)
  
 
 

@@ -13,6 +13,18 @@ connect(host=db_uri, db="emc_project2151")
 # connect(host=db_uri, db="emc_project2151")
 
 
+
+
+
+
+class Order(Document):
+    vendorCode = StringField(required=True, unique=True)
+    vendorName = StringField(required=True)
+    vendorEmail = EmailField(required=True)
+    vendorMobile = StringField(required=True, regex=r'^\d{10}$')
+    vendorAddr =StringField(required=True)
+    
+    
 # Define RestoMenuMaster document
 class RestoMenuMaster(Document):
     showName = StringField(required=True, null=False)

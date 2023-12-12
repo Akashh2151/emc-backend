@@ -9,6 +9,60 @@ from model.shop_model import MenuMaster
 restoapp=Blueprint('restoapp',__name__)
 
 
+# Fields:
+# vendorCode (text)
+# vendorName (text)
+# vendorEmail (text)
+# vendorMobile (text)
+# vendorAddr (text)
+# @restoapp.route('/order',methods=['POST'])
+# def order():
+#     data=request.json
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # _______________________________________________________________________________________________________________________________________
 # CREATE

@@ -1,14 +1,24 @@
 import mimetypes
+import re
+import google.auth.exceptions
 from flask import request
 from bson import InvalidDocument
+from werkzeug.utils import secure_filename
 from flask import Blueprint, request, jsonify
+# from firebase_admin import auth
+# from firebase_admin import auth as firebase_auth
+from firebase_admin import auth as firebase_auth, exceptions as auth_exceptions
+
+from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 from firebase_admin import credentials, initialize_app, storage
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
+# from flask_firebase import Firebase
 from pydantic import ValidationError
 from model.shop_model import BankDetails, GeneralMaster, Invoice, InvoiceItem, MenuMaster, PaymentMaster, PaymentModeDetails, PaymentSlab, Product, SellMaster, userinfo
 from mongoengine.queryset import QuerySet
 from mongoengine import EmbeddedDocument
+# from security.security import phone_number
 shopapp=Blueprint('shopapp',__name__)
 newfrom=Blueprint('newfrom',__name__)
 
@@ -33,6 +43,26 @@ firebase_app = initialize_app(cred, firebase_config, name='emcbackend')
 
 # Firebase Storage instance
 storage_client = storage.bucket(app=firebase_app)
+
+
+# def verify_firebase_token(id_token):
+#     try:
+#         decoded_token = firebase_auth.verify_id_token(id_token)
+#         return decoded_token['uid']
+#     except auth_exceptions.ExpiredIdTokenError:
+#         # Token has expired, try refreshing the token with explicit token_expiry
+#         try:
+#             # Refresh the token with an expiration time far in the future
+#             new_token = firebase_auth.refresh(id_token, token_expiry=datetime.utcnow() + timedelta(days=365))
+#             return new_token['uid']
+#         except google.auth.exceptions.RefreshError as refresh_error:
+#             print(f"Error refreshing token: {refresh_error}")
+#             raise
+#     except google.auth.exceptions.RefreshError as refresh_error:
+#         print(f"Error verifying token: {refresh_error}")
+#         raise
+
+    
 
 
 # Endpoint to create user and upload multiple images to Firebase
@@ -90,7 +120,7 @@ def create_user():
 
         user_id = str(user.id)
         response = {'Body': {'userid': user_id}, 'status': 'success', 'statusCode': 200,
-                    'message': 'Item master successfully created'}
+                    'message': 'User successfully created'}
         return jsonify(response)
 
     except Exception as e:
@@ -100,7 +130,9 @@ def create_user():
 
 
 
-@newfrom.route('/upload/<string:user_id>', methods=['POST'])
+
+
+@newfrom.route('/profile/<string:user_id>', methods=['POST'])
 def upload_image(user_id):
     try:
         # Retrieve user from the database using user_id
@@ -176,23 +208,48 @@ def get_user(user_id):
 
 
 
+
 @newfrom.route('/userinfo/<user_id>', methods=['PUT'])
 def update_user(user_id):
     try:
-        data = request.json
+        data = request.form
         user = userinfo.objects.get(id=user_id)
 
-        user.name = data.get('name', user.name)
-        user.shopName = data.get('shopName', user.shopName)
-        user.address = data.get('address', user.address)
-        user.mobile = data.get('mobile', user.mobile)
-        user.photos = data.get('photos', user.photos)
-        user.profilePic = data.get('profilePic', user.profilePic)
+        if user:
+            # Update basic user information
+            user.name = data.get('name', user.name)
+            user.shopName = data.get('shopName', user.shopName)
+            user.address = data.get('address', user.address)
+            user.mobile = data.get('mobile', user.mobile)
 
-        user.save()
+            # Update profile pictures if provided
+            profile_pic = request.files.get('profilePic')
 
-        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'User successfully updated'}
-        return jsonify(response)
+            if profile_pic:
+                # Read the content of the file and store it in a variable
+                profile_pic_content = profile_pic.read()
+
+                # Check if the image size is greater than 2MB
+                if len(profile_pic_content) > 2 * 1024 * 1024:
+                    return jsonify({'error': 'Profile picture size exceeds 2MB'}), 400
+
+                # Reset the file pointer after reading
+                profile_pic.seek(0)
+
+                # Debugging statements
+                print(f"Content length: {len(profile_pic_content)}")
+                print(f"Profile picture size: {len(profile_pic_content) / (1024 * 1024):.2f} MB")
+
+                # ... Rest of the code remains unchanged ...
+
+            # Save the changes to the user object
+            user.save()
+
+            response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'User successfully updated'}
+            return jsonify(response)
+        else:
+            response = {'Body': None, 'error': 'User not found', 'status_code': 404}
+            return jsonify(response)
 
     except userinfo.DoesNotExist:
         response = {'Body': None, 'error': 'User not found', 'status_code': 404}
@@ -200,6 +257,9 @@ def update_user(user_id):
 
     except Exception as e:
         return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
 
 
 
@@ -323,7 +383,6 @@ def delete_menumaster(menumaster_id):
 #iteam masters
 # full validation
 # CREATE
-# CREATE
 @shopapp.route('/item_masters/create', methods=['POST'])
 def create_item_master():
     try:
@@ -335,26 +394,26 @@ def create_item_master():
         barcode_status = data.get('barcode_status')
         barcode_value = data.get('barcode_value')
         rackManagement_status = data.get('rackManagement_status')
-        rackManagement_value = data.get('rackManagement_value')
+        rackManagement_value=data.get('rackManagement_value')
         deadStock_status = data.get('deadStock_status')
         deadStock_value = data.get('deadStock_value')
 
         if None in [category, subCategory, taxIndividual_status, taxIndividual_value,
-                    barcode_status, barcode_value, rackManagement_status, rackManagement_value, deadStock_status, deadStock_value]:
+                    barcode_status, barcode_value, rackManagement_status,rackManagement_value, deadStock_status, deadStock_value]:
             return jsonify({'error': 'All fields are required', 'status_code': 400}), 400
 
         itemmaster = Product(category=category, subCategory=subCategory,
                              taxIndividual_status=taxIndividual_status, taxIndividual_value=taxIndividual_value,
                              barcode_status=barcode_status, barcode_value=barcode_value,
                              rackManagement_status=rackManagement_status,
-                             deadStock_status=deadStock_status, deadStock_value=deadStock_value, rackManagement_value=rackManagement_value)
+                             deadStock_status=deadStock_status, deadStock_value=deadStock_value,rackManagement_value=rackManagement_value)
         itemmaster.save()
 
         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item master successfully created'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'error': str(e), 'status_code': 400}), 400
+        return jsonify({'error': str(e), 'status_code': 500}), 500
 
 
 
@@ -609,7 +668,6 @@ def create_general_master():
 
     except Exception as e:
         return jsonify({'error': str(e), 'status_code': 500}), 500
-
 
 
 

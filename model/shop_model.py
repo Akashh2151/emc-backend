@@ -64,7 +64,7 @@ class userinfo(Document):
     name = StringField(required=True, null=False)
     shopName = StringField(required=True, null=False)
     address = StringField(required=True, null=False, validation=validate_non_empty)
-    mobile = StringField(required=True, null=False, max_length=12)
+    mobile = StringField(required=True, null=False, max_length=13)
     photos = ListField(URLField(required=True, null=False, validation=validate_non_empty))
     profilePic = URLField(required=False, null=True, validation=validate_non_empty)
      
