@@ -7,8 +7,8 @@ from pymongo import MongoClient
 
 
 
-# # MongoDB Configuration
-# # client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
+# MongoDB Configuration
+# client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
 # client = MongoClient("mongodb://localhost:27017")
 
 
@@ -30,11 +30,14 @@ from pymongo import MongoClient
 
 # ___________________________________________________________________________________________________________________
 from mongoengine import connect
+# Replace the values with your MongoDB URI and other settings
+db_uri = "mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority"
+connect(host=db_uri, db="emc_project2151")
 # disconnect
 # Replace the values with your username, password, and cluster name
-db_uri = "mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority"
+# db_uri = "mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority"
 # Replace the value with your database name
-connect(host=db_uri, db="emc_project2151")
+# connect(host=db_uri, db="emc_project2151")
 # connect(host=db_uri, db="emc_project2151")
 
 # Disconnect existing connections
@@ -56,6 +59,16 @@ def validate_non_empty(value):
     elif isinstance(value, (int, float)):
         # You can customize this part based on your requirements for numeric fields
         pass
+
+class userinfo(Document):
+    name = StringField(required=True, null=False)
+    shopName = StringField(required=True, null=False)
+    address = StringField(required=True, null=False, validation=validate_non_empty)
+    mobile = StringField(required=True, null=False, max_length=12)
+    photos = ListField(URLField(required=True, null=False, validation=validate_non_empty))
+    profilePic = URLField(required=False, null=True, validation=validate_non_empty)
+     
+
 
 
 # Define MenuMaster document

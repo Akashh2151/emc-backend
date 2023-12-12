@@ -1,15 +1,224 @@
-import json
+import mimetypes
+from flask import request
 from bson import InvalidDocument
 from flask import Blueprint, request, jsonify
-# from pymongo import MongoClient
 from bson.objectid import ObjectId
+from firebase_admin import credentials, initialize_app, storage
+from werkzeug.utils import secure_filename
 from pydantic import ValidationError
-# from model.shop_model import shop_collection,shop_invoices,shop_item_master_collection,shop_masters_collection,shop_payment_master,general_master_collection
-from model.shop_model import BankDetails, GeneralMaster, Invoice, InvoiceItem, MenuMaster, PaymentMaster, PaymentModeDetails, PaymentSlab, Product, SellMaster
+from model.shop_model import BankDetails, GeneralMaster, Invoice, InvoiceItem, MenuMaster, PaymentMaster, PaymentModeDetails, PaymentSlab, Product, SellMaster, userinfo
 from mongoengine.queryset import QuerySet
-# shopapp blue print
 from mongoengine import EmbeddedDocument
 shopapp=Blueprint('shopapp',__name__)
+newfrom=Blueprint('newfrom',__name__)
+
+ 
+# Firebase configuration
+firebase_config = {
+    "apiKey": "AIzaSyCD5nCSKUFGZgyO3tkEPt3aAuwUKIT2Rgw",
+    "authDomain": "emcbackend.firebaseapp.com",
+    "projectId": "emcbackend",
+    "storageBucket": "emcbackend.appspot.com",
+    "messagingSenderId": "381147915781",
+    "appId": "1:381147915781:web:732c0ed128b30273c31e6c",
+    "measurementId": "G-4WEY4FPCY0"
+}
+
+# Path to the downloaded JSON file
+firebase_cred_path = './configurations/emcbackend-firebase-adminsdk-56i8d-22778d49de.json'
+
+# Initialize Firebase app with the credentials
+cred = credentials.Certificate(firebase_cred_path)
+firebase_app = initialize_app(cred, firebase_config, name='emcbackend')
+
+# Firebase Storage instance
+storage_client = storage.bucket(app=firebase_app)
+
+
+# Endpoint to create user and upload multiple images to Firebase
+@shopapp.route('/userinfo', methods=['POST'])
+def create_user():
+    try:
+        data = request.form
+        name = data.get('name')
+        shopName = data.get('shopName')
+        address = data.get('address')
+        mobile = data.get('mobile')
+
+        if not name or not shopName or not address or not mobile:
+            response = {'Body': None, 'error': 'All fields are required', 'status_code': 400}
+            return jsonify(response)
+
+        # Ensure 'images' is present in request.files
+        if 'images' not in request.files:
+            response = {'error': 'Images are required', 'status_code': 400}
+            return jsonify(response)
+
+        images = request.files.getlist('images')
+
+        # Validate total size of all images
+        total_size = sum(len(image_file.read()) for image_file in images)
+        if total_size > 5 * 1024 * 1024:
+            return jsonify({'error': 'Total image size exceeds 5MB'}), 400
+
+        # Save each image to Firebase Storage and collect URLs
+        photo_urls = []
+        for image_file in images:
+                image_file.seek(0)
+                filename = secure_filename(image_file.filename)
+                blob = storage_client.blob('photos/img/' + filename)
+
+                # Set content type to image/jpeg
+                blob.upload_from_file(image_file, content_type='image/jpeg')
+                
+                # Set ACL to public-read
+                blob.acl.all().grant_read()
+                
+                photo_urls.append(blob.public_url)
+            
+
+        # Continue with the rest of your code
+        user = userinfo(
+            name=name,
+            shopName=shopName,
+            address=address,
+            mobile=mobile,
+            photos=photo_urls,
+            profilePic=None  # Set profilePic to None or provide a default value if needed
+        )
+        user.save()
+
+        user_id = str(user.id)
+        response = {'Body': {'userid': user_id}, 'status': 'success', 'statusCode': 200,
+                    'message': 'Item master successfully created'}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
+
+
+@newfrom.route('/upload/<string:user_id>', methods=['POST'])
+def upload_image(user_id):
+    try:
+        # Retrieve user from the database using user_id
+        user = userinfo.objects.get(id=user_id)
+    except userinfo.DoesNotExist:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Check if the user_id from the URL matches the one from form data
+    if str(user.id) != user_id:
+        return jsonify({'error': 'User ID mismatch'}), 400
+
+    # Check if the request contains an image file
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image provided'}), 400
+
+    image = request.files['image']
+
+    # Check if the image size is greater than 2MB
+    if len(image.read()) > 2 * 1024 * 1024:
+        return jsonify({'error': 'Image size exceeds 2MB'}), 400
+
+    # Reset the file pointer after reading
+    image.seek(0)
+
+    # Define the desired filename format (e.g., "profilepic1.jpg")
+    filename_format = f"profilepic{user.id}.jpg"
+
+    # Set the content type based on the file extension
+    content_type, _ = mimetypes.guess_type(filename_format)
+    if not content_type:
+        content_type = 'application/octet-stream'  # Set a default content type if unable to guess
+
+    # Store the image on Firebase Storage with the predefined filename
+    firebase_path = f"profilePic/{filename_format}"
+    blob = storage_client.blob(firebase_path)
+    blob.upload_from_file(image, content_type=content_type)
+
+    # Generate a URL for the stored image
+    cloud_url = blob.public_url
+
+    # Update the user's profilePic field in the database
+    user.profilePic = cloud_url
+    user.save()
+
+    return jsonify({'message': 'Profile photo updated successfully', 'url': cloud_url}), 200
+
+ 
+
+
+@newfrom.route('/userinfo/<user_id>', methods=['GET'])
+def get_user(user_id):
+    try:
+        user = userinfo.objects.get(id=user_id)
+        user_data = {
+            'name': user.name,
+            'shopName': user.shopName,
+            'address': user.address,
+            'mobile': user.mobile,
+            'photos': user.photos,
+            'profilePic': user.profilePic
+        }
+
+        response = {'Body': user_data, 'status': 'success', 'statusCode': 200}
+        return jsonify(response)
+
+    except userinfo.DoesNotExist:
+        response = {'Body': None, 'error': 'User not found', 'status_code': 404}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
+
+@newfrom.route('/userinfo/<user_id>', methods=['PUT'])
+def update_user(user_id):
+    try:
+        data = request.json
+        user = userinfo.objects.get(id=user_id)
+
+        user.name = data.get('name', user.name)
+        user.shopName = data.get('shopName', user.shopName)
+        user.address = data.get('address', user.address)
+        user.mobile = data.get('mobile', user.mobile)
+        user.photos = data.get('photos', user.photos)
+        user.profilePic = data.get('profilePic', user.profilePic)
+
+        user.save()
+
+        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'User successfully updated'}
+        return jsonify(response)
+
+    except userinfo.DoesNotExist:
+        response = {'Body': None, 'error': 'User not found', 'status_code': 404}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+
+@shopapp.route('/userinfo/<user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        user = userinfo.objects.get(id=user_id)
+        user.delete()
+
+        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'User successfully deleted'}
+        return jsonify(response)
+
+    except userinfo.DoesNotExist:
+        response = {'Body': None, 'error': 'User not found', 'status_code': 404}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'status_code': 500}), 500          
+
 
 # ______________________________________________________________________________________________________
 #  menu master
@@ -210,6 +419,7 @@ def update_item_master(item_id):
 
     except Exception as e:
         return jsonify({'error': str(e), 'status_code': 500}), 500
+
 
 
 

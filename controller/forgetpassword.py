@@ -7,12 +7,8 @@
 
 # app = Flask(__name__)
 # forgetpassword_app = Blueprint('forgetpassword', __name__)
-
-# # MongoDB Configuration
-# client = MongoClient("mongodb://localhost:27017")
-# # client = MongoClient("mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority")
-# db = client["emc_project"]
-# collection = db["signup"]
+ 
+ 
 
 # def generate_otp():
 #     otp = ''.join(random.choices(string.digits, k=6))
@@ -25,7 +21,7 @@
 #     try:
 #         data = request.json
 #         email = data.get('email')
-#         user = collection.find_one({"email": email})
+#         user = .find_one({"email": email})
 
 #         if user:
 #             otp = generate_otp()
@@ -37,6 +33,7 @@
 #             return jsonify({"message": "User not found"}), 404
 #     except Exception as e:
 #         return jsonify({"message": "An error occurred"}), 500
+
 
 
 
