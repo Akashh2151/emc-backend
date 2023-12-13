@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, EmailField,DictField,ListField
+from mongoengine import Document, StringField, EmailField,DictField,ListField,DynamicField
 from flask import Flask
 from flask_mongoengine import MongoEngine
 from mongoengine import connect,disconnect
@@ -23,6 +23,6 @@ class User(Document):
     businessName = StringField(max_length=100)
     businessType = StringField(max_length=100)
     shopBundle = ListField(DictField())
-    restoBundle = ListField(DictField())
+    restoBundle = ListField(DynamicField())  
     # encoded_data = StringField(max_length=500) 
     

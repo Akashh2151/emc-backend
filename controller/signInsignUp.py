@@ -1,5 +1,6 @@
 import hashlib
 import datetime
+import json
 import re
 import uuid
 from bson import ObjectId
@@ -9,11 +10,14 @@ import jwt
 from model.signInsignup_model import  User
 from configurations.configuration import shop_data,resto_data
 from security.allSecurity import email_regex,password_regex
+import logging
 
-
-
-# Step 1: Register user with basic information
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 signUp_bp = Blueprint('signUp', __name__)
+
+
+
 @signUp_bp.route('/register/step1', methods=['POST'])
 def register_step1():
     try:
@@ -111,14 +115,16 @@ def register_step2():
         # Perform additional validation if needed
         if businessType == "resto" or businessType == "shop":
             # Remove existing bundles if present
-            user.shopBundle = None
-            user.restoBundle = None
+            # Remove existing bundles if present
+            user.shopBundle = []
+            user.restoBundle = []
+
             if businessType == "shop":
                 user.shopBundle = shop_data
-                response=jwt.encode({'bundal':shop_data},current_app.config['SECRET_KEY'],algorithm='HS256')
+                response = jwt.encode({'bundle': shop_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
             elif businessType == "resto":
-                user.restoBundle = resto_data
-                response=jwt.encode({'bundal':resto_data},current_app.config['SECRET_KEY'],algorithm='HS256')
+                user.restoBundle = [resto_data]  # Wrap resto_data in a list
+                response = jwt.encode({'bundle': resto_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
         # Save the updated user to the database
         user.save()
         
