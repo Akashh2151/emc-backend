@@ -4,10 +4,8 @@ from model.signInsignup_model import User
 
 
 master=Blueprint('master',__name__)
-
-
-
 from flask import request, jsonify
+
 
 @master.route('/update-master-details', methods=['POST'])
 def update_master_details():
@@ -29,35 +27,46 @@ def update_master_details():
             response = {"Body": None, "status": "error", "statusCode": 404, "message": 'User not found'}
             return jsonify(response), 404
 
-        # Get the new isActive value from the request JSON
-        data = request.json
-        master_type = data.get('masterType')
-        new_is_active = data.get('isActive')
+        # Get the new isActive values from the request JSON
+        updated_category = request.json
+
+        # Extract category details
+        category_name = updated_category.get('name')
+        new_is_active_category = updated_category.get('isActive')
 
         # Access the "Masters" category directly (index 1)
         masters_category = user.restoBundle[0]['categories'][1]
 
-        # Use filter to find the specific master category based on master type
-        master_category = next((subcategory for subcategory in masters_category.get("subcategories", []) if subcategory.get("name") == master_type), None)
+        # Use filter to find the specific master category based on category name
+        master_category = next((subcategory for subcategory in masters_category.get("subcategories", []) if subcategory.get("name") == category_name), None)
 
         if not master_category:
-            response = {"Body": None, "status": "error", "statusCode": 404, "message": f'{master_type} not found in Masters category'}
+            response = {"Body": None, "status": "error", "statusCode": 404, "message": f'{category_name} not found in Masters category'}
             return jsonify(response), 404
 
         # Update isActive for the master category
-        master_category['isActive'] = new_is_active
+        master_category['isActive'] = new_is_active_category
 
-        # Handle submenus if any
-        submenus = master_category.get("subMenu", [])
-        for submenu in submenus:
-            submenu_name = submenu.get("name")
-            new_submenu_is_active = data.get(f'isActive{submenu_name.capitalize()}')
-            submenu['isActive'] = new_submenu_is_active
+        # Handle subcategories if any
+        subcategories = updated_category.get("subMenu", [])
+        for subcategory in subcategories:
+            subcategory_name = subcategory.get("name")
+            new_is_active_subcategory = subcategory.get("isActive")
+
+            # Find the specific subcategory based on subcategory name
+            target_subcategory = next((sub for sub in master_category.get("subcategories", []) if sub.get("name") == subcategory_name), None)
+
+            if not target_subcategory:
+                response = {"Body": None, "status": "error", "statusCode": 404, "message": f'{subcategory_name} not found in {category_name}'}
+                return jsonify(response), 404
+
+            # Update isActive for the subcategory
+            target_subcategory['isActive'] = new_is_active_subcategory
 
         # Save the updated user to the database
         user.save()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": f'{master_type} details updated successfully'}
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Master details updated successfully'}
         return jsonify(response), 200
 
     except Exception as e:
@@ -65,30 +74,158 @@ def update_master_details():
         return jsonify(response), 500
 
 
- 
+# ____________________________________________________________________
+# json data 
+# [
+#   {
+#     "name": "menuMaster",
+#     "title": "Menu",
+#     "isActive": false,
+#     "subMenu": []
+#   }
+# ]
+
+# @master.route('/update-master-details', methods=['POST'])
+# def update_master_details():
+#     try:
+#         # Get the user ID from the headers
+#         user_id_from_header = request.headers.get('id')
+
+#         if not user_id_from_header:
+#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'User ID is required in the header'}
+#             return jsonify(response), 400
+
+#         # Convert user ID to ObjectId
+#         user_id_object = ObjectId(user_id_from_header)
+
+#         # Get the user from the database
+#         user = User.objects(id=user_id_object).first()
+
+#         if not user:
+#             response = {"Body": None, "status": "error", "statusCode": 404, "message": 'User not found'}
+#             return jsonify(response), 404
+
+#         # Get the new isActive values from the request JSON
+#         updated_categories = request.json
+
+#         # Iterate through the updated categories
+#         for updated_category in updated_categories:
+#             category_name = updated_category.get('name')
+#             new_is_active_category = updated_category.get('isActive')
+
+#             # Access the "Masters" category directly (index 1)
+#             masters_category = user.restoBundle[0]['categories'][1]
+
+#             # Use filter to find the specific master category based on category name
+#             master_category = next((subcategory for subcategory in masters_category.get("subcategories", []) if subcategory.get("name") == category_name), None)
+
+#             if not master_category:
+#                 response = {"Body": None, "status": "error", "statusCode": 404, "message": f'{category_name} not found in Masters category'}
+#                 return jsonify(response), 404
+
+#             # Update isActive for the master category
+#             master_category['isActive'] = new_is_active_category
+
+#             # Handle subcategories if any
+#             subcategories = updated_category.get("subMenu", [])
+#             for subcategory in subcategories:
+#                 subcategory_name = subcategory.get("name")
+#                 new_is_active_subcategory = subcategory.get("isActive")
+
+#                 # Find the specific subcategory based on subcategory name
+#                 target_subcategory = next((sub for sub in master_category.get("subcategories", []) if sub.get("name") == subcategory_name), None)
+
+#                 if not target_subcategory:
+#                     response = {"Body": None, "status": "error", "statusCode": 404, "message": f'{subcategory_name} not found in {category_name}'}
+#                     return jsonify(response), 404
+
+#                 # Update isActive for the subcategory
+#                 target_subcategory['isActive'] = new_is_active_subcategory
+
+#         # Save the updated user to the database
+#         user.save()
+
+#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Master details updated successfully'}
+#         return jsonify(response), 200
+
+#     except Exception as e:
+#         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
+#         return jsonify(response), 500
 
 
 
 
+# ________________________________________________
+# {
+#   "masterType": "itemMaster",
+# //   "isActive": true,
+# //   "isActiveName": true,
+#      "isActiveDescription": true
+# //   "isActiveMeasureUnit": true,
+# //   "isActivePrice": true,
+# //   "isActiveCategory": true,
+# //   "isActiveSubCategory": true,
+# //   "isActiveNutrition": true
+# }
+
+# @master.route('/update-master-details', methods=['POST'])
+# def update_master_details():
+#     try:
+#         # Get the user ID from the headers
+#         user_id_from_header = request.headers.get('id')
+
+#         if not user_id_from_header:
+#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'User ID is required in the header'}
+#             return jsonify(response), 400
+
+#         # Convert user ID to ObjectId
+#         user_id_object = ObjectId(user_id_from_header)
+
+#         # Get the user from the database
+#         user = User.objects(id=user_id_object).first()
+
+#         if not user:
+#             response = {"Body": None, "status": "error", "statusCode": 404, "message": 'User not found'}
+#             return jsonify(response), 404
+
+#         # Get the new isActive value from the request JSON
+#         data = request.json
+#         master_type = data.get('masterType')
+#         new_is_active = data.get('isActive')
+
+#         # Access the "Masters" category directly (index 1)
+#         masters_category = user.restoBundle[0]['categories'][1]
+
+#         # Use filter to find the specific master category based on master type
+#         master_category = next((subcategory for subcategory in masters_category.get("subcategories", []) if subcategory.get("name") == master_type), None)
+
+#         if not master_category:
+#             response = {"Body": None, "status": "error", "statusCode": 404, "message": f'{master_type} not found in Masters category'}
+#             return jsonify(response), 404
+
+#         # Update isActive for the master category
+#         master_category['isActive'] = new_is_active
+
+#         # Handle submenus if any
+#         submenus = master_category.get("subMenu", [])
+#         for submenu in submenus:
+#             submenu_name = submenu.get("name")
+#             new_submenu_is_active = data.get(f'isActive{submenu_name.capitalize()}')
+#             submenu['isActive'] = new_submenu_is_active
+
+#         # Save the updated user to the database
+#         user.save()
+
+#         response = {"Body": None, "status": "success", "statusCode": 200, "message": f'{master_type} details updated successfully'}
+#         return jsonify(response), 200
+
+#     except Exception as e:
+#         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
+#         return jsonify(response), 500
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# ______________________________________________________________________________________
 # # from flask import request, jsonify
 # @master.route('/update-menu-master-details', methods=['POST'])
 # def update_menu_master_details():

@@ -85,7 +85,7 @@ class Item(Document):
     status = StringField()
     tax = StringField()
     discount = StringField()
-    images = StringField()  # Assuming images are stored as file paths or URLs
+    images = ListField(StringField())  # Assuming images are stored as file paths or URLs
     currentStock = StringField()
     barcode = StringField()
     salesHistory = ListField(EmbeddedDocumentField(History))

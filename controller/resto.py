@@ -126,117 +126,117 @@ def delete_order(vendor_code):
 # __
 
 
-# # Create an item
-# @restoapp.route('/item', methods=['POST'])
-# def create_item():
-#     try:
-#         data = request.json
-#         name = data.get('name')
-#         description = data.get('description')
-#         measureUnit = data.get('measureUnit')
-#         price = data.get('price')
-#         category = data.get('category')
-#         subCategory = data.get('subCategory')
-#         nutrition = data.get('nutrition')
+# Create an item
+@restoapp.route('/item', methods=['POST'])
+def create_item():
+    try:
+        data = request.json
+        name = data.get('name')
+        description = data.get('description')
+        measureUnit = data.get('measureUnit')
+        price = data.get('price')
+        category = data.get('category')
+        subCategory = data.get('subCategory')
+        nutrition = data.get('nutrition')
 
-#         new_item = ItemMaster(
-#             name=name,
-#             description=description,
-#             measureUnit=measureUnit,
-#             price=price,
-#             category=category,
-#             subCategory=subCategory,
-#             nutrition=nutrition
-#         )
-#         new_item.save()
+        new_item = ItemMaster(
+            name=name,
+            description=description,
+            measureUnit=measureUnit,
+            price=price,
+            category=category,
+            subCategory=subCategory,
+            nutrition=nutrition
+        )
+        new_item.save()
 
-#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item created'}
-#         return jsonify(response)
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item created'}
+        return jsonify(response)
 
-#     except Exception as e:
-#         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
-
-
-# # Get all items
-# @restoapp.route('/item', methods=['GET'])
-# def get_items():
-#     try:
-#         items = ItemMaster.objects()
-#         items_list = [{"name": item.name, "description": item.description,
-#                        "measureUnit": item.measureUnit, "price": item.price,
-#                        "category": item.category, "subCategory": item.subCategory,
-#                        "nutrition": item.nutrition} for item in items]
-
-#         response = {'Body': items_list, 'status': 'success', 'statusCode': 200, 'message': 'Items retrieved'}
-#         return jsonify(response)
-
-#     except Exception as e:
-#         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
 
 
-# # Update an existing item by name
-# @restoapp.route('/item/<string:item_name>', methods=['PUT'])
-# def update_item(item_name):
-#     try:
-#         item = ItemMaster.objects(name=item_name).first()
-#         if not item:
-#             response = {'Body': None, 'message': 'Item not found', 'statusCode': 404, 'status': 'error'}
-#             return jsonify(response)
+# Get all items
+@restoapp.route('/item', methods=['GET'])
+def get_items():
+    try:
+        items = ItemMaster.objects()
+        items_list = [{"name": item.name, "description": item.description,
+                       "measureUnit": item.measureUnit, "price": item.price,
+                       "category": item.category, "subCategory": item.subCategory,
+                       "nutrition": item.nutrition} for item in items]
 
-#         data = request.json
+        response = {'Body': items_list, 'status': 'success', 'statusCode': 200, 'message': 'Items retrieved'}
+        return jsonify(response)
 
-#         # Update only the fields present in the request JSON
-#         for key, value in data.items():
-#             setattr(item, key, value)
-
-#         item.save()
-
-#         response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'Item updated'}
-#         return jsonify(response)
-
-#     except Exception as e:
-#         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
 
 
+# Update an existing item by name
+@restoapp.route('/item/<string:item_name>', methods=['PUT'])
+def update_item(item_name):
+    try:
+        item = ItemMaster.objects(name=item_name).first()
+        if not item:
+            response = {'Body': None, 'message': 'Item not found', 'statusCode': 404, 'status': 'error'}
+            return jsonify(response)
 
-# # Get a specific item by name
-# @restoapp.route('/item/<string:item_name>', methods=['GET'])
-# def get_item(item_name):
-#     try:
-#         item = ItemMaster.objects(name=item_name).first()
-#         if not item:
-#             response = {'Body': None, 'message': 'Item not found', 'statusCode': 404, 'status': 'error'}
-#             return jsonify(response)
+        data = request.json
 
-#         item_dict = {"name": item.name, "description": item.description,
-#                      "measureUnit": item.measureUnit, "price": item.price,
-#                      "category": item.category, "subCategory": item.subCategory,
-#                      "nutrition": item.nutrition}
+        # Update only the fields present in the request JSON
+        for key, value in data.items():
+            setattr(item, key, value)
 
-#         response = {'Body': item_dict, 'status': 'success', 'statusCode': 200, 'message': 'Item retrieved'}
-#         return jsonify(response)
+        item.save()
 
-#     except Exception as e:
-#         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'Item updated'}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
 
 
 
-# # Delete an item by name
-# @restoapp.route('/item/<string:item_name>', methods=['DELETE'])
-# def delete_item(item_name):
-#     try:
-#         item = ItemMaster.objects(name=item_name).first()
-#         if not item:
-#             response = {'Body': None, 'message': 'Item not found', 'statusCode': 404, 'status': 'error'}
-#             return jsonify(response)
+# Get a specific item by name
+@restoapp.route('/item/<string:item_name>', methods=['GET'])
+def get_item(item_name):
+    try:
+        item = ItemMaster.objects(name=item_name).first()
+        if not item:
+            response = {'Body': None, 'message': 'Item not found', 'statusCode': 404, 'status': 'error'}
+            return jsonify(response)
 
-#         item.delete()
+        item_dict = {"name": item.name, "description": item.description,
+                     "measureUnit": item.measureUnit, "price": item.price,
+                     "category": item.category, "subCategory": item.subCategory,
+                     "nutrition": item.nutrition}
 
-#         response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'Item deleted'}
-#         return jsonify(response)
+        response = {'Body': item_dict, 'status': 'success', 'statusCode': 200, 'message': 'Item retrieved'}
+        return jsonify(response)
 
-#     except Exception as e:
-#         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+
+# Delete an item by name
+@restoapp.route('/item/<string:item_name>', methods=['DELETE'])
+def delete_item(item_name):
+    try:
+        item = ItemMaster.objects(name=item_name).first()
+        if not item:
+            response = {'Body': None, 'message': 'Item not found', 'statusCode': 404, 'status': 'error'}
+            return jsonify(response)
+
+        item.delete()
+
+        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'Item deleted'}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
 
 
 #__
@@ -560,6 +560,7 @@ def create_item():
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
 
 
+
     
 # Get all items
 @restoapp.route('/item', methods=['GET'])
@@ -597,44 +598,44 @@ def get_all_items():
     
     
     
-#  # Get a specific item by itemCode
-# @restoapp.route('/item/<item_code>', methods=['GET'])
-# def get_byitemcode(item_code):
-#     try:
-#         print(f"Attempting to find item with code: {item_code}")
-#         item = Item.objects.get(itemCode=item_code).first()
-#         print(f"Found item: {item}")
+ # Get a specific item by itemCode
+@restoapp.route('/item/<item_code>', methods=['GET'])
+def get_byitemcode(item_code):
+    try:
+        print(f"Attempting to find item with code: {item_code}")
+        item = Item.objects.get(itemCode=item_code).first()
+        print(f"Found item: {item}")
         
 
-#         item_data = {
-#             "itemCode": item.itemCode,
-#             "itemName": item.itemName,
-#             "itemCategory": item.itemCategory,
-#             "itemSubCategory": item.itemSubCategory,
-#             "itemPrice": item.itemPrice,
-#             "ingredients": item.ingredients,
-#             "recipe": item.recipe,
-#             "allergen": item.allergen,
-#             "portionSize": item.portionSize,
-#             "status": item.status,
-#             "tax": item.tax,
-#             "discount": item.discount,
-#             "images": item.images,
-#             "currentStock": item.currentStock,
-#             "barcode": item.barcode,
-#             "salesHistory": [{"date": entry.date.isoformat(), "action": entry.action} for entry in item.salesHistory],
-#             "customNotes": item.customNotes
-#         }
+        item_data = {
+            "itemCode": item.itemCode,
+            "itemName": item.itemName,
+            "itemCategory": item.itemCategory,
+            "itemSubCategory": item.itemSubCategory,
+            "itemPrice": item.itemPrice,
+            "ingredients": item.ingredients,
+            "recipe": item.recipe,
+            "allergen": item.allergen,
+            "portionSize": item.portionSize,
+            "status": item.status,
+            "tax": item.tax,
+            "discount": item.discount,
+            "images": item.images,
+            "currentStock": item.currentStock,
+            "barcode": item.barcode,
+            "salesHistory": [{"date": entry.date.isoformat(), "action": entry.action} for entry in item.salesHistory],
+            "customNotes": item.customNotes
+        }
 
-#         response = {'Body': item_data, 'status': 'success', 'statusCode': 200, 'message': 'Item retrieved'}
-#         return jsonify(response)
+        response = {'Body': item_data, 'status': 'success', 'statusCode': 200, 'message': 'Item retrieved'}
+        return jsonify(response)
 
-#     except Item.DoesNotExist:
-#         print(f"Item with code {item_code} not found.")
-#         return jsonify({'Body': None, 'error': 'Item not found', 'statusCode': 404})
-#     except Exception as e:
-#         print(f"An error occurred: {str(e)}")
-#         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+    except Item.DoesNotExist:
+        print(f"Item with code {item_code} not found.")
+        return jsonify({'Body': None, 'error': 'Item not found', 'statusCode': 404})
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -646,6 +647,7 @@ def update_items(item_code):
     try:
         data = request.json
         item = Item.objects.get(itemCode=item_code)
+        
 
         # Update item attributes
         item.itemName = data.get('itemName', item.itemName)
