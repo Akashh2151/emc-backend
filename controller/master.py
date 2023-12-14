@@ -47,11 +47,13 @@ def update_master_details():
         for category in user.restoBundle[0]['categories']:
             for subcategory in category.get("subcategories", []):
                 update_is_active(subcategory, updated_master['name'], updated_master['isActive'])
+                
+            
 
         # Save the updated user to the database
         user.save()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": f'{master_type} master details updated successfully'}
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'master details updated successfully'}
         return jsonify(response), 200
 
     except Exception as e:
