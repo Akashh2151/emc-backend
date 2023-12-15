@@ -1,6 +1,7 @@
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from model.signInsignup_model import User
+from security.mastervalidation import validate_unauthorized_access,validate_user_found,validate_no_blank_spaces,validate_no_blank_space_keys_dict,validate_no_blank_space_values,validate_status_not_default,validate_is_active_boolean
 
 
 master=Blueprint('master',__name__)
@@ -11,40 +12,62 @@ from flask import request, jsonify
 
 from bson import ObjectId  # Make sure to import ObjectId
 
+
 @master.route('/v1/updateuserinfo', methods=['POST'])
 def update_master_details():
     try:
         # Get the user ID from the headers
         user_id_from_header = request.headers.get('id')
-
-        if not user_id_from_header:
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'User ID is required in the header'}
-            return jsonify(response), 400
-
+        
+        # Validate unauthorized access
+        is_authorized, error_message = validate_unauthorized_access(user_id_from_header)
+        if not is_authorized:
+             response = {"Body": None, "status": "error", "statusCode": 401, "message": error_message}
+             return jsonify(response), 401
+         
         # Convert user ID to ObjectId
         user_id_object = ObjectId(user_id_from_header)
-
         # Get the user from the database
         user = User.objects(id=user_id_object).first()
-
-        if not user:
-            response = {"Body": None, "status": "error", "statusCode": 404, "message": 'User not found'}
-            return jsonify(response), 404
+        
+        # Validate if the user is found
+        is_user_found, error_message = validate_user_found(user)
+        if not is_user_found:
+            response = {"Body": None, "status": "error", "statusCode": 401, "message": error_message}
+            return jsonify(response), 401
 
         # Get the new isActive values from the request JSON
         updated_master = request.json
 
-        status_value = updated_master.get('status')
-
-        if status_value and status_value.lower() == 'default':
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'You cannot update with status as default'}
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
+        if not is_no_blank_spaces:
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
+            return jsonify(response), 400
+     
+        # Validate for blank spaces in keys of the dictionary
+        is_no_blank_space_keys, error_message = validate_no_blank_space_keys_dict(request.json)
+        if not is_no_blank_space_keys:
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 400
 
-        # Add this validation after obtaining updated_master['isActive']
-        if not isinstance(updated_master['isActive'], bool):
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": "'isActive' must be a boolean"}
+        is_no_blank_space_values, error_message = validate_no_blank_space_values(request.json)
+        if not is_no_blank_space_values:
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 400
 
+        # Validate for 'status' not being 'default'
+        is_status_not_default, error_message = validate_status_not_default(request.json)
+        if not is_status_not_default:
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
+            return jsonify(response), 400
+        
+        # Validate 'isActive' is a boolean
+        is_active_boolean, error_message = validate_is_active_boolean(updated_master)
+        if not is_active_boolean:
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
+            return jsonify(response), 400
+            
         # Function to recursively update isActive values based on name
         def update_is_active(item, name, new_is_active):
             if item.get('name') == name:
@@ -63,14 +86,22 @@ def update_master_details():
         # Save the updated user to the database
         user.save()
 
-        # Prepare the response with the updated user details
+               
         updated_user_details = {
             "id": str(user.id),
             # Include other relevant user details here
+               }
+        # Prepare the response with the updated user details
+        updated_user_details = {
+            "id": updated_user_details,
+            # "updated_master_details": updated_master,
+            "statusCode": 200,
+            # Include other relevant user details here
         }
 
-        response = {"Body": updated_user_details, "status": "success", "statusCode": 200, "message": 'master details updated successfully'}
+        response = {"Body": updated_user_details, "status": "success", "message": 'master details updated successfully'}
         return jsonify(response), 200
+
 
     except Exception as e:
         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
