@@ -18,103 +18,109 @@ signUp_bp = Blueprint('signUp', __name__)
 
 
 
-@signUp_bp.route('/register/step1', methods=['POST'])
+# unsycronaycied 
+# mulitipale worki doning in ne time
+# sycronazed
+# doing one wrok in one time 
+# compiler working this all things
+
+# login return in body bussiness type
+
+
+
+
+
+
+# 1st
+#  name 
+#  maobaile 
+#  email 
+#  password 
+# 2sd
+# b name
+# b mob
+# b email
+# b addres
+# b type
+
+
+# (
+# need this unique
+# 1st
+# user email 
+# user mobaile
+
+
+# 2sd
+# b email 
+# b mobail
+# return this all things in ragister response - user
+# name  
+# )
+
+
+@signUp_bp.route('/register', methods=['POST'])
 def register_step1():
     try:
         data = request.json
-        userName = data.get('userName')
+        name = data.get('name')
+        mobile = data.get('mobile')
         email = data.get('email')
         password = data.get('password')
-        role = data.get('role')
-        
-        userpassword=hashlib.sha256(password.encode()).hexdigest()
+        businessName = data.get('businessName')
+        businessMobile = data.get('businessMobile')
+        businessEmail = data.get('businessEmail')
+        businessAddress = data.get('businessAddress')
+        businessType = data.get('businessType')
 
- 
-        # Check if the email is already registered
-        if User.objects(email=email).first():
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Email is already registered'}
+        # Check if the email or mobile is already registered
+        if User.objects(email=email).first() or User.objects(mobile=mobile).first():
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Email or mobile is already registered'}
             return jsonify(response), 400
         
-            
-        if not userName or not email or not password or not role:
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'userName, email, password, and role are required'}
+                # Check if the business email is already registered
+        if User.objects(businessEmail=businessEmail).first():
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Business email is already registered'}
             return jsonify(response), 400
-        
-        # Define your password requirements
+
+        # Check if the business email or business mobile is already registered
+        if User.objects(businessMobile=businessMobile).first():
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Business mobile is already registered'}
+            return jsonify(response), 400
+
+        # Validate required fields
+        required_fields = [name, email, password, mobile, businessName, businessMobile, businessType, businessEmail, businessAddress]
+        if not all(required_fields):
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'All required fields must be provided'}
+            return jsonify(response), 400
+
+        # Validate password and email format
         if not re.match(password_regex, password):
             response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Password requirements not met'}
             return jsonify(response)
-        
-        # Define your email requirements
-        if not re.match(email_regex,email):
-                response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Email requirement not met'}
-                return jsonify(response)
-        
+
+        if not re.match(email_regex, email):
+            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Email requirement not met'}
+            return jsonify(response)
+
+        # Hash the password
+        userpassword = hashlib.sha256(password.encode()).hexdigest()
+
+        # Create the User object
         user = User(
-            userName=userName,
+            name=name,
+            mobile=mobile,
             email=email,
             password=userpassword,
-            role=role,
+            businessName=businessName,
+            businessMobile=businessMobile,
+            businessEmail=businessEmail,
+            businessAddress=businessAddress,
+            businessType=businessType
         )
 
-        # Save the user to the database
-        user.save()
-
-        # Retrieve the user ID after saving to the database and convert to string
-        user_id = str(user.id)      
-
-        # Include user ID in the response
-        response = {"Body": {"user_id": user_id}, "status": "success", "statusCode": 200, "message": 'Step 1 successful'}
-        return jsonify(response), 200
-
-    except Exception as e:
-        response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
-        return jsonify(response), 500
-
-
-
-
-@signUp_bp.route('/register/step2', methods=['POST'])
-def register_step2():
-    try:
-        data = request.json
-        name = data.get('name')
-        mobileNumber = data.get('mobileNumber')
-        businessName = data.get('businessName')
-        businessType = data.get('businessType')
-
-        if not name or not mobileNumber or not businessName or not businessType:
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'userName, name, mobile number, business name, and business type are required'}
-            return jsonify(response), 400
-
-        # Get the user ID from the headers
-        user_id_from_header = request.headers.get('id')
-
-        if not user_id_from_header:
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'User ID is required in the header'}
-            return jsonify(response), 400
-
-        # Convert user ID to ObjectId
-        user_id_object = ObjectId(user_id_from_header)
-
-        # Get the user from the database
-        user = User.objects(id=user_id_object).first()
-
-        if not user:
-            response = {"Body": None, "status": "error", "statusCode": 404, "message": 'User not found'}
-            return jsonify(response), 404
-
-        # Update the user with additional information
-        user.name = name
-        user.mobileNumber = mobileNumber
-        user.businessName = businessName
-        user.businessType = businessType
-      
-        
-
-        # Perform additional validation if needed
+        # Perform additional validation and bundle setup if needed
         if businessType == "resto" or businessType == "shop":
-            # Remove existing bundles if present
             # Remove existing bundles if present
             user.shopBundle = []
             user.restoBundle = []
@@ -125,16 +131,135 @@ def register_step2():
             elif businessType == "resto":
                 user.restoBundle = [resto_data]  # Wrap resto_data in a list
                 response = jwt.encode({'bundle': resto_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
-        # Save the updated user to the database
+
+        # Save the user to the database
         user.save()
-        
-        response = {"Body": response, "status": "success", "statusCode": 200, "message": 'Step 2 successful'}
+
+        response = {"Body": response, "status": "success", "statusCode": 200, "message": 'Registration successful'}
         return jsonify(response), 200
 
     except Exception as e:
         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
         return jsonify(response), 500
 
+
+# ____________________________________________________________________________________________________________
+# all working 
+# @signUp_bp.route('/register/step1', methods=['POST'])
+# def register_step1():
+#     try:
+#         data = request.json
+#         userName = data.get('userName')
+#         email = data.get('email')
+#         password = data.get('password')
+#         role = data.get('role')
+        
+#         userpassword=hashlib.sha256(password.encode()).hexdigest()
+
+ 
+#         # Check if the email is already registered
+#         if User.objects(email=email).first():
+#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Email is already registered'}
+#             return jsonify(response), 400
+        
+            
+#         if not userName or not email or not password or not role:
+#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'userName, email, password, and role are required'}
+#             return jsonify(response), 400
+        
+#         # Define your password requirements
+#         if not re.match(password_regex, password):
+#             response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Password requirements not met'}
+#             return jsonify(response)
+        
+#         # Define your email requirements
+#         if not re.match(email_regex,email):
+#                 response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Email requirement not met'}
+#                 return jsonify(response)
+        
+#         user = User(
+#             userName=userName,
+#             email=email,
+#             password=userpassword,
+#             role=role,
+#         )
+
+#         # Save the user to the database
+#         user.save()
+
+#         # Retrieve the user ID after saving to the database and convert to string
+#         user_id = str(user.id)      
+
+#         # Include user ID in the response
+#         response = {"Body": {"user_id": user_id}, "status": "success", "statusCode": 200, "message": 'Step 1 successful'}
+#         return jsonify(response), 200
+
+#     except Exception as e:
+#         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
+#         return jsonify(response), 500
+
+
+# @signUp_bp.route('/register/step2', methods=['POST'])
+# def register_step2():
+#     try:
+#         data = request.json
+#         name = data.get('name')
+#         mobileNumber = data.get('mobileNumber')
+#         businessName = data.get('businessName')
+#         businessType = data.get('businessType')
+
+#         if not name or not mobileNumber or not businessName or not businessType:
+#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'userName, name, mobile number, business name, and business type are required'}
+#             return jsonify(response), 400
+
+#         # Get the user ID from the headers
+#         user_id_from_header = request.headers.get('id')
+
+#         if not user_id_from_header:
+#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'User ID is required in the header'}
+#             return jsonify(response), 400
+
+#         # Convert user ID to ObjectId
+#         user_id_object = ObjectId(user_id_from_header)
+
+#         # Get the user from the database
+#         user = User.objects(id=user_id_object).first()
+
+#         if not user:
+#             response = {"Body": None, "status": "error", "statusCode": 404, "message": 'User not found'}
+#             return jsonify(response), 404
+
+#         # Update the user with additional information
+#         user.name = name
+#         user.mobileNumber = mobileNumber
+#         user.businessName = businessName
+#         user.businessType = businessType
+      
+        
+
+#         # Perform additional validation if needed
+#         if businessType == "resto" or businessType == "shop":
+#             # Remove existing bundles if present
+#             # Remove existing bundles if present
+#             user.shopBundle = []
+#             user.restoBundle = []
+
+#             if businessType == "shop":
+#                 user.shopBundle = shop_data
+#                 response = jwt.encode({'bundle': shop_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
+#             elif businessType == "resto":
+#                 user.restoBundle = [resto_data]  # Wrap resto_data in a list
+#                 response = jwt.encode({'bundle': resto_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
+#         # Save the updated user to the database
+#         user.save()
+        
+#         response = {"Body": response, "status": "success", "statusCode": 200, "message": 'Step 2 successful'}
+#         return jsonify(response), 200
+
+#     except Exception as e:
+#         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
+#         return jsonify(response), 500
+# ___________________________________________________________________________________________________________________
  
 
 
@@ -222,11 +347,11 @@ def login():
                     'jti': str(uuid.uuid4()),
                     'identity': user.email,
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=50),
-                    'role': user.role,
                     'type': 'access',
                     'fresh': True
                 }
                 token = jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
+                
 
                 # Check if a bundle is stored for the user
                 if user.restoBundle:

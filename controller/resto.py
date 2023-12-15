@@ -1,7 +1,7 @@
 # import datetime
 from json import JSONEncoder
 from flask import Blueprint, app, request, jsonify 
-from model.resto_model import   CustomerMaster, EmployeeMaster, History, Item, ItemMaster, Order, TaxMaster, Verification
+from model.resto_model import   CustomerMaster, EmployeeMaster, History, Item, ItemMaster, Order, TaxMaster, Verification 
 from mongoengine.errors import DoesNotExist
 
 from datetime import datetime
@@ -127,8 +127,8 @@ def delete_order(vendor_code):
 
 
 # Create an item
-@restoapp.route('/item', methods=['POST'])
-def create_item():
+@restoapp.route('/itemmaster', methods=['POST'])
+def create_masteritem():
     try:
         data = request.json
         name = data.get('name')
@@ -158,8 +158,8 @@ def create_item():
 
 
 # Get all items
-@restoapp.route('/item', methods=['GET'])
-def get_items():
+@restoapp.route('/itemmaster', methods=['GET'])
+def get_masteritems():
     try:
         items = ItemMaster.objects()
         items_list = [{"name": item.name, "description": item.description,
@@ -175,8 +175,8 @@ def get_items():
 
 
 # Update an existing item by name
-@restoapp.route('/item/<string:item_name>', methods=['PUT'])
-def update_item(item_name):
+@restoapp.route('/itemmaster/<string:item_name>', methods=['PUT'])
+def update_mastseritem(item_name):
     try:
         item = ItemMaster.objects(name=item_name).first()
         if not item:
@@ -200,8 +200,8 @@ def update_item(item_name):
 
 
 # Get a specific item by name
-@restoapp.route('/item/<string:item_name>', methods=['GET'])
-def get_item(item_name):
+@restoapp.route('/itemmaster/<string:item_name>', methods=['GET'])
+def get_masteritem(item_name):
     try:
         item = ItemMaster.objects(name=item_name).first()
         if not item:
@@ -222,8 +222,8 @@ def get_item(item_name):
 
 
 # Delete an item by name
-@restoapp.route('/item/<string:item_name>', methods=['DELETE'])
-def delete_item(item_name):
+@restoapp.route('/itemmaster/<string:item_name>', methods=['DELETE'])
+def delete_masteritem(item_name):
     try:
         item = ItemMaster.objects(name=item_name).first()
         if not item:
@@ -501,8 +501,8 @@ def delete_employee(employee_id):
 
 # __
 
-@restoapp.route('/fooditem', methods=['POST'], endpoint='create_food_item')
-def create_item():
+@restoapp.route('/item', methods=['POST'])
+def item():
     try:
         data = request.json
         item_code = data.get('itemCode')
@@ -573,7 +573,7 @@ def get_all_items():
                 "itemName": item.itemName,
                 "itemCategory": item.itemCategory,
                 "itemSubCategory": item.itemSubCategory,
-                "itemPrice": item.itemPrice,
+                "itemPrice": float(item.itemPrice),  # Convert Decimal to float
                 "ingredients": item.ingredients,
                 "recipe": item.recipe,
                 "allergen": item.allergen,
@@ -603,7 +603,7 @@ def get_all_items():
 def get_byitemcode(item_code):
     try:
         print(f"Attempting to find item with code: {item_code}")
-        item = Item.objects.get(itemCode=item_code).first()
+        item = Item.objects.get(itemCode=item_code)
         print(f"Found item: {item}")
         
 
@@ -612,7 +612,7 @@ def get_byitemcode(item_code):
             "itemName": item.itemName,
             "itemCategory": item.itemCategory,
             "itemSubCategory": item.itemSubCategory,
-            "itemPrice": item.itemPrice,
+            "itemPrice": float(item.itemPrice),
             "ingredients": item.ingredients,
             "recipe": item.recipe,
             "allergen": item.allergen,
@@ -642,12 +642,16 @@ def get_byitemcode(item_code):
  
  
  # Update an item by itemCode
+from datetime import datetime
+from flask import jsonify
+
+# Assuming you have the rest of the necessary imports and setup
+
 @restoapp.route('/item/<item_code>', methods=['PUT'])
 def update_items(item_code):
     try:
         data = request.json
         item = Item.objects.get(itemCode=item_code)
-        
 
         # Update item attributes
         item.itemName = data.get('itemName', item.itemName)
@@ -669,7 +673,8 @@ def update_items(item_code):
         # Update sales history if provided
         sales_history_data = data.get('salesHistory', [])
         item.salesHistory = [
-            History(date=entry['date'], action=entry['action']) for entry in sales_history_data
+            History(date=datetime.strptime(entry['date'], "%Y-%m-%dT%H:%M:%S.%fZ"), action=entry['action'])
+            for entry in sales_history_data
         ]
 
         # Save the updated item
@@ -682,34 +687,58 @@ def update_items(item_code):
         return jsonify({'Body': None, 'error': 'Item not found', 'statusCode': 404})
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
  
  
  
+
+
+
+
+# Delete an item by itemCode
+@restoapp.route('/item/<item_code>', methods=['DELETE'])
+# @restoapp.route('/employee/<employee_id>', methods=['DELETE'])
+def delete_item(item_code):
+    try:
+        item = Item.objects.get(itemCode=item_code)
+        item.delete()
+
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item deleted'}
+        return jsonify(response)
+
+    except DoesNotExist:
+        return jsonify({'Body': None, 'error': 'Item not found', 'statusCode': 404})
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+
  
+
+# @app.route('/table',methods=['POST'])
+# def tables():
+#     data=request.json()
+#     tableCode=data.get('tableCode')
+#     tableName=data.get('tableName')
+#     tableStatus=data.get('tableStatus')
+#     tablePlacement=data.get('tablePlacement')
+#     tableQR=data.get('tableQR')
     
-
-# # Delete an item by itemCode
-# @restoapp.route('/item/<item_code>', methods=['DELETE'])
-# def delete_item(item_code):
-#     try:
-#         item = Item.objects.get(itemCode=item_code)
-#         item.delete()
-
-#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item deleted'}
+#     if not tableCode or not tableName or not tableStatus or not tablePlacement or not tableQR:
+#         response={'Body':None,"statusCode":400,'status':'error','message':'All filds are required'}
 #         return jsonify(response)
-
-#     except DoesNotExist:
-#         return jsonify({'Body': None, 'error': 'Item not found', 'statusCode': 404})
-#     except Exception as e:
-#         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
-
-
-
-
-
-
-
-
+    
+    
+#     tablesData=Table(tableCode=tableCode,tableName=tableName,tableStatus=tableStatus,tablePlacement=tablePlacement,tableQR=tableQR)
+    
+    
+#     tablesData.save()
+    
+#     response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Table '}
+#     return jsonify(response)
+    
+    
+    
 
 
 

@@ -2,6 +2,7 @@ from mongoengine import Document, StringField, EmailField,DictField,ListField,Dy
 from flask import Flask
 from flask_mongoengine import MongoEngine
 from mongoengine import connect,disconnect
+from pydantic import ValidationError
  
 
 
@@ -12,17 +13,23 @@ connect(host=db_uri, db="emc_project2151")
 disconnect()
 
 
+def validate_non_empty(value):
+    if isinstance(value, (str,)):
+        if not value.strip():
+            raise ValidationError("Field cannot be empty.")
+    elif isinstance(value, (int, float)):
+        # You can customize this part based on your requirements for numeric fields
+        pass
 
+# Define the User model
 class User(Document):
-    userName = StringField(required=True, max_length=100)
-    email = EmailField(unique=True, required=True)
-    password = StringField(required=True, max_length=100)
-    role = StringField(required=True, choices=("user", "admin")) 
     name = StringField(max_length=100)
-    mobileNumber = StringField(max_length=15)
+    mobile = StringField(required=True, max_length=100, unique=True)  # Unique mobile field
+    email = EmailField(unique=True, required=True)  # Unique email field
+    password = StringField(required=True, max_length=100)
     businessName = StringField(max_length=100)
+    businessMobile = StringField(max_length=15, unique=True)  # Unique businessMobile field
+    businessEmail = EmailField(unique=True, required=True)  # Unique businessEmail field
+    businessAddress = StringField(max_length=30)
     businessType = StringField(max_length=100)
-    shopBundle = ListField(DictField())
-    restoBundle = ListField(DynamicField())  
-    # encoded_data = StringField(max_length=500) 
-    
+    restoBundle = ListField(DynamicField())

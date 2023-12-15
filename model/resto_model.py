@@ -91,8 +91,15 @@ class Item(Document):
     salesHistory = ListField(EmbeddedDocumentField(History))
     customNotes = StringField()    
 
-    
-    
+
+
+# class Table(Document):
+#         tableCode =StringField(required=True,unique=True)
+#         tableName=StringField(required=True,)
+#         tableStatus =StringField(required=True)
+#         tableQR=StringField(required=True)
+#         tablePlacement =StringField(required=True)
+ 
     
 # # Define RestoMenuMaster document
 # class RestoMenuMaster(Document):

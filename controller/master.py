@@ -7,6 +7,10 @@ master=Blueprint('master',__name__)
 from flask import request, jsonify
 
 
+
+
+from bson import ObjectId  # Make sure to import ObjectId
+
 @master.route('/v1/updateuserinfo', methods=['POST'])
 def update_master_details():
     try:
@@ -30,8 +34,16 @@ def update_master_details():
         # Get the new isActive values from the request JSON
         updated_master = request.json
 
-        # Extract master details
-        master_type = updated_master.get('type')  # Add a 'type' field to distinguish between menu and item master
+        status_value = updated_master.get('status')
+
+        if status_value and status_value.lower() == 'default':
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'You cannot update with status as default'}
+            return jsonify(response), 400
+
+        # Add this validation after obtaining updated_master['isActive']
+        if not isinstance(updated_master['isActive'], bool):
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": "'isActive' must be a boolean"}
+            return jsonify(response), 400
 
         # Function to recursively update isActive values based on name
         def update_is_active(item, name, new_is_active):
@@ -47,13 +59,17 @@ def update_master_details():
         for category in user.restoBundle[0]['categories']:
             for subcategory in category.get("subcategories", []):
                 update_is_active(subcategory, updated_master['name'], updated_master['isActive'])
-                
-            
 
         # Save the updated user to the database
         user.save()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'master details updated successfully'}
+        # Prepare the response with the updated user details
+        updated_user_details = {
+            "id": str(user.id),
+            # Include other relevant user details here
+        }
+
+        response = {"Body": updated_user_details, "status": "success", "statusCode": 200, "message": 'master details updated successfully'}
         return jsonify(response), 200
 
     except Exception as e:
@@ -63,6 +79,64 @@ def update_master_details():
 
 
 
+
+
+# ____________________________________________________________________
+# full working code
+
+# @master.route('/v1/updateuserinfo', methods=['POST'])
+# def update_master_details():
+#     try:
+#         # Get the user ID from the headers
+#         user_id_from_header = request.headers.get('id')
+        
+
+#         if not user_id_from_header:
+#             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'User ID is required in the header'}
+#             return jsonify(response), 400
+        
+        
+#         # Convert user ID to ObjectId
+#         user_id_object = ObjectId(user_id_from_header)
+
+#         # Get the user from the database
+#         user = User.objects(id=user_id_object).first()
+
+#         if not user:
+#             response = {"Body": None, "status": "error", "statusCode": 404, "message": 'User not found'}
+#             return jsonify(response), 404
+
+#         # Get the new isActive values from the request JSON
+#         updated_master = request.json
+
+#         # Extract master details
+#         # master_type = updated_master.get('type')  # Add a 'type' field to distinguish between menu and item master
+
+#         # Function to recursively update isActive values based on name
+#         def update_is_active(item, name, new_is_active):
+#             if item.get('name') == name:
+#                 item['isActive'] = new_is_active
+#             for sub_item in item.get('subMenu', []):
+#                 update_is_active(sub_item, name, new_is_active)
+#             for subcategory_item in item.get('subcategories', []):
+#                 for sub_item in subcategory_item.get('subMenu', []):
+#                     update_is_active(sub_item, name, new_is_active)
+
+#         # Iterate through each category and update isActive based on name
+#         for category in user.restoBundle[0]['categories']:
+#             for subcategory in category.get("subcategories", []):
+#                 update_is_active(subcategory, updated_master['name'], updated_master['isActive'])
+                
+
+#         # Save the updated user to the database
+#         user.save()
+
+#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'master details updated successfully'}
+#         return jsonify(response), 200
+
+#     except Exception as e:
+#         response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
+#         return jsonify(response), 500
 
 
 
