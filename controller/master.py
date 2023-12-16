@@ -87,19 +87,20 @@ def update_master_details():
         user.save()
 
                
-        updated_user_details = {
-            "id": str(user.id),
+        updated_user_details = str(user.id)
+        updated_masterdetails=request.json
             # Include other relevant user details here
-               }
+               
         # Prepare the response with the updated user details
         updated_user_details = {
-            "id": updated_user_details,
+            "_id": updated_user_details,
+            "updateDetails":updated_masterdetails
             # "updated_master_details": updated_master,
-            "statusCode": 200,
+           
             # Include other relevant user details here
         }
 
-        response = {"Body": updated_user_details, "status": "success", "message": 'master details updated successfully'}
+        response = {"Body": updated_user_details, "status": "success", "statusCode": 200, "message": 'master details updated successfully'}
         return jsonify(response), 200
 
 

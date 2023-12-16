@@ -148,7 +148,7 @@ def register_step1():
         # Save the user to the database
         user.save()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Registration successful'}
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Registration successfully'}
         return jsonify(response), 200
 
     except Exception as e:

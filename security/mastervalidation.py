@@ -51,13 +51,19 @@ def validate_no_blank_space_keys_dict(updated_master):
 
     return True, None
 
+ 
+
 
 
 def validate_no_blank_space_values(updated_master):
     """
     Validate for blank spaces in string values.
     """
+    
     for key, value in updated_master.items():
+        # Skip the validation for the key "values"
+        if key == "values":
+            continue
         if isinstance(value, str) and value.strip() == '':
             return False, f'Value for key "{key}" cannot be blank'
 
@@ -78,6 +84,7 @@ def validate_status_not_default(updated_master):
     # You can add more checks if needed
 
     return True, None
+
 
 
 def validate_is_active_boolean(updated_master):
