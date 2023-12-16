@@ -23,13 +23,13 @@ def validate_non_empty(value):
 
 # Define the User model
 class User(Document):
-    name = StringField(max_length=100)
-    mobile = StringField(required=True, max_length=100, unique=True)  # Unique mobile field
+    name = StringField(max_length=24)
+    mobile = StringField(required=True, max_length=10, unique=True)  # Unique mobile field
     email = EmailField(unique=True, required=True)  # Unique email field
     password = StringField(required=True, max_length=100)
-    businessName = StringField(max_length=100)
-    businessMobile = StringField(max_length=15, unique=True)  # Unique businessMobile field
+    businessName = StringField(max_length=24)
+    businessMobile = StringField(max_length=10, unique=True)  # Unique businessMobile field
     businessEmail = EmailField(unique=True, required=True)  # Unique businessEmail field
-    businessAddress = StringField(max_length=30)
+    businessAddress = StringField(max_length=100)
     businessType = StringField(max_length=100)
     restoBundle = ListField(DynamicField())

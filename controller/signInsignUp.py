@@ -9,7 +9,7 @@ from flask_jwt_extended import jwt_required
 import jwt
 from model.signInsignup_model import  User
 from configurations.configuration import shop_data,resto_data
-from security.allSecurity import email_regex,password_regex
+from security.allSecurity import email_regex,password_regex,phone_number
 import logging
 
 # Configure logging
@@ -75,8 +75,8 @@ def register_step1():
 
         # Check if the email or mobile is already registered
         if User.objects(email=email).first() or User.objects(mobile=mobile).first():
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Email or mobile is already registered'}
-            return jsonify(response), 400
+            response = {"Body": None, "status": "error", "statusCode": 403, "message": 'Email or mobile is already registered'}
+            return jsonify(response), 403
         
                 # Check if the business email is already registered
         if User.objects(businessEmail=businessEmail).first():
@@ -93,16 +93,29 @@ def register_step1():
         if not all(required_fields):
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'All required fields must be provided'}
             return jsonify(response), 400
-
+        
         # Validate password and email format
         if not re.match(password_regex, password):
-            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Password requirements not met'}
+            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Password must be at least 8 characters long'}
             return jsonify(response)
 
         if not re.match(email_regex, email):
             response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Email requirement not met'}
             return jsonify(response)
-
+        
+        if not re.match(phone_number,mobile):
+            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Mobile number must be exactly 10 digits long and should only contain numeric characters.'}
+            return jsonify(response)
+       
+        if not re.match(phone_number,businessMobile):
+            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Mobile number must be exactly 10 digits long and should only contain numeric characters.'}
+            return jsonify(response)
+                    
+        print("Business Name:", businessType)
+        if not re.match(r'^(resto|shop)', businessType):
+            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'businessName requirement not met'}
+            return jsonify(response)
+            
         # Hash the password
         userpassword = hashlib.sha256(password.encode()).hexdigest()
 
@@ -127,15 +140,15 @@ def register_step1():
 
             if businessType == "shop":
                 user.shopBundle = shop_data
-                response = jwt.encode({'bundle': shop_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
+                # response = jwt.encode({'bundle': shop_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
             elif businessType == "resto":
                 user.restoBundle = [resto_data]  # Wrap resto_data in a list
-                response = jwt.encode({'bundle': resto_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
+                # response = jwt.encode({'bundle': resto_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
 
         # Save the user to the database
         user.save()
 
-        response = {"Body": response, "status": "success", "statusCode": 200, "message": 'Registration successful'}
+        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Registration successful'}
         return jsonify(response), 200
 
     except Exception as e:
@@ -356,8 +369,17 @@ def login():
                 # Check if a bundle is stored for the user
                 if user.restoBundle:
                     encoded_bundle_data = jwt.encode({'bundle': user.restoBundle}, current_app.config['SECRET_KEY'], algorithm='HS256')
-                    return jsonify({'Body': encoded_bundle_data,
-                                    'message': 'Login successful', 'access_token': token, 'status_code': 200})
+                                        # Prepare the response with the updated user details
+                    updated_user_details = {
+                        "bundle": encoded_bundle_data,
+                        # "updated_master_details": updated_master,
+                        "statusCode": 200,
+                        # Include other relevant user details here
+                    }
+              
+              
+                    return jsonify({'Body': updated_user_details,
+                                    'message': 'Login successful', 'access_token': token})
                 else:
                     return jsonify({'message': 'Login successful', 'access_token': token, 'status_code': 200})
 
