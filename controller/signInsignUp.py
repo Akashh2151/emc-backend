@@ -113,7 +113,7 @@ def register_step1():
                     
         print("Business Name:", businessType)
         if not re.match(r'^(resto|shop)', businessType):
-            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'businessName requirement not met'}
+            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'businessType requirement not met'}
             return jsonify(response)
             
         # Hash the password
@@ -370,18 +370,25 @@ def login():
                 if user.restoBundle:
                     encoded_bundle_data = jwt.encode({'bundle': user.restoBundle}, current_app.config['SECRET_KEY'], algorithm='HS256')
                                         # Prepare the response with the updated user details
+                  
+       
+                    updated_user_detail = str(user.name)
+                                        # Include other relevant user details here
+                                    
                     updated_user_details = {
                         "bundle": encoded_bundle_data,
+                         "name": updated_user_detail
                         # "updated_master_details": updated_master,
-                        "statusCode": 200,
+                        # "userName":userName
+                         
                         # Include other relevant user details here
                     }
               
               
                     return jsonify({'Body': updated_user_details,
-                                    'message': 'Login successful', 'access_token': token})
+                                    'message': 'Login successfully', 'access_token': token,"statusCode": 200,})
                 else:
-                    return jsonify({'message': 'Login successful', 'access_token': token, 'status_code': 200})
+                    return jsonify({'message': 'Login successfully', 'access_token': token, 'statusCode': 200})
 
             else:
                 return jsonify({'error': 'Incorrect password'}), 401
