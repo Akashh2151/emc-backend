@@ -96,7 +96,7 @@ def register_step1():
         
         # Validate password and email format
         if not re.match(password_regex, password):
-            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Password must be at least 8 characters long'}
+            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Password must be at least 8 to 16 characters long'}
             return jsonify(response)
 
         if not re.match(email_regex, email):

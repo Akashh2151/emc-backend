@@ -39,6 +39,10 @@ jwt = JWTManager(app)
 CORS(app)
 CORS(app, origins=['http://localhost:3000', 'https://my-digital-ocean-app.com'])
 
+
+# Enable CORS for all routes with wildcard *
+# CORS(app, origins='*')
+
  
 
 @app.route('/')
