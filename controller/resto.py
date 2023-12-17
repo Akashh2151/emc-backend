@@ -1,7 +1,8 @@
 # import datetime
 from json import JSONEncoder
+# from msilib import Table
 from flask import Blueprint, app, request, jsonify 
-from model.resto_model import   CustomerMaster, EmployeeMaster, History, Item, ItemMaster, Order, TaxMaster, Verification 
+from model.resto_model import   CustomerMaster, EmployeeMaster, History, Item,Table, ItemMaster, Order, TaxMaster, Verification 
 from mongoengine.errors import DoesNotExist
 
 from datetime import datetime
@@ -715,29 +716,31 @@ def delete_item(item_code):
 
  
 
-# @app.route('/table',methods=['POST'])
-# def tables():
-#     data=request.json()
-#     tableCode=data.get('tableCode')
-#     tableName=data.get('tableName')
-#     tableStatus=data.get('tableStatus')
-#     tablePlacement=data.get('tablePlacement')
-#     tableQR=data.get('tableQR')
+@restoapp.route('/v1/table',methods=['POST'])
+def tables():
+    data=request.json
+    tableCode=data.get('tableCode')
+    tableName=data.get('tableName')
+    tableStatus=data.get('tableStatus')
+    tablePlacement=data.get('tablePlacement')
+    tableQR=data.get('tableQR')
     
-#     if not tableCode or not tableName or not tableStatus or not tablePlacement or not tableQR:
-#         response={'Body':None,"statusCode":400,'status':'error','message':'All filds are required'}
-#         return jsonify(response)
-    
-    
-#     tablesData=Table(tableCode=tableCode,tableName=tableName,tableStatus=tableStatus,tablePlacement=tablePlacement,tableQR=tableQR)
+    if not tableCode or not tableName or not tableStatus or not tablePlacement or not tableQR:
+        response={'Body':None,"statusCode":400,'status':'error','message':'All filds are required'}
+        return jsonify(response)
     
     
-#     tablesData.save()
-    
-#     response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Table '}
-#     return jsonify(response)
+    tablesData=Table(tableCode=tableCode,tableName=tableName,tableStatus=tableStatus,tablePlacement=tablePlacement,tableQR=tableQR)
     
     
+    tablesData.save()
+    
+    response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Table '}
+    return jsonify(response)
+    
+    
+    
+
     
 
 

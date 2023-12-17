@@ -59,7 +59,7 @@ signUp_bp = Blueprint('signUp', __name__)
 # )
 
 
-@signUp_bp.route('/register', methods=['POST'])
+@signUp_bp.route('/v1/register', methods=['POST'])
 def register_step1():
     try:
         data = request.json
@@ -136,19 +136,19 @@ def register_step1():
         if businessType == "resto" or businessType == "shop":
             # Remove existing bundles if present
             user.shopBundle = []
-            user.restoBundle = []
+            user.bundle = []
 
             if businessType == "shop":
                 user.shopBundle = shop_data
                 # response = jwt.encode({'bundle': shop_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
             elif businessType == "resto":
-                user.restoBundle = [resto_data]  # Wrap resto_data in a list
+                user.bundle = [resto_data]  # Wrap resto_data in a list
                 # response = jwt.encode({'bundle': resto_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
 
         # Save the user to the database
         user.save()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Registration successfully'}
+        response = {"Body": {}, "status": "success", "statusCode": 200, "message": 'Registration successfully'}
         return jsonify(response), 200
 
     except Exception as e:
@@ -255,13 +255,13 @@ def register_step1():
 #             # Remove existing bundles if present
 #             # Remove existing bundles if present
 #             user.shopBundle = []
-#             user.restoBundle = []
+#             user.Bundle = []
 
 #             if businessType == "shop":
 #                 user.shopBundle = shop_data
 #                 response = jwt.encode({'bundle': shop_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
 #             elif businessType == "resto":
-#                 user.restoBundle = [resto_data]  # Wrap resto_data in a list
+#                 user.Bundle = [resto_data]  # Wrap resto_data in a list
 #                 response = jwt.encode({'bundle': resto_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
 #         # Save the updated user to the database
 #         user.save()
@@ -336,7 +336,7 @@ login_bp = Blueprint('login', __name__)
 
 
 # login route
-@login_bp.route('/login', methods=['POST'])
+@login_bp.route('/v1/login', methods=['POST'])
 def login():
     try:
         data = request.json
@@ -367,8 +367,8 @@ def login():
                 
 
                 # Check if a bundle is stored for the user
-                if user.restoBundle:
-                    encoded_bundle_data = jwt.encode({'bundle': user.restoBundle}, current_app.config['SECRET_KEY'], algorithm='HS256')
+                if user.bundle:
+                    encoded_bundle_data = jwt.encode({'bundle': user.bundle}, current_app.config['SECRET_KEY'], algorithm='HS256')
                                         # Prepare the response with the updated user details
                   
        

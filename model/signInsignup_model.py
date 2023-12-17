@@ -32,4 +32,4 @@ class User(Document):
     businessEmail = EmailField(unique=True, required=True)  # Unique businessEmail field
     businessAddress = StringField(max_length=100)
     businessType = StringField(max_length=100)
-    restoBundle = ListField(DynamicField())
+    bundle = ListField(DynamicField())
