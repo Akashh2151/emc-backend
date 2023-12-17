@@ -345,7 +345,7 @@ def login():
 
         # Validate the presence of 'email' and 'password'
         if email is None or password is None:
-            return jsonify({'error': 'Email and password are required', 'status_code': 400}), 400
+            return jsonify({'Body': {},"status": "error",'message': 'Email and password are required', 'statusCode': 401}), 200
 
         # Find the user by email
         user = User.objects(email=email).first()
@@ -386,12 +386,12 @@ def login():
               
               
                     return jsonify({'Body': updated_user_details,
-                                    'message': 'Login successfully', 'access_token': token,"statusCode": 200,})
+                                    'message': 'Login successfully',"status": "success", 'access_token': token,"statusCode": 200,}),200
                 else:
-                    return jsonify({'message': 'Login successfully', 'access_token': token, 'statusCode': 200})
+                    return jsonify({'Body':{},'message': 'Login successfully', 'access_token': token, 'statusCode': 200}),200
 
             else:
-                return jsonify({'error': 'Incorrect password'}), 401
+                return jsonify({'Body':{},'message': 'Incorrect password','statusCode': 401,"status": "error"}), 200
 
         return jsonify({'Body': {},'message': 'Invalid email or password',"status": "error", 'statusCode': 401,}), 200
 
