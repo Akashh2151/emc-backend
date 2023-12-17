@@ -76,7 +76,7 @@ def register_step1():
         # Check if the email or mobile is already registered
         if User.objects(email=email).first() or User.objects(mobile=mobile).first():
             response = {"Body": None, "status": "error", "statusCode": 403, "message": 'Email or mobile is already registered'}
-            return jsonify(response), 200
+            return jsonify(response),200
         
                 # Check if the business email is already registered
         if User.objects(businessEmail=businessEmail).first():
@@ -110,7 +110,7 @@ def register_step1():
         if not re.match(phone_number,businessMobile):
             response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Mobile number must be exactly 10 digits long and should only contain numeric characters.'}
             return jsonify(response)
-                    
+                    # password mast be atalet 8 to charater
         print("Business Name:", businessType)
         if not re.match(r'^(resto|shop)', businessType):
             response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'businessType requirement not met'}
