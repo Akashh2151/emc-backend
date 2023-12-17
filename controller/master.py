@@ -1,7 +1,7 @@
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from model.signInsignup_model import User
-from security.mastervalidation import validate_unauthorized_access,validate_user_found,validate_no_blank_spaces,validate_no_blank_space_keys_dict,validate_no_blank_space_values,validate_status_not_default,validate_is_active_boolean
+from security.masterValidation import validate_unauthorized_access,validate_user_found,validate_no_blank_spaces,validate_no_blank_space_keys_dict,validate_no_blank_space_values,validate_status_not_default,validate_is_active_boolean
 
 
 master=Blueprint('master',__name__)

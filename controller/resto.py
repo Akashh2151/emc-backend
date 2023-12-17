@@ -522,6 +522,8 @@ def item():
         current_stock = data.get('currentStock')
         barcode = data.get('barcode')
         custom_notes = data.get('customNotes')
+        
+        
 
         # Create a list of History objects from the provided salesHistory data
         sales_history_data = data.get('salesHistory', [])
@@ -559,6 +561,7 @@ def item():
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
 
 
 

@@ -393,7 +393,7 @@ def login():
             else:
                 return jsonify({'error': 'Incorrect password'}), 401
 
-        return jsonify({'error': 'Invalid email or password'}), 401
+        return jsonify({'Body': {},'message': 'Invalid email or password',"status": "error", 'statusCode': 401,}), 200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
