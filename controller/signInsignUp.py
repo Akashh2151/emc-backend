@@ -76,17 +76,17 @@ def register_step1():
         # Check if the email or mobile is already registered
         if User.objects(email=email).first() or User.objects(mobile=mobile).first():
             response = {"Body": None, "status": "error", "statusCode": 403, "message": 'Email or mobile is already registered'}
-            return jsonify(response), 403
+            return jsonify(response), 200
         
                 # Check if the business email is already registered
         if User.objects(businessEmail=businessEmail).first():
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Business email is already registered'}
-            return jsonify(response), 400
+            return jsonify(response), 200
 
         # Check if the business email or business mobile is already registered
         if User.objects(businessMobile=businessMobile).first():
             response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Business mobile is already registered'}
-            return jsonify(response), 400
+            return jsonify(response), 200
 
         # Validate required fields
         required_fields = [name, email, password, mobile, businessName, businessMobile, businessType, businessEmail, businessAddress]
@@ -397,6 +397,7 @@ def login():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 
     
