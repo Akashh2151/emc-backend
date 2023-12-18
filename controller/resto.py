@@ -502,6 +502,7 @@ def delete_employee(employee_id):
 
 # __
 
+
 @restoapp.route('/item', methods=['POST'])
 def item():
     try:
@@ -523,8 +524,6 @@ def item():
         barcode = data.get('barcode')
         custom_notes = data.get('customNotes')
         
-        
-
         # Create a list of History objects from the provided salesHistory data
         sales_history_data = data.get('salesHistory', [])
         sales_history = [
@@ -561,6 +560,8 @@ def item():
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
 
 
 
@@ -714,6 +715,8 @@ def delete_item(item_code):
         return jsonify({'Body': None, 'error': 'Item not found', 'statusCode': 404})
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
 
 
 
