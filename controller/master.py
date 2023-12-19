@@ -79,7 +79,7 @@ def update_master_details():
                     update_is_active(sub_item, name, new_is_active)
 
         # Iterate through each category and update isActive based on name
-        for category in user.restoBundle[0]['categories']:
+        for category in user.bundle[0]['categories']:
             for subcategory in category.get("subcategories", []):
                 update_is_active(subcategory, updated_master['name'], updated_master['isActive'])
 
@@ -100,12 +100,12 @@ def update_master_details():
             # Include other relevant user details here
         }
 
-        response = {"Body": updated_user_details, "status": "success", "statusCode": 200, "message": 'master details updated successfully'}
+        response = {"body": updated_user_details, "status": "success", "statusCode": 200, "message": 'master details updated successfully'}
         return jsonify(response), 200
 
 
     except Exception as e:
-        response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
+        response = {"body": None, "status": "error", "statusCode": 500, "message": str(e)}
         return jsonify(response), 500
 
 

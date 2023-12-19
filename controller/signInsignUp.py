@@ -75,45 +75,45 @@ def register_step1():
 
         # Check if the email or mobile is already registered
         if User.objects(email=email).first() or User.objects(mobile=mobile).first():
-            response = {"Body": None, "status": "error", "statusCode": 403, "message": 'Email or mobile is already registered'}
+            response = {"body": None, "status": "error", "statusCode": 403, "message": 'Email or mobile is already registered'}
             return jsonify(response),200
         
                 # Check if the business email is already registered
         if User.objects(businessEmail=businessEmail).first():
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Business email is already registered'}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": 'Business email is already registered'}
             return jsonify(response), 200
 
         # Check if the business email or business mobile is already registered
         if User.objects(businessMobile=businessMobile).first():
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'Business mobile is already registered'}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": 'Business mobile is already registered'}
             return jsonify(response), 200
 
         # Validate required fields
         required_fields = [name, email, password, mobile, businessName, businessMobile, businessType, businessEmail, businessAddress]
         if not all(required_fields):
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'All required fields must be provided'}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": 'All required fields must be provided'}
             return jsonify(response), 400
         
         # Validate password and email format
         if not re.match(password_regex, password):
-            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Password must be at least 8 to 16 characters long'}
+            response = {'body': None, 'status': 'error', 'statusCode': 422, 'message': 'Password must be at least 8 to 16 characters long'}
             return jsonify(response)
 
         if not re.match(email_regex, email):
-            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Email requirement not met'}
+            response = {'body': None, 'status': 'error', 'statusCode': 422, 'message': 'Email requirement not met'}
             return jsonify(response)
         
         if not re.match(phone_number,mobile):
-            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Mobile number must be exactly 10 digits long and should only contain numeric characters.'}
+            response = {'body': None, 'status': 'error', 'statusCode': 422, 'message': 'Mobile number must be exactly 10 digits long and should only contain numeric characters.'}
             return jsonify(response)
        
         if not re.match(phone_number,businessMobile):
-            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'Mobile number must be exactly 10 digits long and should only contain numeric characters.'}
+            response = {'body': None, 'status': 'error', 'statusCode': 422, 'message': 'Mobile number must be exactly 10 digits long and should only contain numeric characters.'}
             return jsonify(response)
                     # password mast be atalet 8 to charater
         print("Business Name:", businessType)
         if not re.match(r'^(resto|shop)', businessType):
-            response = {'Body': None, 'status': 'error', 'statusCode': 422, 'message': 'businessType requirement not met'}
+            response = {'body': None, 'status': 'error', 'statusCode': 422, 'message': 'businessType requirement not met'}
             return jsonify(response)
             
         # Hash the password
@@ -148,11 +148,11 @@ def register_step1():
         # Save the user to the database
         user.save()
 
-        response = {"Body": {}, "status": "success", "statusCode": 200, "message": 'Registration successfully'}
+        response = {"body": {}, "status": "success", "statusCode": 200, "message": 'Registration successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        response = {"Body": None, "status": "error", "statusCode": 500, "message": str(e)}
+        response = {"body": None, "status": "error", "statusCode": 500, "message": str(e)}
         return jsonify(response), 500
 
 
@@ -345,7 +345,7 @@ def login():
 
         # Validate the presence of 'email' and 'password'
         if email is None or password is None:
-            return jsonify({'Body': {},"status": "error",'message': 'Email and password are required', 'statusCode': 401}), 200
+            return jsonify({'body': {},"status": "error",'message': 'Email and password are required', 'statusCode': 401}), 200
 
         # Find the user by email
         user = User.objects(email=email).first()
@@ -385,15 +385,15 @@ def login():
                     }
               
               
-                    return jsonify({'Body': updated_user_details,
+                    return jsonify({'body': updated_user_details,
                                     'message': 'Login successfully',"status": "success", 'access_token': token,"statusCode": 200,}),200
                 else:
-                    return jsonify({'Body':{},'message': 'Login successfully', 'access_token': token, 'statusCode': 200}),200
+                    return jsonify({'body':{},'message': 'Login successfully', 'access_token': token, 'statusCode': 200}),200
 
             else:
-                return jsonify({'Body':{},'message': 'Incorrect password','statusCode': 401,"status": "error"}), 200
+                return jsonify({'body':{},'message': 'Incorrect password','statusCode': 401,"status": "error"}), 200
 
-        return jsonify({'Body': {},'message': 'Invalid email or password',"status": "error", 'statusCode': 401,}), 200
+        return jsonify({'body': {},'message': 'Invalid email or password',"status": "error", 'statusCode': 401,}), 200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
