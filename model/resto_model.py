@@ -1,10 +1,12 @@
 from attr import validate
 from mongoengine import Document, StringField, EmailField,ListField,DecimalField,DateTimeField,IntField,URLField,EmbeddedDocumentField,EmbeddedDocument,FloatField
 # from pydantic import ValidationError
+# from pydantic import ValidationError
 from pymongo import MongoClient
 
  
 from mongoengine import connect
+from wtforms import ValidationError
 # Replace the values with your MongoDB URI and other settings
 db_uri = "mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority"
 connect(host=db_uri, db="emc_project2151")
@@ -13,7 +15,13 @@ connect(host=db_uri, db="emc_project2151")
 
 
 
-
+def validate_non_empty(value):
+    if isinstance(value, (str,)):
+        if not value.strip():
+            raise ValidationError("Field cannot be empty.")
+    elif isinstance(value, (int, float)):
+        # You can customize this part based on your requirements for numeric fields
+        pass
 
 class Order(Document):
     vendorCode = StringField(required=True, unique=True)
@@ -76,8 +84,8 @@ class Item(Document):
     itemCode = StringField(required=True, unique=True)
     itemName = StringField(required=True)
     itemCategory = StringField()
-    itemSubCategory = StringField()
-    itemPrice = DecimalField(precision=2)
+    itemSubCategory = StringField(validation=validate_non_empty)
+    itemPrice = DecimalField(precision=2,required=True)
     ingredients = StringField()
     recipe = StringField()
     allergen = StringField()
