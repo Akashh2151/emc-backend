@@ -92,29 +92,29 @@ def register_step1():
         required_fields = [name, email, password, mobile, businessName, businessMobile, businessType, businessEmail, businessAddress]
         if not all(required_fields):
             response = {"body": None, "status": "error", "statusCode": 400, "message": 'All required fields must be provided'}
-            return jsonify(response), 400
+            return jsonify(response), 200
         
         # Validate password and email format
         if not re.match(password_regex, password):
             response = {'body': None, 'status': 'error', 'statusCode': 422, 'message': 'Password must be at least 8 to 16 characters long'}
-            return jsonify(response)
+            return jsonify(response),200
 
         if not re.match(email_regex, email):
             response = {'body': None, 'status': 'error', 'statusCode': 422, 'message': 'Email requirement not met'}
-            return jsonify(response)
+            return jsonify(response),200
         
         if not re.match(phone_number,mobile):
             response = {'body': None, 'status': 'error', 'statusCode': 422, 'message': 'Mobile number must be exactly 10 digits long and should only contain numeric characters.'}
-            return jsonify(response)
+            return jsonify(response),200
        
         if not re.match(phone_number,businessMobile):
             response = {'body': None, 'status': 'error', 'statusCode': 422, 'message': 'Mobile number must be exactly 10 digits long and should only contain numeric characters.'}
-            return jsonify(response)
+            return jsonify(response),200
                     # password mast be atalet 8 to charater
         print("Business Name:", businessType)
         if not re.match(r'^(resto|shop)', businessType):
             response = {'body': None, 'status': 'error', 'statusCode': 422, 'message': 'businessType requirement not met'}
-            return jsonify(response)
+            return jsonify(response),200
             
         # Hash the password
         userpassword = hashlib.sha256(password.encode()).hexdigest()
