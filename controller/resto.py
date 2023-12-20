@@ -575,6 +575,7 @@ def get_all_items():
     try:
         items = Item.objects()
         firstiteam=items.first()
+        print("____________________",firstiteam)
        
         if  firstiteam:
            response_item={
@@ -707,8 +708,6 @@ def update_items(item_code):
 
  
  
- 
-
 
 
 

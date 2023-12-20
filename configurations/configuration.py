@@ -2,7 +2,7 @@
 
 
 import json
-
+shop_data=[]
 
 resto_data = {
       "type": "resto",

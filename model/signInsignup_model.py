@@ -33,3 +33,5 @@ class User(Document):
     businessAddress = StringField(max_length=100)
     businessType = StringField(max_length=100)
     bundle = ListField(DynamicField())
+    
+    
