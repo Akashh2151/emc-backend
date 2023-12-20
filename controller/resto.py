@@ -1,5 +1,6 @@
 # import datetime
 from json import JSONEncoder
+from pymongo.errors import DuplicateKeyError
 # from msilib import Table
 from flask import Blueprint, app, request, jsonify 
 from model.resto_model import   CustomerMaster, EmployeeMaster, History, Item,Table, ItemMaster, Order, TaxMaster, Verification 
@@ -502,64 +503,65 @@ def delete_employee(employee_id):
 
 # __
 
-
 @restoapp.route('/item', methods=['POST'])
 def item():
     try:
         data = request.json
         item_code = data.get('itemCode')
         item_name = data.get('itemName')
-        item_category = data.get('itemCategory')
-        item_sub_category = data.get('itemSubCategory')
         item_price = data.get('itemPrice')
-        ingredients = data.get('ingredients')
-        recipe = data.get('recipe')
-        allergen = data.get('allergen')
-        portion_size = data.get('portionSize')
-        status = data.get('status')
-        tax = data.get('tax')
-        discount = data.get('discount')
-        images = data.get('images')
-        current_stock = data.get('currentStock')
-        barcode = data.get('barcode')
-        custom_notes = data.get('customNotes')
-        
-        # Create a list of History objects from the provided salesHistory data
-        sales_history_data = data.get('salesHistory', [])
-        sales_history = [
-            History(date=datetime.strptime(entry['date'], '%Y-%m-%dT%H:%M:%S.%fZ'), action=entry['action'])
-            for entry in sales_history_data
-        ]
+        print(item_code)
+        print(item_name)
+        print(item_price)
 
+        # Check if the required fields are provided
+        if item_code is None or item_name is None or item_price is None:
+            return jsonify({'Body': None, "status": "error", 'message': 'itemCode, itemName, and itemPrice are required fields.', 'statuscode': 400}),200
+
+        existing_item = Item.objects(itemCode=item_code).first()
+        if existing_item:
+              return jsonify({'Body': None, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statuscode': 400}),200
+        # iteamCode=Item.objects.get(item_code=item_code)
+        # print("______________________________________",iteamCode)
         # Create the Item object with the extracted data
         new_item = Item(
             itemCode=item_code,
             itemName=item_name,
-            itemCategory=item_category,
-            itemSubCategory=item_sub_category,
             itemPrice=item_price,
-            ingredients=ingredients,
-            recipe=recipe,
-            allergen=allergen,
-            portionSize=portion_size,
-            status=status,
-            tax=tax,
-            discount=discount,
-            images=images,
-            currentStock=current_stock,
-            barcode=barcode,
-            salesHistory=sales_history,
-            customNotes=custom_notes
-        )
+            # Set other fields to default values if not provided
+            itemCategory=data.get('itemCategory', None),
+            itemSubCategory=data.get('itemSubCategory', None),
+            ingredients=data.get('ingredients', None),
+            recipe=data.get('recipe', None),
+            allergen=data.get('allergen', None),
+            portionSize=data.get('portionSize', None),
+            status=data.get('status', None),
+            tax=data.get('tax', None),
+            discount=data.get('discount', None),
+            images=data.get('images', None),
+            currentStock=data.get('currentStock', None),    
+            barcode=data.get('barcode', None),
+            # Assuming salesHistory is a list of dictionaries with 'date' and 'action' keys
+            salesHistory=[
+                History(date=datetime.strptime(entry['date'], '%Y-%m-%dT%H:%M:%S.%fZ'), action=entry['action'])
+                for entry in data.get('salesHistory', [])
+            ],
+            customNotes=data.get('customNotes', None)
+             )
 
         # Save the new item
         new_item.save()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item created'}
+        response = {"Body": None, "status": "success", "statuscode": 200, "message": 'Item created successfully'},200
         return jsonify(response)
+    
+    # except DuplicateKeyError:
+    #     # Handle duplicate key error
+    #     return jsonify({'Body': None, 'error': 'Item with the provided itemCode already exists.', 'statusCode': 400})
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
 
 
 
@@ -572,8 +574,10 @@ def item():
 def get_all_items():
     try:
         items = Item.objects()
-        items_list = [
-            {
+        firstiteam=items.first()
+       
+        if  firstiteam:
+           response_item={
                 "itemCode": item.itemCode,
                 "itemName": item.itemName,
                 "itemCategory": item.itemCategory,
@@ -592,16 +596,16 @@ def get_all_items():
                 "salesHistory": [{"date": entry.date, "action": entry.action} for entry in item.salesHistory],
                 "customNotes": item.customNotes
             }
-            for item in items
-        ]
-
-        response = {'Body': items_list, 'status': 'success', 'statusCode': 200, 'message': 'Items retrieved'}
-        return jsonify(response)
+          
+        response = {'Body': response_item, 'status': 'success', 'statuscode': 200, 'message': 'Items retrieved  successfully'}
+        return jsonify(response),200
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
     
     
+
+
     
  # Get a specific item by itemCode
 @restoapp.route('/item/<item_code>', methods=['GET'])
@@ -632,7 +636,7 @@ def get_byitemcode(item_code):
             "customNotes": item.customNotes
         }
 
-        response = {'Body': item_data, 'status': 'success', 'statusCode': 200, 'message': 'Item retrieved'}
+        response = {'Body': item_data, 'status': 'success', 'statusCode': 200, 'message': 'Item retrieved successfully'}
         return jsonify(response)
 
     except Item.DoesNotExist:
@@ -684,14 +688,22 @@ def update_items(item_code):
 
         # Save the updated item
         item.save()
+        
+        userid=str(item.id)
+        updatediteamdetail=request.json
+        
+        res={
+            "_id":userid,
+            "updateDetails":updatediteamdetail
+        }
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item updated'}
-        return jsonify(response)
+        response = {"Body": res, "status": "success", "statusCode": 200, "message": 'Item updated successfully'}
+        return jsonify(response),200
     
     except DoesNotExist:
-        return jsonify({'Body': None, 'error': 'Item not found', 'statusCode': 404})
+        return jsonify({'Body': {}, 'error': 'Item not found', 'statusCode': 404})
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'Body': {}, 'error': str(e), 'statusCode': 500})
 
  
  
@@ -708,13 +720,13 @@ def delete_item(item_code):
         item = Item.objects.get(itemCode=item_code)
         item.delete()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item deleted'}
+        response = {"Body": {}, "status": "success", "statuscode": 200, "message": 'Item deleted successfully'}
         return jsonify(response)
 
     except DoesNotExist:
-        return jsonify({'Body': None, 'error': 'Item not found', 'statusCode': 404})
+        return jsonify({'Body': {}, 'error': 'Item not found', 'statuscode': 404})
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'Body': {}, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -722,27 +734,27 @@ def delete_item(item_code):
 
  
 
-@restoapp.route('/v1/table',methods=['POST'])
-def tables():
-    data=request.json
-    tableCode=data.get('tableCode')
-    tableName=data.get('tableName')
-    tableStatus=data.get('tableStatus')
-    tablePlacement=data.get('tablePlacement')
-    tableQR=data.get('tableQR')
+# @restoapp.route('/v1/table',methods=['POST'])
+# def tables():
+#     data=request.json
+#     tableCode=data.get('tableCode')
+#     tableName=data.get('tableName')
+#     tableStatus=data.get('tableStatus')
+#     tablePlacement=data.get('tablePlacement')
+#     tableQR=data.get('tableQR')
     
-    if not tableCode or not tableName or not tableStatus or not tablePlacement or not tableQR:
-        response={'Body':None,"statusCode":400,'status':'error','message':'All filds are required'}
-        return jsonify(response)
-    
-    
-    tablesData=Table(tableCode=tableCode,tableName=tableName,tableStatus=tableStatus,tablePlacement=tablePlacement,tableQR=tableQR)
+#     if not tableCode or not tableName or not tableStatus or not tablePlacement or not tableQR:
+#         response={'Body':None,"statusCode":400,'status':'error','message':'All filds are required'}
+#         return jsonify(response)
     
     
-    tablesData.save()
+#     tablesData=Table(tableCode=tableCode,tableName=tableName,tableStatus=tableStatus,tablePlacement=tablePlacement,tableQR=tableQR)
     
-    response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Table '}
-    return jsonify(response)
+    
+#     tablesData.save()
+    
+#     response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Table '}
+#     return jsonify(response)
     
     
     

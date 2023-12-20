@@ -1,333 +1,9 @@
 
 
-shop_data =  [
-    {
 
-     "masters": [
-                    {
-                        "menuMaster": [
-                            {
-                                "showName": "Masters",
-                                "path": "/masters",
-                                "subMenu": [
-                                    {
-                                        "showName": "General Master",
-                                        "connectedTo": "generalMaster",
-                                        "path": "/masters/general"
-                                    },
-                                    {
-                                        "showName": "Food Master",
-                                        "connectedTo": "itemMaster",
-                                        "path": "/masters/foods"
-                                    },
-                                    {
-                                        "showName": "Payments Master",
-                                        "connectedTo": "paymentMaster",
-                                        "path": "/masters/payments"
-                                    },
-                                    {
-                                        "showName": "Menu Master",
-                                        "connectedTo": "menuMaster",
-                                        "path": "/masters/menu"
-                                    }
-                                ]
-                            },
-                            {
-                                "showName": "Foods",
-                                "path": "/foods",
-                                "subMenu": [
-                                    {
-                                        "showName": "Manage Foods",
-                                        "path": "/foods/manage"
-                                    },
-                                    {
-                                        "showName": "Create",
-                                        "path": "/foods/create"
-                                    }
-                                ]
-                            },
-                            {
-                                "showName": "My Restaurant",
-                                "path": "/boards",
-                                "subMenu": [
-                                    {
-                                        "showName": "Sales",
-                                        "path": "/boards/sales"
-                                    },
-                                    {
-                                        "showName": "KOT",
-                                        "path": "/boards/kot"
-                                    }
-                                ]
-                            }
-                        ],
-                        "sellMaster": [
-                            {
-                                "showName": "Sells Master",
-                                "status": "Active/Inactive",
-                                "sellUnits": ["kg", "gm", "/pc"],
-                                "printers": ["Printer 1", "Printer 2"],
-                                "sellType": ["EndCustomer", "Retailer", "Wholesaler"]
-                            },
-                            {
-                                "showName": "Service Master",
-                                "status": "Active/Inactive",
-                                "sellUnits": ["/pc"],
-                                "printers": ["Printer 1", "Printer 2"],
-                                "sellType": ["EndCustomer", "Retailer", "Wholesaler"]
-                            }
-                        ],
-                        "generalMaster": [
-                            {
-                                "billId": {
-                                    "startString": "RESTO",
-                                    "endString": 1000
-                                }
-                            },
-                            {
-                                "language": "En"
-                            },
-                            {
-                                "theme": "dark/light/any color"
-                            },
-                            {
-                                "shopName": "Customer Defined Name"
-                            },
-                            {
-                                "sources": ["source 1 ", "source 2"]
-                            },
-                            {
-                                "shopAddress": "resto address which will be used while serving foods"
-                            },
-                            {
-                                "role": {
-                                    "title": "owner",
-                                    "accessTo": ["shop1", "shop2", "list of shops"]
-                                }
-                            },
-                            {
-                                "name": "Customers Full Name"
-                            },
-                            {
-                                "userPic": "path to user picture"
-                            },
-                            {
-                                "businessSummaryStatus": "active"
-                            },
-                            {
-                                "businessSummary": [
-                                    {
-                                        "businessURL": "/resto-name"
-                                    },
-                                    {
-                                        "businessName": "cusomers Resto Name"
-                                    },
-                                    {
-                                        "businessAddress": "cusomers Resto Name"
-                                    },
-                                    {
-                                        "businessMobile": ["9890980947", "9890980948"]
-                                    },
-                                    {
-                                        "businessEmail": "cusomers Email Id"
-                                    },
-                                    {
-                                        "businessDescription": "Long Text Added by customer about their resto"
-                                    }
-                                ]
-                            },
-                            {
-                                "orderTypes": {
-                                    "showName": "How You Serve Your Foods",
-                                    "properties": ["online", "parcel", "walkin", "dine"]
-                                }
-                            }
-                        ],
-                        "itemMaster": [
-                            {
-                                "category": [
-                                    {
-                                        "showName": "Food Category",
-                                        "accessTo": ["SUB CATEGORY 1", "SUB CATEGORY 2"]
-                                    }
-                                ]
-                            },
-                            {
-                                "subCategory": [
-                                    {
-                                        "showName": "Food Sub Category",
-                                        "properties": ["sub category 1 ", "sub category 2"]
-                                    }
-                                ]
-                            },
-                            {
-                                "taxIndividual": {
-                                    "showName": "Apply tax to indiviual food",
-                                    "properties": {
-                                        "status": "active",
-                                        "value": "false"
-                                    }
-                                }
-                            },
-                            {
-                                "barcode": {
-                                    "showName": "Add Barcode to foods",
-                                    "properties": {
-                                        "status": "active",
-                                        "value": "false"
-                                    }
-                                }
-                            },
-                            {
-                                "rackManagement": {
-                                    "showName": "Add rack management",
-                                    "properties": {
-                                        "status": "active",
-                                        "value": "false"
-                                    }
-                                }
-                            },
-                            {
-                                "deadStock": {
-                                    "showName": "Manage my dead stocks",
-                                    "properties": {
-                                        "status": "active",
-                                        "value": "false"
-                                    }
-                                }
-                            }
-                        ],
-                        "paymentMaster": [
-                            {
-                                "taxSlab": [
-                                    {
-                                        "showName": "Tax Slabs",
-                                        "properties": [
-                                            {
-                                                "slabName": "tax 18",
-                                                "slabValue": 18
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "banks": [
-                                    {
-                                        "showName": "Your Banks",
-                                        "properties": [
-                                            {
-                                                "name": "tax 18",
-                                                "branch": "SBI Karad",
-                                                "ifscCode": "esasdasd",
-                                                "accNumber": "asdasdasdads",
-                                                "startingBalance": 2000,
-                                                "currentBalance": 3000
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "paymentModes": [
-                                    {
-                                        "showName": "Your Payment Modes",
-                                        "properties": [
-                                            {
-                                                "name": "PhonePe ",
-                                                "bankAttahed": "SBI Karad"
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "subCategory": [
-                                    {
-                                        "showName": "Sub Category",
-                                        "properties": ["sub category 1 ", "sub category 2"]
-                                    }
-                                ]
-                            },
-                            {
-                                "taxIndividual": {
-                                    "showName": "Apply tax to indiviual item",
-                                    "properties": {
-                                        "status": "active",
-                                        "value": "false"
-                                    }
-                                }
-                            },
-                            {
-                                "barcode": {
-                                    "showName": "Add Barcode to items",
-                                    "properties": {
-                                        "status": "active",
-                                        "value": "false"
-                                    }
-                                }
-                            },
-                            {
-                                "rackManagement": {
-                                    "showName": "Add rack management",
-                                    "properties": {
-                                        "status": "active",
-                                        "value": "false"
-                                    }
-                                }
-                            },
-                            {
-                                "deadStock": {
-                                    "showName": "Manage my dead stocks",
-                                    "properties": {
-                                        "status": "active",
-                                        "value": "false"
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                ],
-                "invoices": [
-                    {
-                        "billId": "Number",
-                        "customer": "mongo ID",
-                        "billDate": "Date",
-                        "itemList": [
-                            {
-                                "itemName": "String",
-                                "itemMrp": "Number",
-                                "itemDisc": "Number",
-                                "itemDiscP": "Number",
-                                "itemPrice": "Number",
-                                "itemQty": "Number",
-                                "subTotal": "Number",
-                                "endUserRate": "Number",
-                                "retailerRate": "Number",
-                                "wholesalerRate": "Number"
-                            }
-                        ],
-                        "savings": "Number",
-                        "status": "String",
-                        "count": "Number",
-                        "orderType": "String",
-                        "taxedAmount": "Number",
-                        "taxedP": "Number",
-                        "discountedAmount": "Number",
-                        "discountedP": "Number",
-                        "grandTotal": "Number",
-                        "Credit": "Number",
-                        "paidAmount": "Number",
-                        "returnedAmount": "Number",
-                        "paidIn": "Number",
-                        "paymentMode": "String",
-                        "remarks": "String"
-                    }
-                ]
-            }
-        ]
+import json
 
-#  New resto data to be added
+
 resto_data = {
       "type": "resto",
       "name": "HR Resorts",
@@ -343,32 +19,32 @@ resto_data = {
           "icon": "Orders",
           "path": "/orders",
           "title": "Orders",
-          "isActive": "true",
-          "default": "true",
+          "isActive": True,
+          "default": True,
           "subcategories": [
             {
               "name": "Orders",
               "title": "Orders",
-              "isActive": "true",
+              "isActive": True,
               "subMenu": [
                 {
                   "name": "vendorCode",
                   "title": "Vendor Code",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Vendor Code"
                 },
                 {
                   "name": "vendorName",
                   "title": "Vendor Name",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Vendor Name"
                 },
                 {
                   "name": "vendorEmail",
                   "title": "Vendor Email",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "values": [],
                   "placeholder": "Enter Vendor Email"
@@ -376,7 +52,7 @@ resto_data = {
                 {
                   "name": "vendorMobile",
                   "title": "Vendor Mobile",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "values": ["Lawn", "Terrace"],
                   "placeholder": "Choose Vendor Location"
@@ -385,7 +61,7 @@ resto_data = {
                 {
                   "name": "vendorAddr",
                   "title": "Vendor Address",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Address"
                 }
@@ -398,26 +74,26 @@ resto_data = {
           "icon": "Masters",
           "path": "/masters",
           "title": "Masters",
-          "isActive": "true",
-          "default": "true",
+          "isActive": True,
+          "default": True,
           "subcategories": [
             {
               "name": "menuMaster",
               "title": "Menu",
-              "isActive": "true",
+              "isActive": True,
               "subMenu": []
             },
             {
               "name": "itemMaster",
               "title": "Items",
-              "isActive": "true",
+              "isActive": True,
               "subMenu": [
                 {
                   "name": "name",
                   "title": "Food Name",
                   "values": "",
                   "type": "Input",
-                  "isActive": "true",
+                  "isActive": True,
                   "status": "default"
                 },
                 {
@@ -425,7 +101,7 @@ resto_data = {
                   "title": "Food Description",
                   "values": "",
                   "type": "Input",
-                  "isActive": "true",
+                  "isActive": True,
                   "status": "custom"
                 },
                 {
@@ -433,7 +109,7 @@ resto_data = {
                   "title": "Units",
                   "type": "DropDown",
                   "values": ["Kg", "PC", "Unit"],
-                  "isActive": "true",
+                  "isActive": True,
                   "status": "default"
                 },
                 {
@@ -442,7 +118,7 @@ resto_data = {
                   "type": "Input",
                   "values": "INR",
                   "default": ["INR", "Dollar"],
-                  "isActive": "true",
+                  "isActive": True,
                   "status": "default"
                 },
                 {
@@ -451,7 +127,7 @@ resto_data = {
                   "type": "Input",
                   "values": "",
                   "default": ["Veg", "Non Veg"],
-                  "isActive": "true",
+                  "isActive": True,
                   "status": "custom"
                 },
                 {
@@ -472,7 +148,7 @@ resto_data = {
                       "values": ["Chinese", "Starters", "Main Course"]
                     }
                   ],
-                  "isActive": "true"
+                  "isActive": True
                 },
                 {
                   "name": "nutrition",
@@ -480,63 +156,63 @@ resto_data = {
                   "type": "Radio",
                   "values": "",
                   "status": "custom",
-                  "isActive": "false"
+                  "isActive": False
                 }
               ]
             },
             {
               "name": "taxMaster",
               "title": "Tax",
-              "isActive": "true",
+              "isActive": True,
               "subMenu": [
                 {
                   "name": "taxName",
                   "title": "Tax Name",
                   "type": "Input",
                   "values": "",
-                  "isActive": "true"
+                  "isActive": True
                 }
               ]
             },
             {
               "name": "customerMaster",
               "title": "Customers Master",
-              "isActive": "true",
+              "isActive": True,
               "subMenu": [
                 {
                   "name": "customerName",
                   "type": "Input",
                   "title": "Customer Name",
                   "values": "",
-                  "isActive": "true"
+                  "isActive": True
                 },
                 {
                   "name": "customerMobile",
                   "title": "Customer Mobile",
                   "type": "Input",
                   "values": "",
-                  "isActive": "true"
+                  "isActive": True
                 },
                 {
                   "name": "customerEmail",
                   "title": "Customer Email",
                   "type": "Input",
                   "values": "",
-                  "isActive": "true"
+                  "isActive": True
                 },
                 {
                   "name": "customerLastVisit",
                   "title": "Customer Last Visit",
                   "type": "Input",
                   "values": "Date",
-                  "isActive": "true"
+                  "isActive": True
                 },
                 {
                   "name": "customerAddr",
                   "title": "Customer Address",
                   "type": "Input",
                   "values": "Address String",
-                  "isActive": "true"
+                  "isActive": True
                 },
                 {
                   "name": "customerHistory",
@@ -549,42 +225,42 @@ resto_data = {
                       "lastAmount": "200"
                     }
                   ],
-                  "isActive": "true"
+                  "isActive": True
                 }
               ]
             },
             {
               "name": "employeeMaster",
               "title": "Employee Master",
-              "isActive": "true",
+              "isActive": True,
               "subMenu": [
                 {
                   "name": "employeeName",
                   "title": "Employee Name",
                   "type": "Input",
                   "values": "",
-                  "isActive": "true"
+                  "isActive": True
                 },
                 {
                   "name": "employeeMobile",
                   "title": "Employee Mobile",
                   "type": "Input",
                   "values": "",
-                  "isActive": "true"
+                  "isActive": True
                 },
                 {
                   "name": "employeeEmail",
                   "title": "Employee Email",
                   "type": "Input",
                   "values": "",
-                  "isActive": "true"
+                  "isActive": True
                 },
                 {
                   "name": "employeeAddr",
                   "title": "Employee Address",
                   "type": "Input",
                   "values": "Address String",
-                  "isActive": "true"
+                  "isActive": True
                 },
                 {
                   "name": "employeeHistory",
@@ -597,7 +273,7 @@ resto_data = {
                       "salary": 200
                     }
                   ],
-                  "isActive": "true"
+                  "isActive": True
                 },
                 {
                   "name": "employeeVerification",
@@ -609,7 +285,7 @@ resto_data = {
                       "proofDoc": "photo path"
                     }
                   ],
-                  "isActive": "true"
+                  "isActive": True
                 }
               ]
             }
@@ -620,32 +296,32 @@ resto_data = {
           "icon": "Items",
           "path": "/items",
           "title": "Foods",
-          "isActive": "true",
-          "default": "true",
+          "isActive": True,
+          "default": True,
           "subcategories": [
             {
               "name": "items",
               "title": "Items",
-              "isActive": "true",
+              "isActive": True,
               "subMenu": [
                 {
                   "name": "itemCode",
                   "title": "Food Code",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Food Code"
                 },
                 {
                   "name": "itemName",
                   "title": "Food Name",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Food Name"
                 },
                 {
                   "name": "itemCategory",
                   "title": "Food Category",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "DropDown",
                   "values": ["Naved", "Naik"],
                   "placeholder": "Choose Food Category"
@@ -653,7 +329,7 @@ resto_data = {
                 {
                   "name": "itemSubCategory",
                   "title": "Food Sub Category",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "DropDown",
                   "values": ["Naved", "Naik"],
                   "placeholder": "Choose Food Sub Category"
@@ -661,14 +337,14 @@ resto_data = {
                 {
                   "name": "itemPrice",
                   "title": "Food Price",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Food Price"
                 },
                 {
                   "name": "ingredients",
                   "title": "Ingredients",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "DropDown",
                   "values": ["category one", "category 2"],
                   "placeholder": "Enter Food Ingredients"
@@ -676,7 +352,7 @@ resto_data = {
                 {
                   "name": "recipe",
                   "title": "Food Recipe",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "DropDown",
                   "values": ["category one", "category 2"],
                   "placeholder": "Enter Food Recipe"
@@ -684,42 +360,42 @@ resto_data = {
                 {
                   "name": "allergen",
                   "title": "Allergen Information",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Something allergic to this food"
                 },
                 {
                   "name": "portionSize",
                   "title": "Portion Size",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "How Many It Can Serve"
                 },
                 {
                   "name": "status",
                   "title": "Status",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Is It Available"
                 },
                 {
                   "name": "tax",
                   "title": "Taxable",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Tax"
                 },
                 {
                   "name": "discount",
                   "title": "Discount",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Discount"
                 },
                 {
                   "name": "images",
                   "title": "Images",
-                  "isActive": "true",
+                  "isActive": True,
                   "value": [{}],
                   "type": "upload",
                   "placeholder": "Upload Pics"
@@ -727,27 +403,27 @@ resto_data = {
                 {
                   "name": "currentStock",
                   "title": "Current Stock",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Items in stock"
                 },
                 {
                   "name": "barcode",
                   "title": "Bar Code",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Barcode"
                 },
                 {
                   "name": "salesHistory",
                   "title": "Sales History",
-                  "isActive": "true",
+                  "isActive": True,
                   "value": [{}]
                 },
                 {
                   "name": "customNotes",
                   "title": "Notes",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter more details"
                 }
@@ -760,32 +436,32 @@ resto_data = {
           "icon": "Tables",
           "path": "/tables",
           "title": "Tables",
-          "isActive": "true",
-          "default": "true",
+          "isActive": True,
+          "default": True,
           "subcategories": [
             {
               "name": "tables",
               "title": "Tables",
-              "isActive": "true",
+              "isActive": True,
               "subMenu": [
                 {
                   "name": "tableCode",
                   "title": "Table Code",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Table Code"
                 },
                 {
                   "name": "tableName",
                   "title": "Table Name",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Table Name"
                 },
                 {
                   "name": "tableStatus",
                   "title": "Table Status",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "DropDown",
                   "values": ["Open", "Vaccant", "Closed", "Dirty"],
                   "placeholder": "Choose Table Status"
@@ -793,7 +469,7 @@ resto_data = {
                 {
                   "name": "tablePlacement",
                   "title": "Table Placement",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "DropDown",
                   "values": ["Lawn", "Terrace"],
                   "placeholder": "Choose Table Location"
@@ -802,7 +478,7 @@ resto_data = {
                 {
                   "name": "tableQR",
                   "title": "Table QR",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Table QR Code"
                 }
@@ -815,32 +491,32 @@ resto_data = {
           "icon": "Employees",
           "path": "/employees",
           "title": "Employees",
-          "isActive": "true",
-          "default": "true",
+          "isActive": True,
+          "default": True,
           "subcategories": [
             {
               "name": "employeea",
               "title": "Employees",
-              "isActive": "true",
+              "isActive": True,
               "subMenu": [
                 {
                   "name": "employeeCode",
                   "title": "Employee Code",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Employee Code"
                 },
                 {
                   "name": "employeeName",
                   "title": "Employee Name",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Employee Name"
                 },
                 {
                   "name": "employeeEmail",
                   "title": "Employee Email",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "values": [],
                   "placeholder": "Enter Employeee Email"
@@ -848,7 +524,7 @@ resto_data = {
                 {
                   "name": "employeeMobile",
                   "title": "Employee Mobile",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "values": ["Lawn", "Terrace"],
                   "placeholder": "Choose Table Location"
@@ -857,14 +533,14 @@ resto_data = {
                 {
                   "name": "employeeAddr",
                   "title": "Employee Address",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Address"
                 },
                 {
                   "name": "employeeVerify",
                   "title": "Employee Verification",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "upload",
                   "placeholder": "Choose ID Proofs"
                 }
@@ -877,32 +553,32 @@ resto_data = {
           "icon": "Vendors",
           "path": "/vendors",
           "title": "Vendors",
-          "isActive": "true",
-          "default": "true",
+          "isActive": True,
+          "default": True,
           "subcategories": [
             {
               "name": "vendors",
               "title": "Vendors",
-              "isActive": "true",
+              "isActive": True,
               "subMenu": [
                 {
                   "name": "vendorCode",
                   "title": "Vendor Code",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Vendor Code"
                 },
                 {
                   "name": "vendorName",
                   "title": "Vendor Name",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Vendor Name"
                 },
                 {
                   "name": "vendorEmail",
                   "title": "Vendor Email",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "values": [],
                   "placeholder": "Enter Vendor Email"
@@ -910,7 +586,7 @@ resto_data = {
                 {
                   "name": "vendorMobile",
                   "title": "Vendor Mobile",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "values": ["Lawn", "Terrace"],
                   "placeholder": "Choose Vendor Location"
@@ -919,7 +595,7 @@ resto_data = {
                 {
                   "name": "vendorAddr",
                   "title": "Vendor Address",
-                  "isActive": "true",
+                  "isActive": True,
                   "type": "text",
                   "placeholder": "Enter Address"
                 }
@@ -931,5 +607,5 @@ resto_data = {
     }
     
 
-
-
+# Convert JSON to Python dictionary
+# resto_dict = json.loads(json.dumps(resto_data))
