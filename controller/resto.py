@@ -505,7 +505,7 @@ def delete_employee(employee_id):
 
 # __
 
-@restoapp.route('/item', methods=['POST'])
+@restoapp.route('/v1/item', methods=['POST'])
 def item():
     try:
         data = request.json
@@ -578,7 +578,7 @@ def item():
 
 
 # Get all items
-@restoapp.route('/item', methods=['GET'])
+@restoapp.route('/v1/item', methods=['GET'])
 def get_all_items():
     try:
         items = Item.objects()
@@ -625,7 +625,7 @@ def get_all_items():
 
     
  # Get a specific item by itemCode
-@restoapp.route('/item/<item_code>', methods=['GET'])
+@restoapp.route('/v1/item/<item_code>', methods=['GET'])
 def get_byitemcode(item_code):
     try:
         print(f"Attempting to find item with code: {item_code}")
@@ -673,7 +673,7 @@ from flask import jsonify
 
 # Assuming you have the rest of the necessary imports and setup
 
-@restoapp.route('/item/<item_code>', methods=['PUT'])
+@restoapp.route('/v1/item/<item_code>', methods=['PUT'])
 def update_items(item_code):
     try:
         data = request.json
@@ -735,7 +735,7 @@ def update_items(item_code):
 
 
 # Delete an item by itemCode
-@restoapp.route('/item/<item_code>', methods=['DELETE'])
+@restoapp.route('/v1/item/<item_code>', methods=['DELETE'])
 # @restoapp.route('/employee/<employee_id>', methods=['DELETE'])
 def delete_item(item_code):
     try:
