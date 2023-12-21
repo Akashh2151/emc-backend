@@ -22,7 +22,7 @@ def update_categories():
         # Validate unauthorized access (provide your own implementation)
         is_authorized, error_message = validate_unauthorized_access(user_id_from_header)
         if not is_authorized:
-            response = {"body": None, "status": "error", "statusCode": 401, "message": error_message}
+            response = {"body": None, "status": "error", "statuscode": 401, "message": error_message}
             return jsonify(response), 401
 
         # Convert user ID to ObjectId (this may not be necessary in this case)
@@ -51,14 +51,14 @@ def update_categories():
             user.save()
 
             # Your existing code for preparing the response
-            response = {"body": None, "status": "success", "statusCode": 200, "message": 'Category updated successfully'}
+            response = {"body": None, "status": "success", "statuscode": 200, "message": 'Category updated successfully'}
             return jsonify(response), 200
         else:
-            response = {"body": None, "status": "error", "statusCode": 404, "message": 'User not found'}
+            response = {"body": None, "status": "error", "statuscode": 404, "message": 'User not found'}
             return jsonify(response), 404
 
     except Exception as e:
-        response = {"body": None, "status": "error", "statusCode": 500, "message": str(e)}
+        response = {"body": None, "status": "error", "statuscode": 500, "message": str(e)}
         return jsonify(response), 500
 
 
@@ -73,8 +73,8 @@ def update_subcategories():
         # Validate unauthorized access (provide your own implementation)
         is_authorized, error_message = validate_unauthorized_access(user_id_from_header)
         if not is_authorized:
-            response = {"body": None, "status": "error", "statusCode": 401, "message": error_message}
-            return jsonify(response), 401
+            response = {"body": None, "status": "error", "statuscode": 401, "message": error_message}
+            return jsonify(response), 200
 
         # Convert user ID to ObjectId (this may not be necessary in this case)
         user_id_object = ObjectId(user_id_from_header)
@@ -108,11 +108,11 @@ def update_subcategories():
             user.save()
 
             # Your existing code for preparing the response
-            response = {"body": None, "status": "success", "statusCode": 200, "message": 'Subcategories updated successfully'}
+            response = {"body": None, "status": "success", "statuscode": 200, "message": 'Subcategories updated successfully'}
             return jsonify(response), 200
         else:
-            response = {"body": None, "status": "error", "statusCode": 404, "message": 'User not found'}
-            return jsonify(response), 404
+            response = {"body": None, "status": "error", "statuscode": 404, "message": 'User not found'}
+            return jsonify(response), 200
 
     except Exception as e:
         response = {"body": None, "status": "error", "statusCode": 500, "message": str(e)}
@@ -130,8 +130,8 @@ def update_submenus():
         # Validate unauthorized access (provide your own implementation)
         is_authorized, error_message = validate_unauthorized_access(user_id_from_header)
         if not is_authorized:
-            response = {"body": None, "status": "error", "statusCode": 401, "message": error_message}
-            return jsonify(response), 401
+            response = {"body": None, "status": "error", "statuscode": 401, "message": error_message}
+            return jsonify(response), 200
 
         # Convert user ID to ObjectId (this may not be necessary in this case)
         user_id_object = ObjectId(user_id_from_header)
@@ -166,11 +166,11 @@ def update_submenus():
             user.save()
 
             # Your existing code for preparing the response
-            response = {"body": None, "status": "success", "statusCode": 200, "message": 'Submenus updated successfully'}
+            response = {"body": None, "status": "success", "statuscode": 200, "message": 'Submenus updated successfully'}
             return jsonify(response), 200
         else:
-            response = {"body": None, "status": "error", "statusCode": 404, "message": 'User not found'}
-            return jsonify(response), 404
+            response = {"body": None, "status": "error", "statuscode": 404, "message": 'User not found'}
+            return jsonify(response), 200
 
     except Exception as e:
         response = {"body": None, "status": "error", "statusCode": 500, "message": str(e)}
