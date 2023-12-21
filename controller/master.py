@@ -37,9 +37,9 @@ def update_categories():
             
             
             # Ensure that the update is only allowed for categories
-            if 'categories' not in updated_category:
-                response = {"body": None, "status": "error", "statusCode": 400, "message": 'Invalid request. Please provide category data.'}
-                return jsonify(response), 200
+            # if 'categories' not in updated_category:
+            #     response = {"body": None, "status": "error", "statusCode": 400, "message": 'Invalid request. Please provide category data.'}
+            #     return jsonify(response), 200
 
             # Update isActive value for the specified category only
             for category in user.bundle[0]['categories']:
@@ -87,9 +87,9 @@ def update_subcategories():
             updated_subcategory = request.json
             
             # Ensure that the update is only allowed for subcategories
-            if 'subcategories' not in updated_subcategory:
-                response = {"body": None, "status": "error", "statusCode": 400, "message": 'Invalid request. Please provide subcategory data.'}
-                return jsonify(response), 200
+            # if 'subcategories' not in updated_subcategory:
+            #     response = {"body": None, "status": "error", "statusCode": 400, "message": 'Invalid request. Please provide subcategory data.'}
+            #     return jsonify(response), 200
 
 
             # Function to recursively update isActive values based on name for subcategories
@@ -145,9 +145,9 @@ def update_submenus():
             
             
             # Ensure that the update is only allowed for submenus
-            if 'subMenu' not in updated_submenu:
-                response = {"body": None, "status": "error", "statusCode": 400, "message": 'Invalid request. Please provide submenu data.'}
-                return jsonify(response), 200
+            # if 'subMenu' not in updated_submenu:
+            #     response = {"body": None, "status": "error", "statusCode": 400, "message": 'Invalid request. Please provide submenu data.'}
+            #     return jsonify(response), 200
 
             # Function to recursively update isActive values based on name for submenus
             def update_is_active_submenu(item, name, new_is_active):
