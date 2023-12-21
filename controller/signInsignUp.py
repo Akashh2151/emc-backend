@@ -8,7 +8,7 @@ from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import jwt_required
 import jwt
 from model.signInsignup_model import  User
-from configurations.configuration import resto_data
+from configurations.configuration import resto_data,shop_data
 from security.allSecurity import email_regex,password_regex,phone_number
 import logging
 

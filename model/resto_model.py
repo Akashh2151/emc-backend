@@ -99,6 +99,7 @@ class Item(Document):
     salesHistory = ListField(EmbeddedDocumentField(History))
     customNotes = StringField()    
 
+ 
 
 
 class Table(Document):
