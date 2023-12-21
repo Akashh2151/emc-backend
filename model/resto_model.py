@@ -86,18 +86,18 @@ class Item(Document):
     itemCategory = StringField()
     itemSubCategory = StringField(validation=validate_non_empty)
     itemPrice = DecimalField(precision=2,required=True)
-    ingredients = StringField()
+    ingredients = ListField()
     recipe = StringField()
     allergen = StringField()
     portionSize = StringField()
     status = StringField()
-    tax = StringField()
-    discount = StringField()
-    images = ListField(StringField())  # Assuming images are stored as file paths or URLs
-    currentStock = StringField()
+    tax = DecimalField()
+    discount = DecimalField()
+    # images = ListField(StringField())  # Assuming images are stored as file paths or URLs
+    currentStock = IntField()
     barcode = StringField()
-    salesHistory = ListField(EmbeddedDocumentField(History))
-    customNotes = StringField()    
+    # salesHistory = ListField(EmbeddedDocumentField(History))
+    # customNotes = StringField()    
 
  
 

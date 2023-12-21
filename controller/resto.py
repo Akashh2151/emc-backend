@@ -8,6 +8,8 @@ from mongoengine.errors import DoesNotExist
 
 from datetime import datetime
 
+from security.mastervalidation import validate_no_blank_spaces
+
 # from dateutil import parser
 
 
@@ -521,9 +523,7 @@ def item():
         existing_item = Item.objects(itemCode=item_code).first()
         if existing_item:
               return jsonify({'Body': None, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statuscode': 400}),200
-        # iteamCode=Item.objects.get(item_code=item_code)
-        # print("______________________________________",iteamCode)
-        # Create the Item object with the extracted data
+       
         new_item = Item(
             itemCode=item_code,
             itemName=item_name,
@@ -534,26 +534,40 @@ def item():
             ingredients=data.get('ingredients', None),
             recipe=data.get('recipe', None),
             allergen=data.get('allergen', None),
+            
             portionSize=data.get('portionSize', None),
             status=data.get('status', None),
             tax=data.get('tax', None),
             discount=data.get('discount', None),
-            images=data.get('images', None),
+            # images=data.get('images', None),
             currentStock=data.get('currentStock', None),    
             barcode=data.get('barcode', None),
             # Assuming salesHistory is a list of dictionaries with 'date' and 'action' keys
-            salesHistory=[
-                History(date=datetime.strptime(entry['date'], '%Y-%m-%dT%H:%M:%S.%fZ'), action=entry['action'])
-                for entry in data.get('salesHistory', [])
-            ],
-            customNotes=data.get('customNotes', None)
+            # salesHistory=[
+            #     History(date=datetime.strptime(entry['date'], '%Y-%m-%dT%H:%M:%S.%fZ'), action=entry['action'])
+            #     for entry in data.get('salesHistory', [])
+            # ],
+            # customNotes=data.get('customNotes', None)
              )
-
+        
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
+        if not is_no_blank_spaces:
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
+            return jsonify(response), 200
+         
+         
         # Save the new item
         new_item.save()
+        
+        updatedetails=request.json
+        res={
+            "updatedIteams":updatedetails
+            
+        }
 
-        response = {"Body": None, "status": "success", "statuscode": 200, "message": 'Item created successfully'},200
-        return jsonify(response)
+        response = {"Body": res, "status": "success", "statuscode": 200, "message": 'Item created successfully'},
+        return jsonify(response),200
     
     # except DuplicateKeyError:
     #     # Handle duplicate key error
@@ -563,43 +577,45 @@ def item():
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
 
 
-
-
-
-
-
-    
 # Get all items
 @restoapp.route('/item', methods=['GET'])
 def get_all_items():
     try:
         items = Item.objects()
-        firstiteam=items.first()
-        print("____________________",firstiteam)
-       
-        if  firstiteam:
-           response_item={
-                "itemCode": item.itemCode,
+        
+        # Get the 'sort' query parameter, default to ascending order
+        sort_order = request.args.get('sort', 'asc').lower()
+
+        # Sort items based on 'itemCode'
+        items = sorted(items, key=lambda x: x.itemCode, reverse=(sort_order == 'desc'))
+
+        
+        response_items = []
+        
+        for item in items:
+            response_item = {
+               "itemCode": str(item.itemCode) if item.itemCode else None,
                 "itemName": item.itemName,
                 "itemCategory": item.itemCategory,
                 "itemSubCategory": item.itemSubCategory,
-                "itemPrice": float(item.itemPrice),  # Convert Decimal to float
+                "itemPrice": float(item.itemPrice) if item.itemPrice is not None else None,
                 "ingredients": item.ingredients,
                 "recipe": item.recipe,
                 "allergen": item.allergen,
                 "portionSize": item.portionSize,
                 "status": item.status,
-                "tax": item.tax,
-                "discount": item.discount,
-                "images": item.images,
+                "tax": float(item.tax) if item.tax is not None else None,
+                "discount": float(item.discount) if item.discount is not None else None,
+                # "images": item.images,
                 "currentStock": item.currentStock,
                 "barcode": item.barcode,
-                "salesHistory": [{"date": entry.date, "action": entry.action} for entry in item.salesHistory],
-                "customNotes": item.customNotes
+                # "salesHistory": [{"date": entry.date, "action": entry.action} for entry in item.salesHistory],
+                # "customNotes": item.customNotes
             }
-          
-        response = {'Body': response_item, 'status': 'success', 'statuscode': 200, 'message': 'Items retrieved  successfully'}
-        return jsonify(response),200
+            response_items.append(response_item)
+
+        response = {'Body': response_items, 'status': 'success', 'statuscode': 200, 'message': 'Items retrieved successfully'}
+        return jsonify(response), 200
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
@@ -618,27 +634,27 @@ def get_byitemcode(item_code):
         
 
         item_data = {
-            "itemCode": item.itemCode,
-            "itemName": item.itemName,
-            "itemCategory": item.itemCategory,
-            "itemSubCategory": item.itemSubCategory,
-            "itemPrice": float(item.itemPrice),
-            "ingredients": item.ingredients,
-            "recipe": item.recipe,
-            "allergen": item.allergen,
-            "portionSize": item.portionSize,
-            "status": item.status,
-            "tax": item.tax,
-            "discount": item.discount,
-            "images": item.images,
-            "currentStock": item.currentStock,
-            "barcode": item.barcode,
-            "salesHistory": [{"date": entry.date.isoformat(), "action": entry.action} for entry in item.salesHistory],
-            "customNotes": item.customNotes
+                "itemCode": str(item.itemCode) if item.itemCode else None,
+                "itemName": item.itemName,
+                "itemCategory": item.itemCategory,
+                "itemSubCategory": item.itemSubCategory,
+                "itemPrice": float(item.itemPrice) if item.itemPrice is not None else None,
+                "ingredients": item.ingredients,
+                "recipe": item.recipe,
+                "allergen": item.allergen,
+                "portionSize": item.portionSize,
+                "status": item.status,
+                "tax": float(item.tax) if item.tax is not None else None,
+                "discount": float(item.discount) if item.discount is not None else None,
+                # "images": item.images,
+                "currentStock": item.currentStock,
+                "barcode": item.barcode,
+                # "salesHistory": [{"date": entry.date, "action": entry.action} for entry in item.salesHistory],
+                # "customNotes": item.customNotes
         }
 
-        response = {'Body': item_data, 'status': 'success', 'statusCode': 200, 'message': 'Item retrieved successfully'}
-        return jsonify(response)
+        response = {'Body': item_data, 'status': 'success', 'statuscode': 200, 'message': 'Item retrieved successfully'}
+        return jsonify(response),200
 
     except Item.DoesNotExist:
         print(f"Item with code {item_code} not found.")
@@ -675,19 +691,26 @@ def update_items(item_code):
         item.status = data.get('status', item.status)
         item.tax = data.get('tax', item.tax)
         item.discount = data.get('discount', item.discount)
-        item.images = data.get('images', item.images)
+        # item.images = data.get('images', item.images)
         item.currentStock = data.get('currentStock', item.currentStock)
         item.barcode = data.get('barcode', item.barcode)
-        item.customNotes = data.get('customNotes', item.customNotes)
+        # item.customNotes = data.get('customNotes', item.customNotes)
 
         # Update sales history if provided
-        sales_history_data = data.get('salesHistory', [])
-        item.salesHistory = [
-            History(date=datetime.strptime(entry['date'], "%Y-%m-%dT%H:%M:%S.%fZ"), action=entry['action'])
-            for entry in sales_history_data
-        ]
+        # sales_history_data = data.get('salesHistory', [])
+        # item.salesHistory = [
+        #     History(date=datetime.strptime(entry['date'], "%Y-%m-%dT%H:%M:%S.%fZ"), action=entry['action'])
+        #     for entry in sales_history_data
+        # ]
 
         # Save the updated item
+        
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
+        if not is_no_blank_spaces:
+            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            return jsonify(response), 200
+        
         item.save()
         
         userid=str(item.id)
@@ -698,11 +721,11 @@ def update_items(item_code):
             "updateDetails":updatediteamdetail
         }
 
-        response = {"Body": res, "status": "success", "statusCode": 200, "message": 'Item updated successfully'}
+        response = {"Body": res, "status": "success", "statuscode": 200, "message": 'Item updated successfully'}
         return jsonify(response),200
     
     except DoesNotExist:
-        return jsonify({'Body': {}, 'error': 'Item not found', 'statusCode': 404})
+        return jsonify({'Body': {}, 'error': 'Item not found', 'statusCode': 404}),404
     except Exception as e:
         return jsonify({'Body': {}, 'error': str(e), 'statusCode': 500})
 
