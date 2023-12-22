@@ -7,6 +7,7 @@ from model.resto_model import   CustomerMaster, EmployeeMaster, History, Item,Ta
 from mongoengine.errors import DoesNotExist
 
 from datetime import datetime
+from model.signInsignup_model import User
 
 from security.mastervalidation import validate_no_blank_spaces
 
@@ -508,6 +509,17 @@ def delete_employee(employee_id):
 @restoapp.route('/v1/item', methods=['POST'])
 def item():
     try:
+        # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
+
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'Body': None, "status": "error", 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
+
+        # Get the current user
+        user = User.objects.get(id=user_id)
+
+
         data = request.json
         item_code = data.get('itemCode')
         item_name = data.get('itemName')
@@ -534,21 +546,14 @@ def item():
             ingredients=data.get('ingredients', None),
             recipe=data.get('recipe', None),
             allergen=data.get('allergen', None),
-            
             portionSize=data.get('portionSize', None),
             status=data.get('status', None),
             tax=data.get('tax', None),
             discount=data.get('discount', None),
-            # images=data.get('images', None),
             currentStock=data.get('currentStock', None),    
             barcode=data.get('barcode', None),
-            # Assuming salesHistory is a list of dictionaries with 'date' and 'action' keys
-            # salesHistory=[
-            #     History(date=datetime.strptime(entry['date'], '%Y-%m-%dT%H:%M:%S.%fZ'), action=entry['action'])
-            #     for entry in data.get('salesHistory', [])
-            # ],
-            # customNotes=data.get('customNotes', None)
-             )
+            creator=user
+            )
         
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
@@ -581,15 +586,19 @@ def item():
 @restoapp.route('/v1/item', methods=['GET'])
 def get_all_items():
     try:
-        items = Item.objects()
-        
-        # Get the 'sort' query parameter, default to ascending order
-        sort_order = request.args.get('sort', 'asc').lower()
+        # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
 
-        # Sort items based on 'itemCode'
-        items = sorted(items, key=lambda x: x.itemCode, reverse=(sort_order == 'desc'))
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'Body': None, "status": "error", 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
 
-        
+        # Get the current user
+        user = User.objects.get(id=user_id)
+
+        # Get all items associated with the user
+        items = Item.objects(creator=user)
+
         response_items = []
         
         for item in items:
@@ -606,11 +615,8 @@ def get_all_items():
                 "status": item.status,
                 "tax": float(item.tax) if item.tax is not None else None,
                 "discount": float(item.discount) if item.discount is not None else None,
-                # "images": item.images,
                 "currentStock": item.currentStock,
                 "barcode": item.barcode,
-                # "salesHistory": [{"date": entry.date, "action": entry.action} for entry in item.salesHistory],
-                # "customNotes": item.customNotes
             }
             response_items.append(response_item)
 
@@ -694,17 +700,7 @@ def update_items(item_code):
         # item.images = data.get('images', item.images)
         item.currentStock = data.get('currentStock', item.currentStock)
         item.barcode = data.get('barcode', item.barcode)
-        # item.customNotes = data.get('customNotes', item.customNotes)
-
-        # Update sales history if provided
-        # sales_history_data = data.get('salesHistory', [])
-        # item.salesHistory = [
-        #     History(date=datetime.strptime(entry['date'], "%Y-%m-%dT%H:%M:%S.%fZ"), action=entry['action'])
-        #     for entry in sales_history_data
-        # ]
-
-        # Save the updated item
-        
+       
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
@@ -732,11 +728,8 @@ def update_items(item_code):
  
  
 
-
-
 # Delete an item by itemCode
 @restoapp.route('/v1/item/<item_code>', methods=['DELETE'])
-# @restoapp.route('/employee/<employee_id>', methods=['DELETE'])
 def delete_item(item_code):
     try:
         item = Item.objects.get(itemCode=item_code)

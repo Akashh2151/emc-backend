@@ -1,5 +1,5 @@
 from attr import validate
-from mongoengine import Document, StringField, EmailField,ListField,DecimalField,DateTimeField,IntField,URLField,EmbeddedDocumentField,EmbeddedDocument,FloatField
+from mongoengine import Document, StringField,ReferenceField, EmailField,ListField,DecimalField,DateTimeField,IntField,URLField,EmbeddedDocumentField,EmbeddedDocument,FloatField
 # from pydantic import ValidationError
 # from pydantic import ValidationError
 from pymongo import MongoClient
@@ -7,6 +7,8 @@ from pymongo import MongoClient
  
 from mongoengine import connect
 from wtforms import ValidationError
+
+from model.signInsignup_model import User
 # Replace the values with your MongoDB URI and other settings
 db_uri = "mongodb+srv://akashh2151:aOSefZ94SgQEkzmg@cluster0.25xmos0.mongodb.net/?retryWrites=true&w=majority"
 connect(host=db_uri, db="emc_project2151")
@@ -96,6 +98,7 @@ class Item(Document):
     # images = ListField(StringField())  # Assuming images are stored as file paths or URLs
     currentStock = IntField()
     barcode = StringField()
+    creator = ReferenceField(User, reverse_delete_rule=2)  # Reverse delete rule: when a user is deleted, set the reference to None
     # salesHistory = ListField(EmbeddedDocumentField(History))
     # customNotes = StringField()    
 
