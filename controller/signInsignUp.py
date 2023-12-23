@@ -277,7 +277,6 @@ def register_step1():
 
 
 
-login_bp = Blueprint('login', __name__)
 # @login_bp.route('/login', methods=['POST'])
 # def login():
 #     try:
@@ -336,6 +335,7 @@ login_bp = Blueprint('login', __name__)
 
 
 # login route
+login_bp = Blueprint('login', __name__)
 @login_bp.route('/v1/login', methods=['POST'])
 def login():
     try:

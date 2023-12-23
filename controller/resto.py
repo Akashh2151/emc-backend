@@ -20,45 +20,68 @@ restoapp = Blueprint('restoapp', __name__)
 
 
 
+
 # Create an order
-@restoapp.route('/order', methods=['POST'])
+@restoapp.route('/v1/order', methods=['POST'])
 def create_order():
     try:
         data = request.json
-        vendorCode = data.get('vendorCode')
-        vendorName = data.get('vendorName')
-        vendorEmail = data.get('vendorEmail')
-        vendorMobile = data.get('vendorMobile')
-        vendorAddr = data.get('vendorAddr')
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+       
+
+        vendor_code = data.get('vendorCode')
+        vendor_name = data.get('vendorName')
+        vendor_email = data.get('vendorEmail')
+        vendor_mobile = data.get('vendorMobile') 
+        vendor_addr = data.get('vendorAddr')
+
+        if not all([vendor_code, vendor_name, vendor_email, vendor_mobile, vendor_addr]):
+            response = {"Body": {}, "status": "success", "statuscode": 200, "message": 'vendorCode, vendorName, vendorEmail, vendorMobile, vendorAddr All required fields must be provided'}
+            return jsonify(response), 200
+
+        existing_order = Order.objects(vendorCode=vendor_code).first()
+        if existing_order:
+            response = {"Body": {}, "status": "success", "statuscode": 200, "message": 'Order with the provided vendorCode already exists.'}
+            return jsonify(response), 200
 
         new_order = Order(
-            vendorCode=vendorCode,
-            vendorName=vendorName,
-            vendorEmail=vendorEmail,
-            vendorMobile=vendorMobile,
-            vendorAddr=vendorAddr
+            vendorCode=vendor_code,
+            vendorName=vendor_name,
+            vendorEmail=vendor_email,
+            vendorMobile=vendor_mobile,
+            vendorAddr=vendor_addr,
+            creator=user
         )
         new_order.save()
+        
+        res={
+            "updatedOrder":data
+            
+        }
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Order created'}
+        response = {"Body": res, "status": "success", "statusCode": 200, "message": 'Order created'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'Body':  {}, 'error': str(e), 'statusCode': 500})
 
 
 
 # Get all orders
-@restoapp.route('/order', methods=['GET'])
+@restoapp.route('/v1/order', methods=['GET'])
 def get_orders():
     try:
-        orders = Order.objects()
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+        orders = Order.objects(creator=user)
+
         orders_list = [{"vendorCode": order.vendorCode, "vendorName": order.vendorName,
                         "vendorEmail": order.vendorEmail, "vendorMobile": order.vendorMobile,
                         "vendorAddr": order.vendorAddr} for order in orders]
 
-        response = {'Body': orders_list, 'status': 'success', 'statusCode': 200, 'message': 'Orders retrieved'}
-        return jsonify(response)
+        response = {'Body': orders_list, 'status': 'success', 'statuscode': 200, 'message': 'Orders retrieved'}
+        return jsonify(response),200
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
@@ -66,55 +89,83 @@ def get_orders():
 
 
 # Update an existing order by vendorCode
-@restoapp.route('/order/<string:vendor_code>', methods=['PUT'])
+@restoapp.route('/v1/order/<string:vendor_code>', methods=['PUT'])
 def update_order(vendor_code):
     try:
-        order = Order.objects(vendorCode=vendor_code).first()
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+
+        order = Order.objects(vendorCode=vendor_code, creator=user).first()
         if not order:
             response = {'Body': None, 'message': 'Order not found', 'statusCode': 404, 'status': 'error'}
             return jsonify(response)
 
         data = request.json
 
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(data)
+        if not is_no_blank_spaces:
+            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            return jsonify(response), 200
+
         # Update only the fields present in the request JSON
-        for key, value in data.items():
-            setattr(order, key, value)
+        for key in data:
+            if key in order._fields:
+                setattr(order, key, data[key])
 
         order.save()
 
-        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'Order updated'}
+        order_id = str(order.id)
+        updated_order_details = data
+
+        res = {
+            "_id": order_id,
+            "updateDetails": updated_order_details
+        }
+
+        response = {"Body": res, "status": "success", "statuscode": 200, "message": 'Order updated successfully'}
         return jsonify(response)
 
+    except DoesNotExist:
+        return jsonify({'Body': {}, 'error': 'Order not found', 'statusCode': 404}), 404
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
-    
+
+
 
 # Get a specific order by vendorCode
-@restoapp.route('/order/<string:vendor_code>', methods=['GET'])
+@restoapp.route('/v1/order/<string:vendor_code>', methods=['GET'])
 def get_order(vendor_code):
     try:
-        order = Order.objects(vendorCode=vendor_code).first()
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+
+        order = Order.objects(vendorCode=vendor_code, creator=user).first()
         if not order:
             response = {'Body': None, 'message': 'Order not found', 'statusCode': 404, 'status': 'error'}
-            return jsonify(response)
+            return jsonify(response),200
 
         order_dict = {"vendorCode": order.vendorCode, "vendorName": order.vendorName,
                       "vendorEmail": order.vendorEmail, "vendorMobile": order.vendorMobile,
                       "vendorAddr": order.vendorAddr}
 
         response = {'Body': order_dict, 'status': 'success', 'statusCode': 200, 'message': 'Order retrieved'}
-        return jsonify(response)
+        return jsonify(response),200
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
 
 
 
+
 # Delete an order by vendorCode
-@restoapp.route('/order/<string:vendor_code>', methods=['DELETE'])
+@restoapp.route('/v1/order/<string:vendor_code>', methods=['DELETE'])
 def delete_order(vendor_code):
     try:
-        order = Order.objects(vendorCode=vendor_code).first()
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+
+        order = Order.objects(vendorCode=vendor_code, creator=user).first()
         if not order:
             response = {'Body': None, 'message': 'Order not found', 'statusCode': 404, 'status': 'error'}
             return jsonify(response)
@@ -128,132 +179,207 @@ def delete_order(vendor_code):
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
 
 
+
+
+
 # __
 
-
-# Create an item
-@restoapp.route('/itemmaster', methods=['POST'])
-def create_masteritem():
+# Create an item master
+@restoapp.route('/v1/itemmaster', methods=['POST'])
+def create_item_master():
     try:
         data = request.json
         name = data.get('name')
         description = data.get('description')
-        measureUnit = data.get('measureUnit')
+        measure_unit = data.get('measureUnit')
         price = data.get('price')
         category = data.get('category')
-        subCategory = data.get('subCategory')
+        sub_category = data.get('subCategory')
         nutrition = data.get('nutrition')
+        
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(data)
+        if not is_no_blank_spaces:
+            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            return jsonify(response), 200
+
+        # Add creator to the data
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
 
         new_item = ItemMaster(
             name=name,
             description=description,
-            measureUnit=measureUnit,
+            measureUnit=measure_unit,
             price=price,
             category=category,
-            subCategory=subCategory,
-            nutrition=nutrition
+            subCategory=sub_category,
+            nutrition=nutrition,
+            creator=user
         )
         new_item.save()
+        
+        res={
+            "updateditemmaster":data
+        }
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Item created'}
-        return jsonify(response)
-
-    except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
-
-
-# Get all items
-@restoapp.route('/itemmaster', methods=['GET'])
-def get_masteritems():
-    try:
-        items = ItemMaster.objects()
-        items_list = [{"name": item.name, "description": item.description,
-                       "measureUnit": item.measureUnit, "price": item.price,
-                       "category": item.category, "subCategory": item.subCategory,
-                       "nutrition": item.nutrition} for item in items]
-
-        response = {'Body': items_list, 'status': 'success', 'statusCode': 200, 'message': 'Items retrieved'}
-        return jsonify(response)
+        response = {"Body": res, "status": "success", "statuscode": 200, "message": 'Item created successfully'}
+        return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'Body': None, 'error': str(e), 'statuscode': 500})
 
 
-# Update an existing item by name
-@restoapp.route('/itemmaster/<string:item_name>', methods=['PUT'])
-def update_mastseritem(item_name):
+
+# Get all item masters
+@restoapp.route('/v1/itemmaster', methods=['GET'])
+def get_all_item_masters():
     try:
-        item = ItemMaster.objects(name=item_name).first()
+        # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
+
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'Body': None, 'status': 'error', 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
+
+        # Get the current user
+        user = User.objects.get(id=user_id)
+
+        # Get all item masters associated with the user
+        item_masters = ItemMaster.objects(creator=user)
+
+        response_items = []
+
+        for item_master in item_masters:
+            response_item = {
+                "name": item_master.name,
+                "description": item_master.description,
+                "measureUnit": item_master.measureUnit,
+                "price": item_master.price,
+                "category": item_master.category,
+                "subCategory": item_master.subCategory,
+                "nutrition": item_master.nutrition
+            }
+            response_items.append(response_item)
+
+        response = {'Body': response_items, 'status': 'success', 'statuscode': 200, 'message': 'Item masters retrieved successfully'}
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statuscode': 500})
+
+
+
+
+# Get a specific item master by name
+@restoapp.route('/v1/itemmaster/<string:item_name>', methods=['GET'])
+def get_item_master(item_name):
+    try:
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+
+        item = ItemMaster.objects(name=item_name, creator=user).first()
         if not item:
-            response = {'Body': None, 'message': 'Item not found', 'statusCode': 404, 'status': 'error'}
-            return jsonify(response)
+            response = {'Body': None, 'error': 'Item not found', 'statuscode': 404}
+            return jsonify(response), 404
 
+        item_dict = {
+            "name": item.name,
+            "description": item.description,
+            "measureUnit": item.measureUnit,
+            "price": item.price,
+            "category": item.category,
+            "subCategory": item.subCategory,
+            "nutrition": item.nutrition
+        }
+
+        response = {'Body': item_dict, 'status': 'success', 'statuscode': 200, 'message': 'Item retrieved successfully'}
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statuscode': 500})
+
+
+
+
+# Update an item master by name
+@restoapp.route('/v1/itemmaster/<string:item_name>', methods=['PUT'])
+def update_item_master(item_name):
+    try:
         data = request.json
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
 
-        # Update only the fields present in the request JSON
+        item = ItemMaster.objects(name=item_name, creator=user).first()
+        if not item:
+            response = {'Body': None, 'error': 'Item not found', 'statuscode': 404}
+            return jsonify(response), 404
+
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(data)
+        if not is_no_blank_spaces:
+            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            return jsonify(response), 200
+
+        # Update item master attributes
         for key, value in data.items():
             setattr(item, key, value)
 
         item.save()
+        
+        res={
+            "masteriteam":data
+        }
 
-        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'Item updated'}
-        return jsonify(response)
-
-    except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
-
-
-
-# Get a specific item by name
-@restoapp.route('/itemmaster/<string:item_name>', methods=['GET'])
-def get_masteritem(item_name):
-    try:
-        item = ItemMaster.objects(name=item_name).first()
-        if not item:
-            response = {'Body': None, 'message': 'Item not found', 'statusCode': 404, 'status': 'error'}
-            return jsonify(response)
-
-        item_dict = {"name": item.name, "description": item.description,
-                     "measureUnit": item.measureUnit, "price": item.price,
-                     "category": item.category, "subCategory": item.subCategory,
-                     "nutrition": item.nutrition}
-
-        response = {'Body': item_dict, 'status': 'success', 'statusCode': 200, 'message': 'Item retrieved'}
-        return jsonify(response)
+        response = {'Body': res, 'status': 'success', 'statuscode': 200, 'message': 'Item updated successfully'}
+        return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'Body': None, 'error': str(e), 'statuscode': 500})
 
 
-
-# Delete an item by name
-@restoapp.route('/itemmaster/<string:item_name>', methods=['DELETE'])
-def delete_masteritem(item_name):
+# Delete an item master by name
+@restoapp.route('/v1/itemmaster/<string:item_name>', methods=['DELETE'])
+def delete_item_master(item_name):
     try:
-        item = ItemMaster.objects(name=item_name).first()
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+
+        item = ItemMaster.objects(name=item_name, creator=user).first()
         if not item:
-            response = {'Body': None, 'message': 'Item not found', 'statusCode': 404, 'status': 'error'}
-            return jsonify(response)
+            response = {'Body': None, 'error': 'Item not found', 'statuscode': 404}
+            return jsonify(response), 404
 
         item.delete()
 
-        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'Item deleted'}
-        return jsonify(response)
+        response = {'Body': None, 'status': 'success', 'statuscode': 200, 'message': 'Item deleted successfully'}
+        return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'Body': None, 'error': str(e), 'statuscode': 500})
+
+
 
 
 #__
 
+
 # Create TaxMaster
-@restoapp.route('/tax', methods=['POST'])
+@restoapp.route('/v1/tax', methods=['POST'])
 def create_tax():
     try:
         data = request.json
-        taxName = data.get('taxName')
+        tax_name = data.get('taxName')
 
-        new_tax = TaxMaster(taxName=taxName)
+        # Validation: Check if taxName is provided
+        if not tax_name:
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'TaxName is required'}
+            return jsonify(response), 200
+
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+
+        new_tax = TaxMaster(taxName=tax_name, creator=user)
         new_tax.save()
 
         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Tax created'}
@@ -263,15 +389,103 @@ def create_tax():
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
 
 
-
 # Get all taxes
-@restoapp.route('/tax', methods=['GET'])
+@restoapp.route('/v1/tax', methods=['GET'])
 def get_taxes():
     try:
-        taxes = TaxMaster.objects()
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+
+        taxes = TaxMaster.objects(creator=user)
         taxes_list = [{"taxName": tax.taxName} for tax in taxes]
 
         response = {'Body': taxes_list, 'status': 'success', 'statusCode': 200, 'message': 'Taxes retrieved'}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+# Update TaxMaster by taxName
+@restoapp.route('/v1/tax/<string:tax_name>', methods=['PUT'])
+def update_tax(tax_name):
+    try:
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+
+        tax = TaxMaster.objects(creator=user, taxName=tax_name).first()
+        if not tax:
+            response = {'Body': None, 'message': 'Tax not found', 'statusCode': 404, 'status': 'error'}
+            return jsonify(response)
+
+        data = request.json
+
+        # Validate key-value pairs
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(data)
+        if not is_no_blank_spaces:
+            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            return jsonify(response), 200
+
+
+        # Validate if the taxName is present in the request JSON
+        if 'taxName' in data:
+            response = {'Body': None, 'status': 'error', 'statusCode': 400, 'message': 'Cannot update taxName'}
+            return jsonify(response)
+
+        # Update only the fields present in the request JSON
+        for key, value in data.items():
+            setattr(tax, key, value)
+
+        tax.save()
+        
+        res={
+            "updatetax":data
+        }
+
+        response = {'Body': res, 'status': 'success', 'statusCode': 200, 'message': 'Tax updated'}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+    
+
+
+# Get a specific tax by taxName
+@restoapp.route('/v1/tax/<string:tax_name>', methods=['GET'])
+def get_tax(tax_name):
+    try:
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+
+        tax = TaxMaster.objects(creator=user, taxName=tax_name).first()
+        if not tax:
+            response = {'Body': None, 'message': 'Tax not found', 'statusCode': 404, 'status': 'error'}
+            return jsonify(response)
+
+        tax_dict = {"taxName": tax.taxName}
+
+        response = {'Body': tax_dict, 'status': 'success', 'statusCode': 200, 'message': 'Tax retrieved'}
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+# Delete TaxMaster by taxName
+@restoapp.route('/v1/tax/<string:tax_name>', methods=['DELETE'])
+def delete_tax(tax_name):
+    try:
+        user_id = request.headers.get('user_id')
+        user = User.objects.get(id=user_id)
+
+        tax = TaxMaster.objects(creator=user, taxName=tax_name).first()
+        if not tax:
+            response = {'Body': None, 'message': 'Tax not found', 'statusCode': 404, 'status': 'error'}
+            return jsonify(response)
+
+        tax.delete()
+
+        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'Tax deleted'}
         return jsonify(response)
 
     except Exception as e:

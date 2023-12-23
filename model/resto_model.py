@@ -25,15 +25,16 @@ def validate_non_empty(value):
         # You can customize this part based on your requirements for numeric fields
         pass
 
+# Order model with creator field
 class Order(Document):
     vendorCode = StringField(required=True, unique=True)
     vendorName = StringField(required=True)
     vendorEmail = EmailField(required=True)
     vendorMobile = StringField(required=True, regex=r'^\d{10}$')
     vendorAddr = StringField(required=True)
+    creator = ReferenceField(User, reverse_delete_rule=2)  # Assuming User is the creator
     
     
-# Define ItemMaster model
 class ItemMaster(Document):
     name = StringField(required=True)
     description = StringField()
@@ -41,8 +42,8 @@ class ItemMaster(Document):
     price = FloatField()
     category = StringField()
     subCategory = StringField()
-    nutrition = StringField()    
-
+    nutrition = StringField()
+    creator = ReferenceField(User, reverse_delete_rule=2)
 
  
 
@@ -51,9 +52,13 @@ class Verification(EmbeddedDocument):
     status = StringField()
     comments = StringField()
     
+    
+    
 # Define TaxMaster model
 class TaxMaster(Document):
     taxName = StringField(required=True)
+    creator = ReferenceField(User, required=True)  # Assuming User is your User model
+
     
 
 class History(EmbeddedDocument):
