@@ -303,20 +303,22 @@ resto_data = {
               "name": "items",
               "title": "Items",
               "isActive": True,
-              "subMenu": [
+             "subMenu": [
                 {
                   "name": "itemCode",
                   "title": "Food Code",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "Enter Food Code"
+                  "placeholder": "Enter Food Code",
+                  "isMobile": True
                 },
                 {
                   "name": "itemName",
                   "title": "Food Name",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "Enter Food Name"
+                  "placeholder": "Enter Food Name",
+                  "isMobile": True
                 },
                 {
                   "name": "itemCategory",
@@ -324,7 +326,8 @@ resto_data = {
                   "isActive": True,
                   "type": "DropDown",
                   "values": ["Naved", "Naik"],
-                  "placeholder": "Choose Food Category"
+                  "placeholder": "Choose Food Category",
+                  "isMobile": False
                 },
                 {
                   "name": "itemSubCategory",
@@ -332,14 +335,16 @@ resto_data = {
                   "isActive": True,
                   "type": "DropDown",
                   "values": ["Naved", "Naik"],
-                  "placeholder": "Choose Food Sub Category"
+                  "placeholder": "Choose Food Sub Category",
+                  "isMobile": False
                 },
                 {
                   "name": "itemPrice",
                   "title": "Food Price",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "Enter Food Price"
+                  "placeholder": "Enter Food Price",
+                  "isMobile": True
                 },
                 {
                   "name": "ingredients",
@@ -347,7 +352,8 @@ resto_data = {
                   "isActive": True,
                   "type": "DropDown",
                   "values": ["category one", "category 2"],
-                  "placeholder": "Enter Food Ingredients"
+                  "placeholder": "Enter Food Ingredients",
+                  "isMobile": False
                 },
                 {
                   "name": "recipe",
@@ -355,42 +361,48 @@ resto_data = {
                   "isActive": True,
                   "type": "DropDown",
                   "values": ["category one", "category 2"],
-                  "placeholder": "Enter Food Recipe"
+                  "placeholder": "Enter Food Recipe",
+                  "isMobile": False
                 },
                 {
                   "name": "allergen",
                   "title": "Allergen Information",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "Something allergic to this food"
+                  "placeholder": "Something allergic to this food",
+                  "isMobile": False
                 },
                 {
                   "name": "portionSize",
                   "title": "Portion Size",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "How Many It Can Serve"
+                  "placeholder": "How Many It Can Serve",
+                  "isMobile": False
                 },
                 {
                   "name": "status",
                   "title": "Status",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "Is It Available"
+                  "placeholder": "Is It Available",
+                  "isMobile": True
                 },
                 {
                   "name": "tax",
                   "title": "Taxable",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "Enter Tax"
+                  "placeholder": "Enter Tax",
+                  "isMobile": False
                 },
                 {
                   "name": "discount",
                   "title": "Discount",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "Enter Discount"
+                  "placeholder": "Enter Discount",
+                  "isMobile": False
                 },
                 {
                   "name": "images",
@@ -398,14 +410,16 @@ resto_data = {
                   "isActive": True,
                   "value": [{}],
                   "type": "upload",
-                  "placeholder": "Upload Pics"
+                  "placeholder": "Upload Pics",
+                  "isMobile": False
                 },
                 {
                   "name": "currentStock",
                   "title": "Current Stock",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "Items in stock"
+                  "placeholder": "Items in stock",
+                  "isMobile": True
                 },
                 {
                   "name": "barcode",
