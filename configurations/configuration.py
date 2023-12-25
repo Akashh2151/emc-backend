@@ -183,6 +183,7 @@ resto_data = {
                   "name": "customerName",
                   "type": "Input",
                   "title": "Customer Name",
+                  "isMobile": True,
                   "values": "",
                   "isActive": True
                 },
@@ -190,6 +191,7 @@ resto_data = {
                   "name": "customerMobile",
                   "title": "Customer Mobile",
                   "type": "Input",
+                  "isMobile": True,
                   "values": "",
                   "isActive": True
                 },
@@ -197,6 +199,7 @@ resto_data = {
                   "name": "customerEmail",
                   "title": "Customer Email",
                   "type": "Input",
+                  "isMobile": True,
                   "values": "",
                   "isActive": True
                 },
@@ -204,6 +207,7 @@ resto_data = {
                   "name": "customerLastVisit",
                   "title": "Customer Last Visit",
                   "type": "Input",
+                  "isMobile": True,
                   "values": "Date",
                   "isActive": True
                 },
@@ -211,6 +215,7 @@ resto_data = {
                   "name": "customerAddr",
                   "title": "Customer Address",
                   "type": "Input",
+                  "isMobile": True,
                   "values": "Address String",
                   "isActive": True
                 },
@@ -463,14 +468,16 @@ resto_data = {
                   "title": "Table Code",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "Enter Table Code"
+                  "placeholder": "Enter Table Code",
+                  "isMobile": True
                 },
                 {
                   "name": "tableName",
                   "title": "Table Name",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "Enter Table Name"
+                  "placeholder": "Enter Table Name",
+                  "isMobile": True
                 },
                 {
                   "name": "tableStatus",
@@ -478,7 +485,8 @@ resto_data = {
                   "isActive": True,
                   "type": "DropDown",
                   "values": ["Open", "Vaccant", "Closed", "Dirty"],
-                  "placeholder": "Choose Table Status"
+                  "placeholder": "Choose Table Status",
+                  "isMobile": True
                 },
                 {
                   "name": "tablePlacement",
@@ -486,7 +494,8 @@ resto_data = {
                   "isActive": True,
                   "type": "DropDown",
                   "values": ["Lawn", "Terrace"],
-                  "placeholder": "Choose Table Location"
+                  "placeholder": "Choose Table Location",
+                  "isMobile": True
                 },
 
                 {
@@ -494,7 +503,8 @@ resto_data = {
                   "title": "Table QR",
                   "isActive": True,
                   "type": "text",
-                  "placeholder": "Enter Table QR Code"
+                  "placeholder": "Enter Table QR Code",
+                  "isMobile": True
                 }
               ]
             }
