@@ -116,6 +116,14 @@ class Table(Document):
         tableStatus =StringField(required=True)
         tableQR=StringField(required=True)
         tablePlacement =StringField(required=True)
+        
+        
+class Vendor(Document):
+    vendorCode = StringField(required=True, unique=True)
+    vendorName = StringField(required=True)
+    vendorEmail = EmailField(required=True)
+    vendorMobile = StringField(required=True)
+    vendorAddr = StringField(required=True)        
  
     
 # # Define RestoMenuMaster document

@@ -3,7 +3,7 @@ from json import JSONEncoder
 from pymongo.errors import DuplicateKeyError
 # from msilib import Table
 from flask import Blueprint, app, request, jsonify 
-from model.resto_model import   CustomerMaster, EmployeeMaster, History, Item,Table, ItemMaster, Order, TaxMaster, Verification 
+from model.resto_model import   CustomerMaster, EmployeeMaster, History, Item,Table, ItemMaster, Order, TaxMaster, Vendor, Verification 
 from mongoengine.errors import DoesNotExist
 
 from datetime import datetime
@@ -960,37 +960,262 @@ def delete_item(item_code):
 
 
 
-
+# __
  
+ 
+@restoapp.route('/v1/table', methods=['POST'])
+def create_table():
+    try:
+        data = request.json
+        table_code = data.get('tableCode')
+        table_name = data.get('tableName')
+        table_status = data.get('tableStatus')
+        table_placement = data.get('tablePlacement')
+        table_qr = data.get('tableQR')
 
-# @restoapp.route('/v1/table',methods=['POST'])
-# def tables():
-#     data=request.json
-#     tableCode=data.get('tableCode')
-#     tableName=data.get('tableName')
-#     tableStatus=data.get('tableStatus')
-#     tablePlacement=data.get('tablePlacement')
-#     tableQR=data.get('tableQR')
-    
-#     if not tableCode or not tableName or not tableStatus or not tablePlacement or not tableQR:
-#         response={'Body':None,"statusCode":400,'status':'error','message':'All filds are required'}
-#         return jsonify(response)
-    
-    
-#     tablesData=Table(tableCode=tableCode,tableName=tableName,tableStatus=tableStatus,tablePlacement=tablePlacement,tableQR=tableQR)
-    
-    
-#     tablesData.save()
-    
-#     response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Table '}
-#     return jsonify(response)
-    
-    
+        if not table_code or not table_name or not table_status or not table_placement or not table_qr:
+            response = {'Body': None, "status": "error", 'statusCode': 400, 'message': 'All fields are required'}
+            return jsonify(response),200
+
+        existing_table = Table.objects(tableCode=table_code).first()
+
+        if existing_table:
+            return jsonify({'Body': None, "status": "error", 'message': 'Table with the provided tableCode already exists.', 'statuscode': 400}), 200
+
+        new_table = Table(
+            tableCode=table_code,
+            tableName=table_name,
+            tableStatus=table_status,
+            tablePlacement=table_placement,
+            tableQR=table_qr
+        )
+
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
+        if not is_no_blank_spaces:
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
+            return jsonify(response), 200
+
+        new_table.save()
+
+        response = {"Body": {}, "status": "success", "statusCode": 200, "message": 'Table created successfully'}
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+@restoapp.route('/v1/table', methods=['GET'])
+def get_all_tables():
+    try:
+        tables = Table.objects()
+
+        response_tables = [{"tableCode": table.tableCode, "tableName": table.tableName,
+                             "tableStatus": table.tableStatus, "tablePlacement": table.tablePlacement,
+                             "tableQR": table.tableQR} for table in tables]
+
+        response = {'Body': response_tables, 'status': 'success', 'statuscode': 200, 'message': 'Tables retrieved successfully'}
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+
+@restoapp.route('/v1/table/<table_code>', methods=['GET'])
+def get_table_by_code(table_code):
+    try:
+        table = Table.objects.get(tableCode=table_code)
+
+        table_data = {
+            "tableCode": table.tableCode,
+            "tableName": table.tableName,
+            "tableStatus": table.tableStatus,
+            "tablePlacement": table.tablePlacement,
+            "tableQR": table.tableQR
+        }
+
+        response = {'Body': table_data, 'status': 'success', 'statuscode': 200, 'message': 'Table retrieved successfully'}
+        return jsonify(response), 200
+
+    except DoesNotExist:
+        return jsonify({'Body': None, 'error': 'Table not found', 'statusCode': 404}), 404
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+@restoapp.route('/v1/table/<table_code>', methods=['PUT'])
+def update_table(table_code):
+    try:
+        data = request.json
+        table = Table.objects.get(tableCode=table_code)
+
+        table.tableName = data.get('tableName', table.tableName)
+        table.tableStatus = data.get('tableStatus', table.tableStatus)
+        table.tablePlacement = data.get('tablePlacement', table.tablePlacement)
+        table.tableQR = data.get('tableQR', table.tableQR)
+
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
+        if not is_no_blank_spaces:
+            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            return jsonify(response), 200
+
+        table.save()
+        
+       
+
+        response = {"Body": data, "status": "success", "statuscode": 200, "message": 'Table updated successfully'}
+        return jsonify(response), 200
+
+    except DoesNotExist:
+        return jsonify({'Body': None, 'error': 'Table not found', 'statusCode': 404}), 404
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+
+
+@restoapp.route('/v1/table/<table_code>', methods=['DELETE'])
+def delete_table(table_code):
+    try:
+        table = Table.objects.get(tableCode=table_code)
+        table.delete()
+
+        response = {"Body": None, "status": "success", "statuscode": 200, "message": 'Table deleted successfully'}
+        return jsonify(response), 200
+
+    except DoesNotExist:
+        return jsonify({'Body': None, 'error': 'Table not found', 'statuscode': 404}), 404
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
     
 
-    
 
 
+
+
+@restoapp.route('/v1/vendors', methods=['POST'])
+def create_vendor():
+    try:
+        data = request.json
+        vendor_code = data.get('vendorCode')
+        vendor_name = data.get('vendorName')
+        vendor_email = data.get('vendorEmail')
+        vendor_mobile = data.get('vendorMobile')
+        vendor_addr = data.get('vendorAddr')
+
+        if not vendor_code or not vendor_name or not vendor_email or not vendor_mobile or not vendor_addr:
+            response = {'Body': None, "status": "error", 'statusCode': 400, 'message': 'All fields are required'}
+            return jsonify(response), 400
+
+        existing_vendor = Vendor.objects(vendorCode=vendor_code).first()
+
+        if existing_vendor:
+            return jsonify({'Body': None, "status": "error", 'message': 'Vendor with the provided vendorCode already exists.', 'statuscode': 400}), 200
+
+        new_vendor = Vendor(
+            vendorCode=vendor_code,
+            vendorName=vendor_name,
+            vendorEmail=vendor_email,
+            vendorMobile=vendor_mobile,
+            vendorAddr=vendor_addr
+        )
+
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
+        if not is_no_blank_spaces:
+            response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
+            return jsonify(response), 200
+
+        new_vendor.save()
+
+        response = {"Body":  {}, "status": "success", "statusCode": 200, "message": 'Vendor created successfully'}
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+@restoapp.route('/v1/vendors', methods=['GET'])
+def get_all_vendors():
+    try:
+        vendors = Vendor.objects()
+
+        response_vendors = [{"vendorCode": vendor.vendorCode, "vendorName": vendor.vendorName,
+                             "vendorEmail": vendor.vendorEmail, "vendorMobile": vendor.vendorMobile,
+                             "vendorAddr": vendor.vendorAddr} for vendor in vendors]
+
+        response = {'Body': response_vendors, 'status': 'success', 'statuscode': 200, 'message': 'Vendors retrieved successfully'}
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+@restoapp.route('/v1/vendors/<vendor_code>', methods=['GET'])
+def get_vendor_by_code(vendor_code):
+    try:
+        vendor = Vendor.objects.get(vendorCode=vendor_code)
+
+        vendor_data = {
+            "vendorCode": vendor.vendorCode,
+            "vendorName": vendor.vendorName,
+            "vendorEmail": vendor.vendorEmail,
+            "vendorMobile": vendor.vendorMobile,
+            "vendorAddr": vendor.vendorAddr
+        }
+
+        response = {'Body': vendor_data, 'status': 'success', 'statuscode': 200, 'message': 'Vendor retrieved successfully'}
+        return jsonify(response), 200
+
+    except DoesNotExist:
+        return jsonify({'Body': None, 'error': 'Vendor not found', 'statusCode': 404}), 404
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+@restoapp.route('/v1/vendors/<vendor_code>', methods=['PUT'])
+def update_vendor(vendor_code):
+    try:
+        data = request.json
+        vendor = Vendor.objects.get(vendorCode=vendor_code)
+
+        vendor.vendorName = data.get('vendorName', vendor.vendorName)
+        vendor.vendorEmail = data.get('vendorEmail', vendor.vendorEmail)
+        vendor.vendorMobile = data.get('vendorMobile', vendor.vendorMobile)
+        vendor.vendorAddr = data.get('vendorAddr', vendor.vendorAddr)
+
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
+        if not is_no_blank_spaces:
+            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            return jsonify(response), 200
+
+        vendor.save()
+
+        response = {"Body": None, "status": "success", "statuscode": 200, "message": 'Vendor updated successfully'}
+        return jsonify(response), 200
+
+    except DoesNotExist:
+        return jsonify({'Body': None, 'error': 'Vendor not found', 'statusCode': 404}), 404
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+@restoapp.route('/v1/vendors/<vendor_code>', methods=['DELETE'])
+def delete_vendor(vendor_code):
+    try:
+        vendor = Vendor.objects.get(vendorCode=vendor_code)
+        vendor.delete()
+
+        response = {"Body": None, "status": "success", "statuscode": 200, "message": 'Vendor deleted successfully'}
+        return jsonify(response), 200
+
+    except DoesNotExist:
+        return jsonify({'Body': None, 'error': 'Vendor not found', 'statuscode': 404}), 404
+    except Exception as e:
+        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
 
 
 
