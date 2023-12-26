@@ -719,9 +719,8 @@ def delete_employee(employee_id):
     
 
 # __
-
 @restoapp.route('/v1/item', methods=['POST'])
-def item():
+def create_item():
     try:
         # Extract the user_id from the request headers
         user_id = request.headers.get('user_id')
@@ -733,23 +732,19 @@ def item():
         # Get the current user
         user = User.objects.get(id=user_id)
 
-
         data = request.json
         item_code = data.get('itemCode')
         item_name = data.get('itemName')
         item_price = data.get('itemPrice')
-        print(item_code)
-        print(item_name)
-        print(item_price)
 
         # Check if the required fields are provided
         if item_code is None or item_name is None or item_price is None:
-            return jsonify({'Body': None, "status": "error", 'message': 'itemCode, itemName, and itemPrice are required fields.', 'statuscode': 400}),200
+            return jsonify({'Body': None, "status": "error", 'message': 'itemCode, itemName, and itemPrice are required fields.', 'statuscode': 400}), 200
 
         existing_item = Item.objects(itemCode=item_code).first()
         if existing_item:
-              return jsonify({'Body': None, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statuscode': 400}),200
-       
+            return jsonify({'Body': None, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statuscode': 400}), 200
+
         new_item = Item(
             itemCode=item_code,
             itemName=item_name,
@@ -764,36 +759,31 @@ def item():
             status=data.get('status', None),
             tax=data.get('tax', None),
             discount=data.get('discount', None),
-            currentStock=data.get('currentStock', None),    
+            currentStock=data.get('currentStock', None),
             barcode=data.get('barcode', None),
             creator=user
-            )
-        
+        )
+
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
             response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
-         
-         
+
         # Save the new item
         new_item.save()
-        
-        updatedetails=request.json
-        res={
-            "updatedIteams":updatedetails
-            
-        }
 
-        response = {"Body": res, "status": "success", "statuscode": 200, "message": 'Item created successfully'},
-        return jsonify(response),200
-    
-    # except DuplicateKeyError:
-    #     # Handle duplicate key error
-    #     return jsonify({'Body': None, 'error': 'Item with the provided itemCode already exists.', 'statusCode': 400})
+        # updatedetails = {
+           
+            # Include other fields as needed
+        # }
+
+        response = {"Body": data, "status": "success", "statuscode": 200, "message": 'Item created successfully'}
+        return jsonify(response), 200
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
 
 
 # Get all items
