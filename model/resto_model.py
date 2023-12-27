@@ -78,6 +78,24 @@ class CustomerMaster(Document):
 
 
 
+# class EmployeeMaster(Document):
+#     employeeName = StringField(required=True)
+#     employeeMobile = StringField(required=True)
+#     employeeEmail = EmailField(required=True)
+#     employeeAddr = StringField()
+#     employeeHistory = ListField(EmbeddedDocumentField(History))
+#     employeeVerification = ListField(EmbeddedDocumentField(Verification))
+
+
+class History(EmbeddedDocument):
+    date = StringField()
+    action = StringField()
+
+class Verification(EmbeddedDocument):
+    date = StringField()
+    status = StringField()
+    comments = StringField()
+
 class EmployeeMaster(Document):
     employeeName = StringField(required=True)
     employeeMobile = StringField(required=True)
@@ -117,13 +135,19 @@ class Table(Document):
         tableQR=StringField(required=True)
         tablePlacement =StringField(required=True)
         
-        
+# Assume you have a User model defined
+class User(Document):
+    # Define your User model fields here
+    pass
+
+
 class Vendor(Document):
     vendorCode = StringField(required=True, unique=True)
     vendorName = StringField(required=True)
     vendorEmail = EmailField(required=True)
     vendorMobile = StringField(required=True)
-    vendorAddr = StringField(required=True)        
+    vendorAddr = StringField(required=True)
+    creator = ReferenceField(User, reverse_delete_rule=2)
  
     
 # # Define RestoMenuMaster document

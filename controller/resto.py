@@ -1,5 +1,6 @@
 # import datetime
 from json import JSONEncoder
+from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
 # from msilib import Table
 from flask import Blueprint, app, request, jsonify 
@@ -595,8 +596,6 @@ def delete_customer(customer_id):
     
 # --
  
-
-# Create EmployeeMaster
 @restoapp.route('/employee', methods=['POST'])
 def create_employee():
     try:
@@ -1083,11 +1082,30 @@ def delete_table(table_code):
 
 
 
-
-
+# Endpoint to create a new vendor
 @restoapp.route('/v1/vendors', methods=['POST'])
 def create_vendor():
     try:
+        # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
+
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'Body': None, "status": "error", 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
+
+        # Convert the user_id string to ObjectId
+        try:
+            user_id = ObjectId(user_id)
+        except:
+            return jsonify({'Body': None, "status": "error", 'message': 'Invalid user ID format.', 'statuscode': 400}), 200
+
+        # Get the current user
+        user = User.objects.filter(id=user_id).first()
+
+        # Check if the user exists
+        if not user:
+            return jsonify({'Body': None, "status": "error", 'message': 'User matching query does not exist.', 'statuscode': 404}), 200
+
         data = request.json
         vendor_code = data.get('vendorCode')
         vendor_name = data.get('vendorName')
@@ -1095,21 +1113,22 @@ def create_vendor():
         vendor_mobile = data.get('vendorMobile')
         vendor_addr = data.get('vendorAddr')
 
-        if not vendor_code or not vendor_name or not vendor_email or not vendor_mobile or not vendor_addr:
-            response = {'Body': None, "status": "error", 'statusCode': 400, 'message': 'All fields are required'}
-            return jsonify(response), 400
+        # Check if the required fields are provided
+        if vendor_code is None or vendor_name is None or vendor_email is None or vendor_mobile is None or vendor_addr is None:
+            return jsonify({'Body': None, "status": "error", 'message': 'All vendor fields are required.', 'statuscode': 400}), 200
 
         existing_vendor = Vendor.objects(vendorCode=vendor_code).first()
-
         if existing_vendor:
             return jsonify({'Body': None, "status": "error", 'message': 'Vendor with the provided vendorCode already exists.', 'statuscode': 400}), 200
 
+        # Create a new vendor
         new_vendor = Vendor(
             vendorCode=vendor_code,
             vendorName=vendor_name,
             vendorEmail=vendor_email,
             vendorMobile=vendor_mobile,
-            vendorAddr=vendor_addr
+            vendorAddr=vendor_addr,
+            creator=user.id  # Use ObjectId for the creator field
         )
 
         # Validate for blank spaces in keys and values
@@ -1118,13 +1137,17 @@ def create_vendor():
             response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
 
+        # Save the new vendor
         new_vendor.save()
 
-        response = {"Body":  {}, "status": "success", "statusCode": 200, "message": 'Vendor created successfully'}
+        response = {"Body": data, "status": "success", "statuscode": 200, "message": 'Vendor created successfully'}
         return jsonify(response), 200
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+    
+    
+    
 
 
 @restoapp.route('/v1/vendors', methods=['GET'])
@@ -1141,6 +1164,7 @@ def get_all_vendors():
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
 
 
 @restoapp.route('/v1/vendors/<vendor_code>', methods=['GET'])
@@ -1191,6 +1215,7 @@ def update_vendor(vendor_code):
         return jsonify({'Body': None, 'error': 'Vendor not found', 'statusCode': 404}), 404
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
 
 
 @restoapp.route('/v1/vendors/<vendor_code>', methods=['DELETE'])
