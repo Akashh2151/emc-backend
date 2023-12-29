@@ -103,6 +103,9 @@ class EmployeeMaster(Document):
     employeeAddr = StringField()
     employeeHistory = ListField(EmbeddedDocumentField(History))
     employeeVerification = ListField(EmbeddedDocumentField(Verification))
+    creator = ReferenceField(User, reverse_delete_rule=2) 
+    
+    
     
     
 class Item(Document):

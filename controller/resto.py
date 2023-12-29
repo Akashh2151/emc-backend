@@ -606,6 +606,18 @@ def create_employee():
         employeeAddr = data.get('employeeAddr')
         employeeHistory = data.get('employeeHistory', [])
         employeeVerification = data.get('employeeVerification', [])
+        
+        
+                # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
+
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'Body': None, "status": "error", 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
+
+        # Get the current user
+        user = User.objects.get(id=user_id)
+
 
         new_employee = EmployeeMaster(
             employeeName=employeeName,
@@ -613,7 +625,9 @@ def create_employee():
             employeeEmail=employeeEmail,
             employeeAddr=employeeAddr,
             employeeHistory=employeeHistory,
-            employeeVerification=employeeVerification
+            employeeVerification=employeeVerification,
+            creator=user
+            
         )
         new_employee.save()
 
@@ -622,6 +636,9 @@ def create_employee():
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
+
 
 
 # Custom JSON Encoder for History, Verification, and datetime objects
@@ -637,6 +654,7 @@ class CustomJSONEncoder(JSONEncoder):
 
 # Set the custom JSON encoder for the app
 restoapp.json_encoder = CustomJSONEncoder
+
 
 # Get all employees
 @restoapp.route('/employee', methods=['GET'])
@@ -655,6 +673,7 @@ def get_employees():
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
 
 
 
@@ -806,7 +825,8 @@ def get_all_items():
         
         for item in items:
             response_item = {
-               "itemCode": str(item.itemCode) if item.itemCode else None,
+                "_id": str(item.id),
+                "itemCode": str(item.itemCode) if item.itemCode else None,
                 "itemName": item.itemName,
                 "itemCategory": item.itemCategory,
                 "itemSubCategory": item.itemSubCategory,
@@ -1081,6 +1101,7 @@ def delete_table(table_code):
     
 
 
+# ____
 
 # Endpoint to create a new vendor
 @restoapp.route('/v1/vendors', methods=['POST'])
@@ -1147,7 +1168,6 @@ def create_vendor():
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
     
     
-    
 
 
 @restoapp.route('/v1/vendors', methods=['GET'])
@@ -1155,15 +1175,25 @@ def get_all_vendors():
     try:
         vendors = Vendor.objects()
 
-        response_vendors = [{"vendorCode": vendor.vendorCode, "vendorName": vendor.vendorName,
-                             "vendorEmail": vendor.vendorEmail, "vendorMobile": vendor.vendorMobile,
-                             "vendorAddr": vendor.vendorAddr} for vendor in vendors]
+        response_vendors = [
+            {
+                "_id": str(vendor.id),  # Add this line to include the vendor id
+                "vendorCode": vendor.vendorCode,
+                "vendorName": vendor.vendorName,
+                "vendorEmail": vendor.vendorEmail,
+                "vendorMobile": vendor.vendorMobile,
+                "vendorAddr": vendor.vendorAddr
+            }
+            for vendor in vendors
+        ]
 
         response = {'Body': response_vendors, 'status': 'success', 'statuscode': 200, 'message': 'Vendors retrieved successfully'}
         return jsonify(response), 200
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+
+
 
 
 
@@ -1208,7 +1238,7 @@ def update_vendor(vendor_code):
 
         vendor.save()
 
-        response = {"Body": None, "status": "success", "statuscode": 200, "message": 'Vendor updated successfully'}
+        response = {"Body": data, "status": "success", "statuscode": 200, "message": 'Vendor updated successfully'}
         return jsonify(response), 200
 
     except DoesNotExist:
