@@ -600,11 +600,12 @@ def delete_customer(customer_id):
 def create_employee():
     try:
         data = request.json
-        employeeName = data.get('employeeName')
+        employeecode= data.get('employeecode') 
+        employeeName = data.get('employeeName')  
+        employeeEmail = data.get('employeeEmail') 
         employeeMobile = data.get('employeeMobile')
-        employeeEmail = data.get('employeeEmail')
         employeeAddr = data.get('employeeAddr')
-        employeeHistory = data.get('employeeHistory', [])
+        # employeeHistory = data.get('employeeHistory', [])
         employeeVerification = data.get('employeeVerification', [])
         
         
@@ -624,7 +625,7 @@ def create_employee():
             employeeMobile=employeeMobile,
             employeeEmail=employeeEmail,
             employeeAddr=employeeAddr,
-            employeeHistory=employeeHistory,
+            # employeeHistory=employeeHistory,
             employeeVerification=employeeVerification,
             creator=user
             
@@ -655,25 +656,28 @@ class CustomJSONEncoder(JSONEncoder):
 # Set the custom JSON encoder for the app
 restoapp.json_encoder = CustomJSONEncoder
 
-
-# Get all employees
 @restoapp.route('/employee', methods=['GET'])
 def get_employees():
     try:
         employees = EmployeeMaster.objects()
-        employees_list = [{"employeeName": employee.employeeName,
-                            "employeeMobile": employee.employeeMobile,
-                            "employeeEmail": employee.employeeEmail,
-                            "employeeAddr": employee.employeeAddr,
-                            "employeeHistory": employee.employeeHistory,
-                            "employeeVerification": employee.employeeVerification} for employee in employees]
+        employees_list = [
+            {
+                "_id": str(employee.id),  
+                "employeeName": employee.employeeName,
+                "employeeMobile": employee.employeeMobile,
+                "employeeEmail": employee.employeeEmail,
+                "employeeAddr": employee.employeeAddr,
+                "employeeHistory": employee.employeeHistory,
+                "employeeVerification": employee.employeeVerification
+            }
+            for employee in employees
+        ]
 
         response = {'Body': employees_list, 'status': 'success', 'statusCode': 200, 'message': 'Employees retrieved'}
         return jsonify(response)
 
     except Exception as e:
         return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
-
 
 
 
@@ -1173,11 +1177,16 @@ def create_vendor():
 @restoapp.route('/v1/vendors', methods=['GET'])
 def get_all_vendors():
     try:
+        user_id=request.headers.get('user_id')
+        
+        if not user_id:
+            return jsonify({'Body': None, "status": "error", 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
+               
         vendors = Vendor.objects()
 
         response_vendors = [
             {
-                "_id": str(vendor.id),  # Add this line to include the vendor id
+                "_id": str(vendor.id),   
                 "vendorCode": vendor.vendorCode,
                 "vendorName": vendor.vendorName,
                 "vendorEmail": vendor.vendorEmail,
