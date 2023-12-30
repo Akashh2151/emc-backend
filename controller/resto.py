@@ -619,12 +619,12 @@ def create_employee():
 
                 # Check if the required fields are provided
         if employeecode is None or employeeName is None or employeeEmail is None or employeeMobile is None or employeeAddr is None:
-            return jsonify({'body': None, "status": "error", 'message': 'itemCode, itemName, and itemPrice are required fields.', 'statusCode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'employeecode, employeeName, and employeeEmail and employeeMobile and employeeAddr  are required fields.', 'statusCode': 400}), 200
 
 
         existing_item = EmployeeMaster.objects(employeecode=employeecode).first()
         if existing_item:
-            return jsonify({'body': None, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statusCode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'employee with the provided employeecode already exists.', 'statusCode': 400}), 200
 
         # Get the current user
         user = User.objects.get(id=user_id)
@@ -1192,6 +1192,17 @@ def create_vendor():
         if existing_vendor:
             return jsonify({'body': None, "status": "error", 'message': 'Vendor with the provided vendorCode already exists.', 'statusCode': 400}), 200
 
+        
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
+        if not is_no_blank_spaces:
+            return jsonify({"body": None, "status": "error", "statusCode": 400, "message": error_message}), 400
+
+        # Check if vendorName is not empty
+        if not vendor_name.strip():
+            return jsonify({"body": None, "status": "error", "statusCode": 400, "message": 'VendorName cannot be empty.'}), 400
+
+    
         # Create a new vendor
         new_vendor = Vendor(
             vendorCode=vendor_code,
@@ -1202,12 +1213,7 @@ def create_vendor():
             creator=user.id  # Use ObjectId for the creator field
         )
 
-        # Validate for blank spaces in keys and values
-        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
-        if not is_no_blank_spaces:
-            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
-            return jsonify(response), 200
-
+      
         # Save the new vendor
         new_vendor.save()
 
