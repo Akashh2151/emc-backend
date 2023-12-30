@@ -38,13 +38,14 @@ def create_order():
         vendor_addr = data.get('vendorAddr')
 
         if not all([vendor_code, vendor_name, vendor_email, vendor_mobile, vendor_addr]):
-            response = {"Body": {}, "status": "success", "statuscode": 200, "message": 'vendorCode, vendorName, vendorEmail, vendorMobile, vendorAddr All required fields must be provided'}
+            response = {"body": {}, "status": "success", "statusCode": 200, "message": 'vendorCode, vendorName, vendorEmail, vendorMobile, vendorAddr All required fields must be provided'}
             return jsonify(response), 200
 
         existing_order = Order.objects(vendorCode=vendor_code).first()
         if existing_order:
-            response = {"Body": {}, "status": "success", "statuscode": 200, "message": 'Order with the provided vendorCode already exists.'}
+            response = {"body": {}, "status": "success", "statusCode": 200, "message": 'Order with the provided vendorCode already exists.'}
             return jsonify(response), 200
+        
 
         new_order = Order(
             vendorCode=vendor_code,
@@ -61,11 +62,11 @@ def create_order():
             
         }
 
-        response = {"Body": res, "status": "success", "statusCode": 200, "message": 'Order created'}
+        response = {"body": res, "status": "success", "statusCode": 200, "message": 'Order created'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body':  {}, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body':  {}, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -81,11 +82,11 @@ def get_orders():
                         "vendorEmail": order.vendorEmail, "vendorMobile": order.vendorMobile,
                         "vendorAddr": order.vendorAddr} for order in orders]
 
-        response = {'Body': orders_list, 'status': 'success', 'statuscode': 200, 'message': 'Orders retrieved'}
+        response = {'body': orders_list, 'status': 'success', 'statusCode': 200, 'message': 'Orders retrieved'}
         return jsonify(response),200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -98,7 +99,7 @@ def update_order(vendor_code):
 
         order = Order.objects(vendorCode=vendor_code, creator=user).first()
         if not order:
-            response = {'Body': None, 'message': 'Order not found', 'statusCode': 404, 'status': 'error'}
+            response = {'body': None, 'message': 'Order not found', 'statusCode': 404, 'status': 'error'}
             return jsonify(response)
 
         data = request.json
@@ -106,7 +107,7 @@ def update_order(vendor_code):
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(data)
         if not is_no_blank_spaces:
-            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
 
         # Update only the fields present in the request JSON
@@ -124,13 +125,13 @@ def update_order(vendor_code):
             "updateDetails": updated_order_details
         }
 
-        response = {"Body": res, "status": "success", "statuscode": 200, "message": 'Order updated successfully'}
+        response = {"body": res, "status": "success", "statusCode": 200, "message": 'Order updated successfully'}
         return jsonify(response)
 
     except DoesNotExist:
-        return jsonify({'Body': {}, 'error': 'Order not found', 'statusCode': 404}), 404
+        return jsonify({'body': {}, 'error': 'Order not found', 'statusCode': 404}), 404
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -143,18 +144,18 @@ def get_order(vendor_code):
 
         order = Order.objects(vendorCode=vendor_code, creator=user).first()
         if not order:
-            response = {'Body': None, 'message': 'Order not found', 'statusCode': 404, 'status': 'error'}
+            response = {'body': None, 'message': 'Order not found', 'statusCode': 404, 'status': 'error'}
             return jsonify(response),200
 
         order_dict = {"vendorCode": order.vendorCode, "vendorName": order.vendorName,
                       "vendorEmail": order.vendorEmail, "vendorMobile": order.vendorMobile,
                       "vendorAddr": order.vendorAddr}
 
-        response = {'Body': order_dict, 'status': 'success', 'statusCode': 200, 'message': 'Order retrieved'}
+        response = {'body': order_dict, 'status': 'success', 'statusCode': 200, 'message': 'Order retrieved'}
         return jsonify(response),200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -168,16 +169,16 @@ def delete_order(vendor_code):
 
         order = Order.objects(vendorCode=vendor_code, creator=user).first()
         if not order:
-            response = {'Body': None, 'message': 'Order not found', 'statusCode': 404, 'status': 'error'}
+            response = {'body': None, 'message': 'Order not found', 'statusCode': 404, 'status': 'error'}
             return jsonify(response)
 
         order.delete()
 
-        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'Order deleted'}
+        response = {'body': None, 'status': 'success', 'statusCode': 200, 'message': 'Order deleted'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -201,7 +202,7 @@ def create_item_master():
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(data)
         if not is_no_blank_spaces:
-            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
 
         # Add creator to the data
@@ -224,11 +225,11 @@ def create_item_master():
             "updateditemmaster":data
         }
 
-        response = {"Body": res, "status": "success", "statuscode": 200, "message": 'Item created successfully'}
+        response = {"body": res, "status": "success", "statusCode": 200, "message": 'Item created successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statuscode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -241,7 +242,7 @@ def get_all_item_masters():
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'Body': None, 'status': 'error', 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
+            return jsonify({'body': None, 'status': 'error', 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
 
         # Get the current user
         user = User.objects.get(id=user_id)
@@ -263,11 +264,11 @@ def get_all_item_masters():
             }
             response_items.append(response_item)
 
-        response = {'Body': response_items, 'status': 'success', 'statuscode': 200, 'message': 'Item masters retrieved successfully'}
+        response = {'body': response_items, 'status': 'success', 'statusCode': 200, 'message': 'Item masters retrieved successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statuscode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -281,7 +282,7 @@ def get_item_master(item_name):
 
         item = ItemMaster.objects(name=item_name, creator=user).first()
         if not item:
-            response = {'Body': None, 'error': 'Item not found', 'statuscode': 404}
+            response = {'body': None, 'error': 'Item not found', 'statusCode': 404}
             return jsonify(response), 404
 
         item_dict = {
@@ -294,11 +295,11 @@ def get_item_master(item_name):
             "nutrition": item.nutrition
         }
 
-        response = {'Body': item_dict, 'status': 'success', 'statuscode': 200, 'message': 'Item retrieved successfully'}
+        response = {'body': item_dict, 'status': 'success', 'statusCode': 200, 'message': 'Item retrieved successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statuscode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -313,13 +314,13 @@ def update_item_master(item_name):
 
         item = ItemMaster.objects(name=item_name, creator=user).first()
         if not item:
-            response = {'Body': None, 'error': 'Item not found', 'statuscode': 404}
+            response = {'body': None, 'error': 'Item not found', 'statusCode': 404}
             return jsonify(response), 404
 
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(data)
         if not is_no_blank_spaces:
-            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
 
         # Update item master attributes
@@ -332,11 +333,11 @@ def update_item_master(item_name):
             "masteriteam":data
         }
 
-        response = {'Body': res, 'status': 'success', 'statuscode': 200, 'message': 'Item updated successfully'}
+        response = {'body': res, 'status': 'success', 'statusCode': 200, 'message': 'Item updated successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statuscode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 # Delete an item master by name
@@ -348,16 +349,16 @@ def delete_item_master(item_name):
 
         item = ItemMaster.objects(name=item_name, creator=user).first()
         if not item:
-            response = {'Body': None, 'error': 'Item not found', 'statuscode': 404}
+            response = {'body': None, 'error': 'Item not found', 'statusCode': 404}
             return jsonify(response), 404
 
         item.delete()
 
-        response = {'Body': None, 'status': 'success', 'statuscode': 200, 'message': 'Item deleted successfully'}
+        response = {'body': None, 'status': 'success', 'statusCode': 200, 'message': 'Item deleted successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statuscode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -374,7 +375,7 @@ def create_tax():
 
         # Validation: Check if taxName is provided
         if not tax_name:
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": 'TaxName is required'}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": 'TaxName is required'}
             return jsonify(response), 200
 
         user_id = request.headers.get('user_id')
@@ -383,11 +384,11 @@ def create_tax():
         new_tax = TaxMaster(taxName=tax_name, creator=user)
         new_tax.save()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Tax created'}
+        response = {"body": None, "status": "success", "statusCode": 200, "message": 'Tax created'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 # Get all taxes
@@ -400,11 +401,11 @@ def get_taxes():
         taxes = TaxMaster.objects(creator=user)
         taxes_list = [{"taxName": tax.taxName} for tax in taxes]
 
-        response = {'Body': taxes_list, 'status': 'success', 'statusCode': 200, 'message': 'Taxes retrieved'}
+        response = {'body': taxes_list, 'status': 'success', 'statusCode': 200, 'message': 'Taxes retrieved'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 # Update TaxMaster by taxName
@@ -416,7 +417,7 @@ def update_tax(tax_name):
 
         tax = TaxMaster.objects(creator=user, taxName=tax_name).first()
         if not tax:
-            response = {'Body': None, 'message': 'Tax not found', 'statusCode': 404, 'status': 'error'}
+            response = {'body': None, 'message': 'Tax not found', 'statusCode': 404, 'status': 'error'}
             return jsonify(response)
 
         data = request.json
@@ -424,13 +425,13 @@ def update_tax(tax_name):
         # Validate key-value pairs
         is_no_blank_spaces, error_message = validate_no_blank_spaces(data)
         if not is_no_blank_spaces:
-            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
 
 
         # Validate if the taxName is present in the request JSON
         if 'taxName' in data:
-            response = {'Body': None, 'status': 'error', 'statusCode': 400, 'message': 'Cannot update taxName'}
+            response = {'body': None, 'status': 'error', 'statusCode': 400, 'message': 'Cannot update taxName'}
             return jsonify(response)
 
         # Update only the fields present in the request JSON
@@ -443,11 +444,11 @@ def update_tax(tax_name):
             "updatetax":data
         }
 
-        response = {'Body': res, 'status': 'success', 'statusCode': 200, 'message': 'Tax updated'}
+        response = {'body': res, 'status': 'success', 'statusCode': 200, 'message': 'Tax updated'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
     
 
 
@@ -460,16 +461,16 @@ def get_tax(tax_name):
 
         tax = TaxMaster.objects(creator=user, taxName=tax_name).first()
         if not tax:
-            response = {'Body': None, 'message': 'Tax not found', 'statusCode': 404, 'status': 'error'}
+            response = {'body': None, 'message': 'Tax not found', 'statusCode': 404, 'status': 'error'}
             return jsonify(response)
 
         tax_dict = {"taxName": tax.taxName}
 
-        response = {'Body': tax_dict, 'status': 'success', 'statusCode': 200, 'message': 'Tax retrieved'}
+        response = {'body': tax_dict, 'status': 'success', 'statusCode': 200, 'message': 'Tax retrieved'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 # Delete TaxMaster by taxName
@@ -481,16 +482,16 @@ def delete_tax(tax_name):
 
         tax = TaxMaster.objects(creator=user, taxName=tax_name).first()
         if not tax:
-            response = {'Body': None, 'message': 'Tax not found', 'statusCode': 404, 'status': 'error'}
+            response = {'body': None, 'message': 'Tax not found', 'statusCode': 404, 'status': 'error'}
             return jsonify(response)
 
         tax.delete()
 
-        response = {'Body': None, 'status': 'success', 'statusCode': 200, 'message': 'Tax deleted'}
+        response = {'body': None, 'status': 'success', 'statusCode': 200, 'message': 'Tax deleted'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 # --
@@ -528,11 +529,11 @@ def create_customer():
         )
         new_customer.save()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Customer created'}
+        response = {"body": None, "status": "success", "statusCode": 200, "message": 'Customer created'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
     
     
 
@@ -548,11 +549,11 @@ def get_customers():
                            "customerAddr": customer.customerAddr,
                            "customerHistory": customer.customerHistory} for customer in customers]
 
-        response = {'Body': customers_list, 'status': 'success', 'statusCode': 200, 'message': 'Customers retrieved'}
+        response = {'body': customers_list, 'status': 'success', 'statusCode': 200, 'message': 'Customers retrieved'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 # Update customer route
 @restoapp.route('/customer/<customer_id>', methods=['PUT'])
@@ -572,11 +573,11 @@ def update_customer(customer_id):
 
         customer.save()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Customer updated'}
+        response = {"body": None, "status": "success", "statusCode": 200, "message": 'Customer updated'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -587,11 +588,11 @@ def delete_customer(customer_id):
         # Find the customer by ID and delete
         CustomerMaster.objects.get(id=customer_id).delete()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Customer deleted'}
+        response = {"body": None, "status": "success", "statusCode": 200, "message": 'Customer deleted'}
         return jsonify(response)
     
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
     
     
 # --
@@ -609,18 +610,28 @@ def create_employee():
         employeeVerification = data.get('employeeVerification', [])
         
         
-                # Extract the user_id from the request headers
+      # Extract the user_id from the request headers
         user_id = request.headers.get('user_id')
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'Body': None, "status": "error", 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+
+                # Check if the required fields are provided
+        if employeecode is None or employeeName is None or employeeEmail is None or employeeMobile is None or employeeAddr is None:
+            return jsonify({'body': None, "status": "error", 'message': 'itemCode, itemName, and itemPrice are required fields.', 'statusCode': 400}), 200
+
+
+        existing_item = EmployeeMaster.objects(employeecode=employeecode).first()
+        if existing_item:
+            return jsonify({'body': None, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statusCode': 400}), 200
 
         # Get the current user
         user = User.objects.get(id=user_id)
 
 
         new_employee = EmployeeMaster(
+            employeecode=employeecode,
             employeeName=employeeName,
             employeeMobile=employeeMobile,
             employeeEmail=employeeEmail,
@@ -632,11 +643,11 @@ def create_employee():
         )
         new_employee.save()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Employee created'}
+        response = {"body": None, "status": "success", "statusCode": 200, "message": 'Employee created'}
         return jsonify(response)
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -659,6 +670,13 @@ restoapp.json_encoder = CustomJSONEncoder
 @restoapp.route('/employee', methods=['GET'])
 def get_employees():
     try:
+        
+        user_id=request.headers.get('user_id')
+        
+        if not user_id:
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+            
+            
         employees = EmployeeMaster.objects()
         employees_list = [
             {
@@ -667,77 +685,94 @@ def get_employees():
                 "employeeMobile": employee.employeeMobile,
                 "employeeEmail": employee.employeeEmail,
                 "employeeAddr": employee.employeeAddr,
-                "employeeHistory": employee.employeeHistory,
+                # "employeeHistory": employee.employeeHistory,
                 "employeeVerification": employee.employeeVerification
             }
             for employee in employees
         ]
 
-        response = {'Body': employees_list, 'status': 'success', 'statusCode': 200, 'message': 'Employees retrieved'}
-        return jsonify(response)
+        response = {'body': employees_list, 'status': 'success', 'statusCode': 200, 'message': 'Employees retrieved'}
+        return jsonify(response),200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
-@restoapp.route('/employee/<employee_id>', methods=['PUT'])
-def update_employee(employee_id):
+@restoapp.route('/employee/<employeecode>', methods=['PUT'])
+def update_employee(employeecode):
     try:
         data = request.json
-        employee = EmployeeMaster.objects.get(id=employee_id)
+
+        # Validate if employeecode in the request matches the one in the URL
+        if data.get('employeeCode') and data['employeeCode'] != employeecode:
+            response = {
+                "body": None,
+                "status": "error",
+                "statusCode": 400,
+                "message": "Cannot change employeecode in the update"
+            }
+            return jsonify(response), 200
+
+        employee = EmployeeMaster.objects.get(employeeCode=employeecode)
 
         # Update employee attributes
         employee.employeeName = data.get('employeeName', employee.employeeName)
         employee.employeeMobile = data.get('employeeMobile', employee.employeeMobile)
         employee.employeeEmail = data.get('employeeEmail', employee.employeeEmail)
         employee.employeeAddr = data.get('employeeAddr', employee.employeeAddr)
-        
-        # Update employee history if provided
-        employee_history = data.get('employeeHistory', [])
-        if employee_history:
-            employee.employeeHistory = [
-                History(date=datetime.strptime(hist['date'], '%Y-%m-%dT%H:%M:%S.%fZ'), action=hist['action']) 
-                for hist in employee_history
-            ]
 
         # Update employee verification if provided
         employee_verification = data.get('employeeVerification', [])
         if employee_verification:
             employee.employeeVerification = [
-                Verification(date=datetime.strptime(verif['date'], '%Y-%m-%dT%H:%M:%S.%fZ'), 
-                             status=verif['status'], 
-                             comments=verif['comments'])
+                Verification(
+                    date=datetime.strptime(verif['date'], '%Y-%m-%dT%H:%M:%S.%fZ'),
+                    status=verif['status'],
+                    comments=verif['comments']
+                )
                 for verif in employee_verification
             ]
+
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
+        if not is_no_blank_spaces:
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
+            return jsonify(response), 400
 
         # Save the updated employee
         employee.save()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Employee updated'}
+        # Generate response with user ID and update details
+        userid = str(employee.id)
+        res = {
+            "_id": userid,
+            "updateDetails": data
+        }
+        response = {"body": res, "status": "success", "statusCode": 200, "message": 'Employee updated'}
         return jsonify(response)
 
     except DoesNotExist:
-        return jsonify({'Body': None, 'error': 'Employee not found', 'statusCode': 404})
+        return jsonify({'body': data, 'error': 'Employee not found', 'statusCode': 404}), 404
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': {}, 'error': str(e), 'statusCode': 500}), 500
 
-
-# Delete an employee
-@restoapp.route('/employee/<employee_id>', methods=['DELETE'])
-def delete_employee(employee_id):
+    
+    
+    
+@restoapp.route('/employee/code/<employee_code>', methods=['DELETE'])
+def delete_employee_by_code(employee_code):
     try:
-        employee = EmployeeMaster.objects.get(id=employee_id)
+        employee = EmployeeMaster.objects.get(employeeCode=employee_code)
         employee.delete()
 
-        response = {"Body": None, "status": "success", "statusCode": 200, "message": 'Employee deleted'}
+        response = {"body": None, "status": "success", "statusCode": 200, "message": 'Employee deleted'}
         return jsonify(response)
 
     except DoesNotExist:
-        return jsonify({'Body': None, 'error': 'Employee not found', 'statusCode': 404})
+        return jsonify({'body': None, 'error': 'Employee not found', 'statusCode': 404})
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
-    
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
     
 
 # __
@@ -749,7 +784,7 @@ def create_item():
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'Body': None, "status": "error", 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
 
         # Get the current user
         user = User.objects.get(id=user_id)
@@ -761,11 +796,11 @@ def create_item():
 
         # Check if the required fields are provided
         if item_code is None or item_name is None or item_price is None:
-            return jsonify({'Body': None, "status": "error", 'message': 'itemCode, itemName, and itemPrice are required fields.', 'statuscode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'itemCode, itemName, and itemPrice are required fields.', 'statusCode': 400}), 200
 
         existing_item = Item.objects(itemCode=item_code).first()
         if existing_item:
-            return jsonify({'Body': None, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statuscode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statusCode': 400}), 200
 
         new_item = Item(
             itemCode=item_code,
@@ -789,7 +824,7 @@ def create_item():
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
 
         # Save the new item
@@ -800,11 +835,11 @@ def create_item():
             # Include other fields as needed
         # }
 
-        response = {"Body": data, "status": "success", "statuscode": 200, "message": 'Item created successfully'}
+        response = {"body": data, "status": "success", "statusCode": 200, "message": 'Item created successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -817,7 +852,7 @@ def get_all_items():
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'Body': None, "status": "error", 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
 
         # Get the current user
         user = User.objects.get(id=user_id)
@@ -847,11 +882,11 @@ def get_all_items():
             }
             response_items.append(response_item)
 
-        response = {'Body': response_items, 'status': 'success', 'statuscode': 200, 'message': 'Items retrieved successfully'}
+        response = {'body': response_items, 'status': 'success', 'statusCode': 200, 'message': 'Items retrieved successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
     
     
 
@@ -886,15 +921,15 @@ def get_byitemcode(item_code):
                 # "customNotes": item.customNotes
         }
 
-        response = {'Body': item_data, 'status': 'success', 'statuscode': 200, 'message': 'Item retrieved successfully'}
+        response = {'body': item_data, 'status': 'success', 'statusCode': 200, 'message': 'Item retrieved successfully'}
         return jsonify(response),200
 
     except Item.DoesNotExist:
         print(f"Item with code {item_code} not found.")
-        return jsonify({'Body': None, 'error': 'Item not found', 'statusCode': 404})
+        return jsonify({'body': None, 'error': 'Item not found', 'statusCode': 404})
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -910,6 +945,17 @@ from flask import jsonify
 def update_items(item_code):
     try:
         data = request.json
+        
+        # Validate if employeecode in the request matches the one in the URL
+        if data.get('itemCode') and data['itemCode'] != item_code:
+            response = {
+                "body": None,
+                "status": "error",
+                "statusCode": 400,
+                "message": "Cannot change itemCode in the update"
+            }
+            return jsonify(response), 200
+        
         item = Item.objects.get(itemCode=item_code)
 
         # Update item attributes
@@ -931,7 +977,7 @@ def update_items(item_code):
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
-            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
         
         item.save()
@@ -944,13 +990,13 @@ def update_items(item_code):
             "updateDetails":updatediteamdetail
         }
 
-        response = {"Body": res, "status": "success", "statuscode": 200, "message": 'Item updated successfully'}
+        response = {"body": res, "status": "success", "statusCode": 200, "message": 'Item updated successfully'}
         return jsonify(response),200
     
     except DoesNotExist:
-        return jsonify({'Body': {}, 'error': 'Item not found', 'statusCode': 404}),404
+        return jsonify({'body': {}, 'error': 'Item not found', 'statusCode': 404}),404
     except Exception as e:
-        return jsonify({'Body': {}, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': {}, 'error': str(e), 'statusCode': 500})
 
  
  
@@ -962,13 +1008,13 @@ def delete_item(item_code):
         item = Item.objects.get(itemCode=item_code)
         item.delete()
 
-        response = {"Body": {}, "status": "success", "statuscode": 200, "message": 'Item deleted successfully'}
+        response = {"body": {}, "status": "success", "statusCode": 200, "message": 'Item deleted successfully'}
         return jsonify(response)
 
     except DoesNotExist:
-        return jsonify({'Body': {}, 'error': 'Item not found', 'statuscode': 404})
+        return jsonify({'body': {}, 'error': 'Item not found', 'statusCode': 404})
     except Exception as e:
-        return jsonify({'Body': {}, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': {}, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -987,13 +1033,13 @@ def create_table():
         table_qr = data.get('tableQR')
 
         if not table_code or not table_name or not table_status or not table_placement or not table_qr:
-            response = {'Body': None, "status": "error", 'statusCode': 400, 'message': 'All fields are required'}
+            response = {'body': None, "status": "error", 'statusCode': 400, 'message': 'All fields are required'}
             return jsonify(response),200
 
         existing_table = Table.objects(tableCode=table_code).first()
 
         if existing_table:
-            return jsonify({'Body': None, "status": "error", 'message': 'Table with the provided tableCode already exists.', 'statuscode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'Table with the provided tableCode already exists.', 'statusCode': 400}), 200
 
         new_table = Table(
             tableCode=table_code,
@@ -1006,16 +1052,16 @@ def create_table():
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
 
         new_table.save()
 
-        response = {"Body": {}, "status": "success", "statusCode": 200, "message": 'Table created successfully'}
+        response = {"body": {}, "status": "success", "statusCode": 200, "message": 'Table created successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 @restoapp.route('/v1/table', methods=['GET'])
@@ -1027,11 +1073,11 @@ def get_all_tables():
                              "tableStatus": table.tableStatus, "tablePlacement": table.tablePlacement,
                              "tableQR": table.tableQR} for table in tables]
 
-        response = {'Body': response_tables, 'status': 'success', 'statuscode': 200, 'message': 'Tables retrieved successfully'}
+        response = {'body': response_tables, 'status': 'success', 'statusCode': 200, 'message': 'Tables retrieved successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -1048,13 +1094,13 @@ def get_table_by_code(table_code):
             "tableQR": table.tableQR
         }
 
-        response = {'Body': table_data, 'status': 'success', 'statuscode': 200, 'message': 'Table retrieved successfully'}
+        response = {'body': table_data, 'status': 'success', 'statusCode': 200, 'message': 'Table retrieved successfully'}
         return jsonify(response), 200
 
     except DoesNotExist:
-        return jsonify({'Body': None, 'error': 'Table not found', 'statusCode': 404}), 404
+        return jsonify({'body': None, 'error': 'Table not found', 'statusCode': 404}), 404
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 @restoapp.route('/v1/table/<table_code>', methods=['PUT'])
@@ -1071,20 +1117,20 @@ def update_table(table_code):
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
-            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
 
         table.save()
         
        
 
-        response = {"Body": data, "status": "success", "statuscode": 200, "message": 'Table updated successfully'}
+        response = {"body": data, "status": "success", "statusCode": 200, "message": 'Table updated successfully'}
         return jsonify(response), 200
 
     except DoesNotExist:
-        return jsonify({'Body': None, 'error': 'Table not found', 'statusCode': 404}), 404
+        return jsonify({'body': None, 'error': 'Table not found', 'statusCode': 404}), 404
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -1095,13 +1141,13 @@ def delete_table(table_code):
         table = Table.objects.get(tableCode=table_code)
         table.delete()
 
-        response = {"Body": None, "status": "success", "statuscode": 200, "message": 'Table deleted successfully'}
+        response = {"body": None, "status": "success", "statusCode": 200, "message": 'Table deleted successfully'}
         return jsonify(response), 200
 
     except DoesNotExist:
-        return jsonify({'Body': None, 'error': 'Table not found', 'statuscode': 404}), 404
+        return jsonify({'body': None, 'error': 'Table not found', 'statusCode': 404}), 404
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
     
 
 
@@ -1116,20 +1162,20 @@ def create_vendor():
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'Body': None, "status": "error", 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
 
         # Convert the user_id string to ObjectId
         try:
             user_id = ObjectId(user_id)
         except:
-            return jsonify({'Body': None, "status": "error", 'message': 'Invalid user ID format.', 'statuscode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'Invalid user ID format.', 'statusCode': 400}), 200
 
         # Get the current user
         user = User.objects.filter(id=user_id).first()
 
         # Check if the user exists
         if not user:
-            return jsonify({'Body': None, "status": "error", 'message': 'User matching query does not exist.', 'statuscode': 404}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'User matching query does not exist.', 'statusCode': 404}), 200
 
         data = request.json
         vendor_code = data.get('vendorCode')
@@ -1140,11 +1186,11 @@ def create_vendor():
 
         # Check if the required fields are provided
         if vendor_code is None or vendor_name is None or vendor_email is None or vendor_mobile is None or vendor_addr is None:
-            return jsonify({'Body': None, "status": "error", 'message': 'All vendor fields are required.', 'statuscode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'All vendor fields are required.', 'statusCode': 400}), 200
 
         existing_vendor = Vendor.objects(vendorCode=vendor_code).first()
         if existing_vendor:
-            return jsonify({'Body': None, "status": "error", 'message': 'Vendor with the provided vendorCode already exists.', 'statuscode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'Vendor with the provided vendorCode already exists.', 'statusCode': 400}), 200
 
         # Create a new vendor
         new_vendor = Vendor(
@@ -1159,17 +1205,17 @@ def create_vendor():
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
-            response = {"Body": None, "status": "error", "statusCode": 400, "message": error_message}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
 
         # Save the new vendor
         new_vendor.save()
 
-        response = {"Body": data, "status": "success", "statuscode": 200, "message": 'Vendor created successfully'}
+        response = {"body": data, "status": "success", "statusCode": 200, "message": 'Vendor created successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
     
     
 
@@ -1180,7 +1226,7 @@ def get_all_vendors():
         user_id=request.headers.get('user_id')
         
         if not user_id:
-            return jsonify({'Body': None, "status": "error", 'message': 'User ID is required in headers.', 'statuscode': 400}), 200
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
                
         vendors = Vendor.objects()
 
@@ -1196,11 +1242,12 @@ def get_all_vendors():
             for vendor in vendors
         ]
 
-        response = {'Body': response_vendors, 'status': 'success', 'statuscode': 200, 'message': 'Vendors retrieved successfully'}
+        response = {'body': response_vendors, 'status': 'success', 'statusCode': 200, 'message': 'Vendors retrieved successfully'}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+
 
 
 
@@ -1219,19 +1266,31 @@ def get_vendor_by_code(vendor_code):
             "vendorAddr": vendor.vendorAddr
         }
 
-        response = {'Body': vendor_data, 'status': 'success', 'statuscode': 200, 'message': 'Vendor retrieved successfully'}
+        response = {'body': vendor_data, 'status': 'success', 'statusCode': 200, 'message': 'Vendor retrieved successfully'}
         return jsonify(response), 200
 
     except DoesNotExist:
-        return jsonify({'Body': None, 'error': 'Vendor not found', 'statusCode': 404}), 404
+        return jsonify({'body': None, 'error': 'Vendor not found', 'statusCode': 404}), 404
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+
 
 
 @restoapp.route('/v1/vendors/<vendor_code>', methods=['PUT'])
 def update_vendor(vendor_code):
     try:
         data = request.json
+        
+        if data.get('vendorCode') and data['vendorCode'] != vendor_code:
+            response = {
+                "body": None,
+                "status": "error",
+                "statusCode": 400,
+                "message": "Cannot change vendorCode in the update"
+            }
+            return jsonify(response), 200
+        
+        
         vendor = Vendor.objects.get(vendorCode=vendor_code)
 
         vendor.vendorName = data.get('vendorName', vendor.vendorName)
@@ -1242,18 +1301,18 @@ def update_vendor(vendor_code):
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
-            response = {"Body": None, "status": "error", "statuscode": 400, "message": error_message}
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
 
         vendor.save()
 
-        response = {"Body": data, "status": "success", "statuscode": 200, "message": 'Vendor updated successfully'}
+        response = {"body": data, "status": "success", "statusCode": 200, "message": 'Vendor updated successfully'}
         return jsonify(response), 200
 
     except DoesNotExist:
-        return jsonify({'Body': None, 'error': 'Vendor not found', 'statusCode': 404}), 404
+        return jsonify({'body': None, 'error': 'Vendor not found', 'statusCode': 404}), 404
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -1263,13 +1322,13 @@ def delete_vendor(vendor_code):
         vendor = Vendor.objects.get(vendorCode=vendor_code)
         vendor.delete()
 
-        response = {"Body": None, "status": "success", "statuscode": 200, "message": 'Vendor deleted successfully'}
+        response = {"body": None, "status": "success", "statusCode": 200, "message": 'Vendor deleted successfully'}
         return jsonify(response), 200
 
     except DoesNotExist:
-        return jsonify({'Body': None, 'error': 'Vendor not found', 'statuscode': 404}), 404
+        return jsonify({'body': None, 'error': 'Vendor not found', 'statusCode': 404}), 404
     except Exception as e:
-        return jsonify({'Body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -1300,14 +1359,14 @@ def delete_vendor(vendor_code):
 #         print(vendorCode)
 
 #         # if not vendorCode or not vendorName or not vendorEmail or not vendorMobile or not vendorAddr:
-#         #     response = {'Body': None, 'message': 'All fields are required', 'statusCode': 400, 'status': 'error'}
+#         #     response = {'body': None, 'message': 'All fields are required', 'statusCode': 400, 'status': 'error'}
 #         #     return jsonify(response)
 
 #         user = Order(vendorCode=vendorCode, vendorName=vendorName, vendorEmail=vendorEmail,
 #                      vendorMobile=vendorMobile, vendorAddr=vendorAddr)
 #         user.save()
 
-#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'MenuMaster created'}
+#         response = {"body": None, "status": "success", "statusCode": 200, "message": 'MenuMaster created'}
 #         return jsonify(response)
 
 #     except Exception as e:
@@ -1338,7 +1397,7 @@ def delete_vendor(vendor_code):
 
 #         menumaster.save()
 
-#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'MenuMaster updated'}
+#         response = {"body": None, "status": "success", "statusCode": 200, "message": 'MenuMaster updated'}
 #         return jsonify(response)
 
 #     except (ValidationError, InvalidDocument) as e:
@@ -1379,7 +1438,7 @@ def delete_vendor(vendor_code):
 
 #         if menumaster:
 #             menumaster.delete()
-#             response = {"Body": None, "status": "success", "statusCode": 200, "message": 'MenuMaster deleted'}
+#             response = {"body": None, "status": "success", "statusCode": 200, "message": 'MenuMaster deleted'}
 #             return jsonify(response)
 #         else:
 #             return jsonify({'error': 'MenuMaster not found', 'status_code': 404}), 404
@@ -1409,7 +1468,7 @@ def delete_vendor(vendor_code):
 #         sellmaster = RestoSellMaster(showName=showName, status=status, sellUnits=sellUnits, printers=printers, sellType=sellType)
 #         sellmaster.save()
 
-#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'SellMaster created'}
+#         response = {"body": None, "status": "success", "statusCode": 200, "message": 'SellMaster created'}
 #         return jsonify(response)
 
 #     except Exception as e:
@@ -1463,7 +1522,7 @@ def delete_vendor(vendor_code):
 
 #         sellmaster.save()
 
-#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'SellMaster updated'}
+#         response = {"body": None, "status": "success", "statusCode": 200, "message": 'SellMaster updated'}
 #         return jsonify(response)
 
 #     except (ValidationError, InvalidDocument) as e:
@@ -1481,7 +1540,7 @@ def delete_vendor(vendor_code):
 
 #         if sellmaster:
 #             sellmaster.delete()
-#             response = {"Body": None, "status": "success", "statusCode": 200, "message": 'SellMaster deleted'}
+#             response = {"body": None, "status": "success", "statusCode": 200, "message": 'SellMaster deleted'}
 #             return jsonify(response)
 #         else:
 #             return jsonify({'error': 'SellMaster not found', 'status_code': 404}), 404
@@ -1526,7 +1585,7 @@ def delete_vendor(vendor_code):
 #         )
 #         generalmaster.save()
 
-#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'GeneralMaster created'}
+#         response = {"body": None, "status": "success", "statusCode": 200, "message": 'GeneralMaster created'}
 #         return jsonify(response)
 
 #     except Exception as e:
@@ -1628,7 +1687,7 @@ def delete_vendor(vendor_code):
 
 #         generalmaster.save()
 
-#         response = {"Body": None, "status": "success", "statusCode": 200, "message": 'GeneralMaster updated'}
+#         response = {"body": None, "status": "success", "statusCode": 200, "message": 'GeneralMaster updated'}
 #         return jsonify(response)
 
 #     except (ValidationError, InvalidDocument) as e:
@@ -1643,7 +1702,7 @@ def delete_vendor(vendor_code):
 
 #         if generalmaster:
 #             generalmaster.delete()
-#             response = {"Body": None, "status": "success", "statusCode": 200, "message": 'GeneralMaster deleted'}
+#             response = {"body": None, "status": "success", "statusCode": 200, "message": 'GeneralMaster deleted'}
 #             return jsonify(response)
 #         else:
 #             return jsonify({'error': 'GeneralMaster not found', 'status_code': 404}), 404

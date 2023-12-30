@@ -96,12 +96,14 @@ class Verification(EmbeddedDocument):
     status = StringField()
     comments = StringField()
 
+
 class EmployeeMaster(Document):
+    employeeCode = StringField(required=True, unique=True)
     employeeName = StringField(required=True)
-    employeeMobile = StringField(required=True)
-    employeeEmail = EmailField(required=True)
+    employeeMobile = StringField(required=True,regex=r'^\d{10}$')
+    employeeEmail = EmailField(required=True,regex = r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
     employeeAddr = StringField()
-    employeeHistory = ListField(EmbeddedDocumentField(History))
+    # employeeHistory = ListField(EmbeddedDocumentField(History))
     employeeVerification = ListField(EmbeddedDocumentField(Verification))
     creator = ReferenceField(User, reverse_delete_rule=2) 
     
@@ -147,8 +149,8 @@ class User(Document):
 class Vendor(Document):
     vendorCode = StringField(required=True, unique=True)
     vendorName = StringField(required=True)
-    vendorEmail = EmailField(required=True)
-    vendorMobile = StringField(required=True)
+    vendorEmail = EmailField(required=True,regex = r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+    vendorMobile = StringField(required=True,regex=r'^\d{10}$')
     vendorAddr = StringField(required=True)
     creator = ReferenceField(User, reverse_delete_rule=2)
  
