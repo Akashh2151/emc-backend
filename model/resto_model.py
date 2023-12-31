@@ -98,10 +98,10 @@ class Verification(EmbeddedDocument):
 
 
 class EmployeeMaster(Document):
-    employeeCode = StringField(required=True, unique=True)
+    employeeCode = StringField(required=True)
     employeeName = StringField(required=True)
     employeeMobile = StringField(required=True,regex=r'^\d{10}$')
-    employeeEmail = EmailField(required=True,regex = r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+    employeeEmail = EmailField(regex = r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
     employeeAddr = StringField()
     # employeeHistory = ListField(EmbeddedDocumentField(History))
     employeeVerification = ListField(EmbeddedDocumentField(Verification))
@@ -116,7 +116,7 @@ class Item(Document):
     itemCategory = StringField()
     itemSubCategory = StringField(validation=validate_non_empty)
     itemPrice = DecimalField(precision=2,required=True)
-    ingredients = ListField()
+    ingredients = StringField()
     recipe = StringField()
     allergen = StringField()
     portionSize = StringField()

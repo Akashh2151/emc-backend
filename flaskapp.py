@@ -8,6 +8,7 @@ from controller.shop import newfrom
 from controller.rating import rating
 from controller.resto import restoapp
 from controller.master import master
+from controller.billing import billing 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '98c5bc0a178ff2d6c0c1471c6f3dc5e4'
@@ -19,6 +20,7 @@ app.register_blueprint(newfrom)
 app.register_blueprint(rating)
 app.register_blueprint(restoapp)
 app.register_blueprint(master)
+app.register_blueprint(billing)
  
 
 
