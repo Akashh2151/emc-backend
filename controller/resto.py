@@ -1118,15 +1118,15 @@ def create_table():
 def get_all_tables():
     try:
         tables = Table.objects()
-        
-         # Extract the user_id from the request headers
+
+        # Extract the user_id from the request headers
         user_id = request.headers.get('user_id')
 
         # Check if the user_id is provided
         if not user_id:
             return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
 
-        response_tables = [{"tableCode": table.tableCode, "tableName": table.tableName,
+        response_tables = [{"_id": str(table.id), "tableCode": table.tableCode, "tableName": table.tableName,
                              "tableStatus": table.tableStatus, "tablePlacement": table.tablePlacement,
                              "tableQR": table.tableQR} for table in tables]
 
@@ -1135,7 +1135,6 @@ def get_all_tables():
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
-
 
 
 @restoapp.route('/v1/table/<table_code>', methods=['GET'])

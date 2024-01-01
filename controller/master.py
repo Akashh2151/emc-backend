@@ -17,7 +17,7 @@ from bson import ObjectId  # Make sure to import ObjectId
 def update_categories():
     try:
         # Get the user ID from the headers
-        user_id_from_header = request.headers.get('id')
+        user_id_from_header = request.headers.get('user_id')
 
         # Validate unauthorized access (provide your own implementation)
         is_authorized, error_message = validate_unauthorized_access(user_id_from_header)
@@ -68,7 +68,7 @@ def update_categories():
 def update_subcategories():
     try:
         # Get the user ID from the headers
-        user_id_from_header = request.headers.get('id')
+        user_id_from_header = request.headers.get('user_id')
 
         # Validate unauthorized access (provide your own implementation)
         is_authorized, error_message = validate_unauthorized_access(user_id_from_header)
@@ -125,7 +125,7 @@ def update_subcategories():
 def update_submenus():
     try:
         # Get the user ID from the headers
-        user_id_from_header = request.headers.get('id')
+        user_id_from_header = request.headers.get('user_id')
 
         # Validate unauthorized access (provide your own implementation)
         is_authorized, error_message = validate_unauthorized_access(user_id_from_header)
