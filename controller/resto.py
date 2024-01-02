@@ -819,7 +819,12 @@ def create_item():
         # Check if the required fields are provided
         if item_code is None or item_name is None or item_price is None:
             return jsonify({'body': None, "status": "error", 'message': 'itemCode, itemName, and itemPrice are required fields.', 'statusCode': 400}), 200
-
+             # Check if itemCode is not empty
+        
+        if not item_code.strip():
+            return jsonify({'body': None, "status": "error", 'message': 'itemCode cannot be empty.', 'statusCode': 400}), 200
+       
+       
         existing_item = Item.objects(itemCode=item_code).first()
         if existing_item:
             return jsonify({'body': None, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statusCode': 400}), 200
@@ -1085,6 +1090,10 @@ def create_table():
         if not table_code or not table_name or not table_status or not table_placement or not table_qr:
             response = {'body': None, "status": "error", 'statusCode': 400, 'message': 'All fields are required'}
             return jsonify(response),200
+        
+        if not table_code.strip():
+            return jsonify({'body': None, "status": "error", 'message': 'tableCode cannot be empty.', 'statusCode': 400}), 200
+
 
         existing_table = Table.objects(tableCode=table_code).first()
 
@@ -1288,8 +1297,8 @@ def create_vendor():
             return jsonify({"body": None, "status": "error", "statusCode": 400, "message": error_message}), 400
 
         # Check if vendorName is not empty
-        if not vendor_name.strip():
-            return jsonify({"body": None, "status": "error", "statusCode": 400, "message": 'VendorName cannot be empty.'}), 400
+        if not vendor_code.strip():
+            return jsonify({"body": None, "status": "error", "statusCode": 400, "message": 'VendorCode cannot be empty.'}), 400
 
     
         # Create a new vendor

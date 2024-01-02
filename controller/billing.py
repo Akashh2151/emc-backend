@@ -176,8 +176,8 @@ def validate_user_id():
     user_exists = User.objects(id=user_id).first()
     if not user_exists:
         return False, jsonify({'body': None, 'status': 'error', 'message': 'Invalid User ID.', 'statusCode': 401}), 401
-
     return True, None
+
 
 # Create a new billing route for creating a billing entry
 @billing.route('/v1/billing', methods=['POST'])
@@ -257,6 +257,7 @@ def create_billing():
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+
 
 
 # Retrieve all billing entries for a user

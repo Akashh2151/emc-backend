@@ -1,12 +1,8 @@
 from attr import validate
 from mongoengine import Document, StringField,ReferenceField, EmailField,ListField,DecimalField,DateTimeField,IntField,URLField,EmbeddedDocumentField,EmbeddedDocument,FloatField
-# from pydantic import ValidationError
-# from pydantic import ValidationError
-from pymongo import MongoClient
-
- 
 from mongoengine import connect
 from wtforms import ValidationError
+from model.resto_model import Item
   
 
   
@@ -34,3 +30,11 @@ class Billing(Document):
     itemPrice = DecimalField()
     itemTotal = DecimalField()
     creator = ReferenceField(User)
+
+
+class BillingEntry(Document):
+    item = ReferenceField(Item, required=True)
+    quantity = IntField(default=1)
+    itemTotal = DecimalField(precision=2)
+    createdAt = DateTimeField()
+    creator = ReferenceField(User)    
