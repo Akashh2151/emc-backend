@@ -3,6 +3,8 @@ from mongoengine import Document, StringField,ReferenceField, EmailField,ListFie
 # from pydantic import ValidationError
 # from pydantic import ValidationError
 from pymongo import MongoClient
+from mongoengine import EmbeddedDocument, StringField
+
 
  
 from mongoengine import connect
@@ -15,8 +17,6 @@ connect(host=db_uri, db="emc_project2151")
 # connect(host=db_uri, db="emc_project2151")
 
 
-
-
 def validate_non_empty(value):
     if isinstance(value, (str,)):
         if not value.strip():
@@ -24,6 +24,29 @@ def validate_non_empty(value):
     elif isinstance(value, (int, float)):
         # You can customize this part based on your requirements for numeric fields
         pass
+
+# Define User model
+# class User(Document):
+#     username = StringField(required=True, unique=True)
+    # Include other user fields as needed
+
+
+# class Verification(EmbeddedDocument):
+#     date = DateTimeField()
+#     status = StringField()
+#     comments = StringField()
+
+class Employee(Document):
+    employeeCode = StringField(required=True, unique=True)
+    employeeName = StringField(required=True)
+    employeeMobile = StringField(required=True,regex=r'^\d{10}$')
+    employeeEmail = StringField()
+    employeeAddr = StringField()
+    employeeVerification = StringField()
+    creator = ReferenceField(User, reverse_delete_rule=2)
+
+ # Initialize the app with the database
+# db.init_app(app)
 
 # Order model with creator field
 class Order(Document):
@@ -97,15 +120,15 @@ class Verification(EmbeddedDocument):
     comments = StringField()
 
 
-class EmployeeMaster(Document):
-    employeeCode = StringField(required=True)
-    employeeName = StringField(required=True)
-    employeeMobile = StringField(required=True,regex=r'^\d{10}$')
-    employeeEmail = EmailField(regex = r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
-    employeeAddr = StringField()
-    # employeeHistory = ListField(EmbeddedDocumentField(History))
-    employeeVerification = ListField(EmbeddedDocumentField(Verification))
-    creator = ReferenceField(User, reverse_delete_rule=2) 
+# class EmployeeMaster(Document):
+#     employeeCode = StringField(required=True, unique=True)
+#     employeeName = StringField(required=True)
+#     employeeMobile = StringField(required=True,regex=r'^\d{10}$')
+#     employeeEmail = EmailField(regex = r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+#     employeeAddr = StringField()
+#     # employeeHistory = ListField(EmbeddedDocumentField(History))
+#     employeeVerification = ListField(EmbeddedDocumentField(Verification))
+#     creator = ReferenceField(User, reverse_delete_rule=2) 
     
     
     

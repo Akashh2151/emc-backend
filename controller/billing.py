@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from model.billing_model import Billing
+from model.billing_model import Billing, BillingEntry
 from model.resto_model import Item
 from model.signInsignup_model import User
 from mongoengine.errors import DoesNotExist
@@ -9,81 +9,10 @@ billing=Blueprint('billing',__name__)
 
 
 
-# # Create a new billing route
-# @billing.route('/v1/billing', methods=['POST'])
-# def create_billing():
-#     try:
-#         # Extract the user_id from the request headers
-#         user_id = request.headers.get('user_id')
-
-#         # Check if the user_id is provided
-#         if not user_id:
-#             return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
-
-#         # Get the current user
-#         user = User.objects.get(id=user_id)
-
-#         # Get items from the request payload
-#         items = request.json.get('items', [])
-
-#         # Calculate subtotal, tax, discount, and grand total
-#         subtotal = 0
-#         for item_data in items:
-#             item_code = item_data.get('itemCode')
-#             quantity = item_data.get('quantity', 1)
-
-#             # Fetch item details from the database
-#             item = Item.objects.get(itemCode=item_code)
-
-#             # Calculate item total
-#             item_total = item.itemPrice * quantity
-
-#             # Update subtotal
-#             subtotal += item_total
-
-#             # Add billing entry
-#             billing_entry = Billing(
-#                 itemCode=item_code,
-#                 itemName=item.itemName,
-#                 quantity=quantity,
-#                 itemPrice=item.itemPrice,
-#                 itemTotal=item_total,
-#                 creator=user
-#             )
-#             billing_entry.save()
-
-#         # Calculate tax, discount, and grand total
-#         tax = request.json.get('tax', 0)
-#         discount = request.json.get('discount', 0)
-#         grand_total = subtotal + tax - discount
-
-#         # Create a response object
-#         response_items = [{
-#             'itemCode': item_data.get('itemCode'),
-#             'itemName': item_data.get('itemName'),
-#             'quantity': item_data.get('quantity', 1),
-#             'itemTotal': item.itemPrice * item_data.get('quantity', 1)
-#         } for item_data in items]
-
-#         response = {
-#             'items': response_items,
-#             'subtotal': subtotal,
-#             'tax': tax,
-#             'discount': discount,
-#             'grandTotal': grand_total,
-#             'status': 'complete'  # You may update this status based on your business logic
-#         }
-
-#         return jsonify({'body': response, 'status': 'success', 'statusCode': 200, 'message': 'Billing created successfully'}), 200
-
-#     except Exception as e:
-#         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
-
-
 
 # Create a new billing route
 @billing.route('/v1/billing', methods=['POST'])
-def create_billing():
+def create_bill():
     try:
         # Extract the user_id from the request headers
         user_id = request.headers.get('user_id')
@@ -163,6 +92,77 @@ def create_billing():
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
     
+# # Create a new billing route
+# @billing.route('/v1/billing', methods=['POST'])
+# def create_billing():
+#     try:
+#         # Extract the user_id from the request headers
+#         user_id = request.headers.get('user_id')
+
+#         # Check if the user_id is provided
+#         if not user_id:
+#             return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+
+#         # Get the current user
+#         user = User.objects.get(id=user_id)
+
+#         # Get items from the request payload
+#         items = request.json.get('items', [])
+
+#         # Calculate subtotal, tax, discount, and grand total
+#         subtotal = 0
+#         for item_data in items:
+#             item_code = item_data.get('itemCode')
+#             quantity = item_data.get('quantity', 1)
+
+#             # Fetch item details from the database
+#             item = Item.objects.get(itemCode=item_code)
+
+#             # Calculate item total
+#             item_total = item.itemPrice * quantity
+
+#             # Update subtotal
+#             subtotal += item_total
+
+#             # Add billing entry
+#             billing_entry = Billing(
+#                 itemCode=item_code,
+#                 itemName=item.itemName,
+#                 quantity=quantity,
+#                 itemPrice=item.itemPrice,
+#                 itemTotal=item_total,
+#                 creator=user
+#             )
+#             billing_entry.save()
+
+#         # Calculate tax, discount, and grand total
+#         tax = request.json.get('tax', 0)
+#         discount = request.json.get('discount', 0)
+#         grand_total = subtotal + tax - discount
+
+#         # Create a response object
+#         response_items = [{
+#             'itemCode': item_data.get('itemCode'),
+#             'itemName': item_data.get('itemName'),
+#             'quantity': item_data.get('quantity', 1),
+#             'itemTotal': item.itemPrice * item_data.get('quantity', 1)
+#         } for item_data in items]
+
+#         response = {
+#             'items': response_items,
+#             'subtotal': subtotal,
+#             'tax': tax,
+#             'discount': discount,
+#             'grandTotal': grand_total,
+#             'status': 'complete'  # You may update this status based on your business logic
+#         }
+
+#         return jsonify({'body': response, 'status': 'success', 'statusCode': 200, 'message': 'Billing created successfully'}), 200
+
+#     except Exception as e:
+#         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+
+
 
 
 
@@ -179,84 +179,86 @@ def validate_user_id():
     return True, None
 
 
-# Create a new billing route for creating a billing entry
-@billing.route('/v1/billing', methods=['POST'])
-def create_billing():
-    try:
-        # Validate user ID
-        valid_user, response = validate_user_id()
-        if not valid_user:
-            return response
 
-        # Get the current user
-        user = User.objects.get(id=request.headers.get('user_id'))
+# # Create a new billing route for creating a billing entry
+# @billing.route('/v1/billing', methods=['POST'])
+# def create_billing():
+#     try:
+#         # Validate user ID
+#         valid_user, response = validate_user_id()
+#         if not valid_user:
+#             return response
 
-        # Get items from the request payload
-        items = request.json.get('items', [])
+#         # Get the current user
+#         user = User.objects.get(id=request.headers.get('user_id'))
 
-        # Calculate subtotal
-        subtotal = 0
-        for item_data in items:
-            item_code = item_data.get('itemCode')
-            quantity = item_data.get('quantity', 1)
+#         # Get items from the request payload
+#         items = request.json.get('items', [])
 
-            # Fetch item details from the database
-            item = Item.objects.get(itemCode=item_code)
+#         # Calculate subtotal
+#         subtotal = 0
+#         for item_data in items:
+#             item_code = item_data.get('itemCode')
+#             quantity = item_data.get('quantity', 1)
 
-            # Check if there is enough stock
-            if item.currentStock < quantity:
-                return jsonify({'body': None, 'status': 'error', 'message': f'Not enough stock for item {item.itemName}', 'statusCode': 400}), 200
+#             # Fetch item details from the database
+#             item = Item.objects.get(itemCode=item_code)
 
-            # Calculate item total
-            item_total = item.itemPrice * quantity
+#             # Check if there is enough stock
+#             if item.currentStock < quantity:
+#                 return jsonify({'body': None, 'status': 'error', 'message': f'Not enough stock for item {item.itemName}', 'statusCode': 400}), 200
 
-            # Update subtotal
-            subtotal += item_total
+#             # Calculate item total
+#             item_total = item.itemPrice * quantity
 
-            # Subtract quantity from current stock
-            item.currentStock -= quantity
-            item.save()
+#             # Update subtotal
+#             subtotal += float(item_total)
 
-            # Add billing entry
-            billing_entry = Billing(
-                itemCode=item.itemCode,
-                itemName=item.itemName,
-                quantity=quantity,
-                itemPrice=item.itemPrice,
-                itemTotal=item_total,
-                creator=user
-            )
-            billing_entry.save()
+#             # Subtract quantity from current stock
+#             item.currentStock -= quantity
+#             item.save()
 
-        # Get tax and discount from the request payload
-        tax = request.json.get('tax', 0)
-        discount = request.json.get('discount', 0)
+#             # Add billing entry
+#             billing_entry = Billing(
+#                 itemCode=item.itemCode,
+#                 itemName=item.itemName,
+#                 quantity=quantity,
+#                 itemPrice=item.itemPrice,
+#                 itemTotal=item_total,
+#                 creator=user
+#             )
+#             billing_entry.save()
 
-        # Calculate grand total
-        grand_total = subtotal + tax - discount
+#         # Get tax and discount from the request payload
+#         # Get tax and discount from the request payload
+#         tax = float(request.json.get('tax', 0))  # Convert tax to float
+#         discount = float(request.json.get('discount', 0))  # Convert discount to float
 
-        # Create a response object
-        response_items = [{
-            'itemCode': item_data.get('itemCode'),
-            'itemName': item_data.get('itemName'),
-            'quantity': item_data.get('quantity', 1),
-            'itemTotal': item.itemPrice * item_data.get('quantity', 1)
-        } for item_data in items]
+#         # Calculate grand total
+#         grand_total = float(subtotal + tax - discount)
 
-        response = {
-            'items': response_items,
-            'itemName': item.itemName,
-            'subtotal': subtotal,
-            'tax': tax,
-            'discount': discount,
-            'grandTotal': grand_total,
-            'status': 'complete'  # You may update this status based on your business logic
-        }
+#         # Create a response object
+#         response_items = [{
+#             'itemCode': item_data.get('itemCode'),
+#             'itemName': item_data.get('itemName'),
+#             'quantity': item_data.get('quantity', 1),
+#             'itemTotal': item.itemPrice * item_data.get('quantity', 1)
+#         } for item_data in items]
 
-        return jsonify({'body': response, 'status': 'success', 'statusCode': 200, 'message': 'Billing created successfully'}), 200
+#         response = {
+#             'items': response_items,
+#             'itemName': item.itemName,
+#             'subtotal': subtotal,
+#             'tax': tax,
+#             'discount': discount,
+#             'grandTotal': grand_total,
+#             'status': 'complete'  # You may update this status based on your business logic
+#         }
 
-    except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+#         return jsonify({'body': response, 'status': 'success', 'statusCode': 200, 'message': 'Billing created successfully'}), 200
+
+#     except Exception as e:
+#         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
 
 
 
@@ -316,38 +318,10 @@ def get_billing_entry(billing_id):
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+ 
 
 
-
-# Update a billing entry
-@billing.route('/v1/billing/<billing_id>', methods=['PUT'])
-def update_billing_entry(billing_id):
-    try:
-        # Validate user ID
-        valid_user, response = validate_user_id()
-        if not valid_user:
-            return response
-
-        # Get the billing entry by ID
-        billing_entry = Billing.objects.get(id=billing_id, creator=request.headers.get('user_id'))
-
-        # Update the billing entry based on the request payload
-        # ... (add your update logic here)
-
-        # Save the updated billing entry
-        billing_entry.save()
-
-        return jsonify({'body': None, 'status': 'success', 'statusCode': 200, 'message': 'Billing entry updated successfully'}), 200
-
-    except DoesNotExist:
-        return jsonify({'body': None, 'status': 'error', 'message': 'Billing entry not found', 'statusCode': 404}), 404
-
-    except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
-
-
-
-
+ 
 # Delete a billing entry
 @billing.route('/v1/billing/<billing_id>', methods=['DELETE'])
 def delete_billing_entry(billing_id):
