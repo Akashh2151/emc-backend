@@ -622,6 +622,13 @@ def create_employee():
         employee_addr = data.get('employeeAddr')
         employee_verification = data.get('employeeVerification')
 
+            # Validate employee_name format
+        if not re.match(r"^[A-Za-z0-9]+$", employee_name):
+            return jsonify({'body': None, "status": "error", 'message': 'Employee name should only contain alphabets and numbers.', 'statusCode': 400}), 200
+                
+        if not employee_code.strip():
+            return jsonify({'body': None, "status": "error", 'message': 'employee_code cannot be empty.', 'statusCode': 400}), 200
+       
         # Check if the required fields are provided
         if employee_code is None or employee_name is None or employee_mobile is None or employee_email is None:
             return jsonify({'body': None, "status": "error", 'message': 'employeeCode, employeeName, employeeMobile, and employeeEmail are required fields.', 'statusCode': 400}), 200
@@ -669,7 +676,7 @@ def create_employee():
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
-@restoapp.route('/v1/employees', methods=['GET'])
+@restoapp.route('/v1/employee', methods=['GET'])
 def get_all_employees():
     try:
         # Get all employees
@@ -763,7 +770,13 @@ def update_employee(employee_code):
         employee.employeeAddr = data.get('employeeAddr', employee.employeeAddr)
         employee.employeeVerification = data.get('employeeVerification', employee.employeeVerification)
 
-    
+         # Validate employee_name format
+        if 'employeeName' in data and not re.match(r"^[A-Za-z0-9]+$", data['employeeName']):
+            return jsonify({'body': None, "status": "error", 'message': 'Employee name should only contain alphabets.', 'statusCode': 400}), 200
+
+        if not employee_code.strip():
+            return jsonify({'body': None, "status": "error", 'message': 'employee_code cannot be empty.', 'statusCode': 400}), 200
+       
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
@@ -841,6 +854,11 @@ def create_item():
         item_code = data.get('itemCode')
         item_name = data.get('itemName')
         item_price = data.get('itemPrice')
+ 
+
+        # Validate employee_name format
+        if not re.match(r"^[A-Za-z0-9]+$", item_name):
+            return jsonify({'body': None, "status": "error", 'message': 'itemname should only contain alphabets and numbers.', 'statusCode': 400}), 200
 
         # Check if the required fields are provided
         if item_code is None or item_name is None or item_price is None:
@@ -1042,6 +1060,11 @@ def update_items(item_code):
         # item.images = data.get('images', item.images)
         item.currentStock = data.get('currentStock', item.currentStock)
         item.barcode = data.get('barcode', item.barcode)
+
+           # Validate employee_name format
+        if 'itemName' in data and not re.match(r"^[A-Za-z0-9]+$", data['itemName']):
+            return jsonify({'body': None, "status": "error", 'message': 'itemName should only contain alphabets.', 'statusCode': 400}), 200
+
        
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
