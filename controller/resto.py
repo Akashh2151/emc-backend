@@ -669,7 +669,33 @@ def create_employee():
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
- 
+@restoapp.route('/v1/employees', methods=['GET'])
+def get_all_employees():
+    try:
+        # Get all employees
+        employees = Employee.objects()
+
+        # Prepare response data
+        employee_list = []
+        for employee in employees:
+            employee_data = {
+                "_id": str(employee.id),
+                "employeeDetails": {
+                    "employeeCode": employee.employeeCode,
+                    "employeeName": employee.employeeName,
+                    "employeeMobile": employee.employeeMobile,
+                    "employeeEmail": employee.employeeEmail,
+                    "employeeAddr": employee.employeeAddr,
+                    "employeeVerification": employee.employeeVerification
+                }
+            }
+            employee_list.append(employee_data)
+
+        response_data = {"body": employee_list, "status": "success", "statusCode": 200, "message": 'All employees retrieved successfully'}
+        return jsonify(response_data), 200
+
+    except Exception as e:
+        return jsonify({'body': None, 'status': 'error', 'message': str(e), 'statusCode': 500}), 500
 
 @restoapp.route('/v1/employee/<employee_code>', methods=['GET'])
 def get_employee(employee_code):
