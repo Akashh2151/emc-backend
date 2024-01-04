@@ -669,19 +669,7 @@ def create_employee():
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
-# Custom JSON Encoder for History, Verification, and datetime objects
-# class CustomJSONEncoder(JSONEncoder):
-#     def default(self, obj):
-#         if isinstance(obj, History):
-#             return {'date': obj.date, 'action': obj.action}
-#         elif isinstance(obj, Verification):
-#             return {'date': obj.date, 'status': obj.status, 'comments': obj.comments}
-#         elif isinstance(obj, datetime):
-#             return obj.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-#         return super().default(obj)
-
-# Set the custom JSON encoder for the app
-# restoapp.json_encoder = CustomJSONEncoder
+ 
 
 @restoapp.route('/v1/employee/<employee_code>', methods=['GET'])
 def get_employee(employee_code):
@@ -708,10 +696,7 @@ def get_employee(employee_code):
         return jsonify({'body': None, 'status': 'error', 'message': 'Employee not found', 'statusCode': 404}), 404
     except Exception as e:
         return jsonify({'body': None, 'status': 'error', 'message': str(e), 'statusCode': 500}), 500
-
-# API route for updating employee details
-    
-    # API route for updating employee details
+ 
 
  
 
