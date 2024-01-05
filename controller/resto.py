@@ -679,6 +679,13 @@ def create_employee():
 @restoapp.route('/v1/employee', methods=['GET'])
 def get_all_employees():
     try:
+                # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
+
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+
         # Get all employees
         employees = Employee.objects()
 
@@ -707,6 +714,14 @@ def get_all_employees():
 def get_employee(employee_code):
     try:
         # Find the employee
+
+                # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
+
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+
         employee = Employee.objects.get(employeeCode=employee_code)
 
         response_data = {
@@ -855,9 +870,10 @@ def create_item():
         item_price = data.get('itemPrice')
  
 
+    
         # Validate employee_name format
-        if not re.match(r"^[A-Za-z0-9]+$", item_name):
-            return jsonify({'body': None, "status": "error", 'message': 'itemname should only contain alphabets and numbers.', 'statusCode': 400}), 200
+        if not re.match(r"^[A-Za-z0-9]+(?: [A-Za-z0-9]+)?$", item_name):
+            return jsonify({'body': None, "status": "error", 'message': 'itemname should only contain alphabets and numbers with at most one space in between.', 'statusCode': 400}), 200
 
         # Check if the required fields are provided
         if item_code is None or item_name is None or item_price is None:
@@ -1060,11 +1076,13 @@ def update_items(item_code):
         item.currentStock = data.get('currentStock', item.currentStock)
         item.barcode = data.get('barcode', item.barcode)
 
-           # Validate employee_name format
-        if 'itemName' in data and not re.match(r"^[A-Za-z0-9]+$", data['itemName']):
-            return jsonify({'body': None, "status": "error", 'message': 'itemName should only contain alphabets.', 'statusCode': 400}), 200
 
-       
+
+        # Validate employee_name format
+        if 'itemName' in data and not re.match(r"^[A-Za-z0-9]+(?: [A-Za-z0-9]+)?$", data['itemName']):
+            return jsonify({'body': None, "status": "error", 'message': 'itemName should only contain alphabets and numbers with at most one space in between.', 'statusCode': 400}), 200
+            
+            
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
