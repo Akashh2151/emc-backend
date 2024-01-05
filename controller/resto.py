@@ -686,8 +686,7 @@ def get_all_employees():
         employee_list = []
         for employee in employees:
             employee_data = {
-                "_id": str(employee.id),
-                "employeeDetails": {
+                    "_id": str(employee.id),
                     "employeeCode": employee.employeeCode,
                     "employeeName": employee.employeeName,
                     "employeeMobile": employee.employeeMobile,
@@ -695,7 +694,7 @@ def get_all_employees():
                     "employeeAddr": employee.employeeAddr,
                     "employeeVerification": employee.employeeVerification
                 }
-            }
+            
             employee_list.append(employee_data)
 
         response_data = {"body": employee_list, "status": "success", "statusCode": 200, "message": 'All employees retrieved successfully'}
