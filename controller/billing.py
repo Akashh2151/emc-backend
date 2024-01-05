@@ -1,3 +1,4 @@
+import logging
 from flask import Blueprint, jsonify, request
 from model.billing_model import Billing, BillingEntry
 from model.resto_model import Item
@@ -263,7 +264,7 @@ def validate_user_id():
 
 
 # Retrieve all billing entries for a user
-@billing.route('/v1/billing', methods=['GET'])
+@billing.route('/v1/allbilling', methods=['GET'])
 def get_all_billing_entries():
     try:
         # Validate user ID
@@ -291,34 +292,68 @@ def get_all_billing_entries():
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
 
 
-# Retrieve a specific billing entry
-@billing.route('/v1/billing/<billing_id>', methods=['GET'])
-def get_billing_entry(billing_id):
+def validate_user_id():
+    user_id = request.headers.get('user_id')
+    if not user_id:
+        return False, jsonify({'body': None, 'status': 'error', 'message': 'User ID not provided in headers', 'statusCode': 400})
+    
+    try:
+        user = User.objects.get(id=user_id)
+        return True, None
+    except DoesNotExist:
+        return False, jsonify({'body': None, 'status': 'error', 'message': 'User not found', 'statusCode': 404})
+
+@billing.route('/v1/billing', methods=['GET'])
+def get_billing_entry_by_code_or_name():
     try:
         # Validate user ID
         valid_user, response = validate_user_id()
         if not valid_user:
             return response
 
-        # Get the billing entry by ID
-        billing_entry = Billing.objects.get(id=billing_id, creator=request.headers.get('user_id'))
+        # Get itemCode and itemName from query parameters
+        item_code = request.args.get('itemCode')
+        item_name = request.args.get('itemName')
 
-        # Create a response object
-        response_entry = {
-            'itemCode': billing_entry.itemCode,
-            'itemName': billing_entry.itemName,
-            'quantity': billing_entry.quantity,
-            'itemTotal': billing_entry.itemTotal
+        # Log the values for debugging
+        logging.info(f"Querying with itemCode: {item_code}, itemName: {item_name}")
+
+        # Validate that at least one of itemCode or itemName is provided
+        if item_code is None and item_name is None:
+            return jsonify({'body': None, 'status': 'error', 'message': 'Please provide either itemCode or itemName', 'statusCode': 400}), 400
+
+        # Query for the billing entry based on itemCode or itemName
+        query_params = {
+            'creator': request.headers.get('user_id')
         }
+        if item_code is not None:
+            query_params['itemCode'] = item_code
+        if item_name is not None:
+            query_params['itemName__iexact'] = item_name
 
-        return jsonify({'body': response_entry, 'status': 'success', 'statusCode': 200, 'message': 'Billing entry retrieved successfully'}), 200
+        billing_entries = Billing.objects.filter(**query_params)
 
-    except DoesNotExist:
-        return jsonify({'body': None, 'status': 'error', 'message': 'Billing entry not found', 'statusCode': 404}), 404
+        if not billing_entries:
+            return jsonify({'body': None, 'status': 'error', 'message': 'Billing entry not found', 'statusCode': 404}), 404
+
+        # Create a list of response objects
+        response_entries = []
+        for entry in billing_entries:
+            response_entry = {
+                'itemCode': entry.itemCode,
+                'itemName': entry.itemName,
+                'quantity': entry.quantity,
+                'itemTotal': entry.itemTotal
+            }
+            response_entries.append(response_entry)
+
+        return jsonify({'body': response_entries, 'status': 'success', 'statusCode': 200, 'message': 'Billing entries retrieved successfully'}), 200
 
     except Exception as e:
+        logging.error(f"Error in API: {str(e)}")
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
- 
+
+
 
 
  
