@@ -308,6 +308,7 @@ def validate_user_id():
         return False, jsonify({'body': None, 'status': 'error', 'message': 'User not found', 'statusCode': 404})
 
 
+
 @billing.route('/v1/billing', methods=['GET'])
 def get_billing_entry_by_code_or_name():
     try:
