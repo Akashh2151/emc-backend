@@ -40,7 +40,10 @@ def create_bill():
             # Check if there is enough stock
             if item.currentStock < quantity:
                 return jsonify({'body': None, 'status': 'error', 'message': f'Not enough stock for item {item.itemName}', 'statusCode': 400}), 200
-
+                
+            if not item_code.strip():
+                  return jsonify({'body': None, "status": "error", 'message': 'itemCode cannot be empty.', 'statusCode': 400}), 200
+       
             # Calculate item total
             item_total = item.itemPrice * quantity
 
@@ -280,6 +283,7 @@ def get_all_billing_entries():
 
         # Create a response object
         response_entries = [{
+            'id': str(entry.id), 
             'itemCode': entry.itemCode,
             'itemName': entry.itemName,
             'quantity': entry.quantity,
@@ -302,6 +306,7 @@ def validate_user_id():
         return True, None
     except DoesNotExist:
         return False, jsonify({'body': None, 'status': 'error', 'message': 'User not found', 'statusCode': 404})
+
 
 @billing.route('/v1/billing', methods=['GET'])
 def get_billing_entry_by_code_or_name():
@@ -340,6 +345,7 @@ def get_billing_entry_by_code_or_name():
         response_entries = []
         for entry in billing_entries:
             response_entry = {
+                'id': str(entry.id), 
                 'itemCode': entry.itemCode,
                 'itemName': entry.itemName,
                 'quantity': entry.quantity,
