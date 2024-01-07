@@ -135,11 +135,11 @@ def register_step1():
         # Perform additional validation and bundle setup if needed
         if businessType == "resto" or businessType == "shop":
             # Remove existing bundles if present
-            user.shopBundle = []
+            user.bundle = []
             user.bundle = []
 
             if businessType == "shop":
-                user.shopBundle = shop_data
+                user.bundle = [shop_data]
                 # response = jwt.encode({'bundle': shop_data}, current_app.config['SECRET_KEY'], algorithm='HS256')
             elif businessType == "resto":
                 user.bundle = [resto_data]  # Wrap resto_data in a list
@@ -352,13 +352,19 @@ def login():
 
         if user:
             provided_password_hash = hashlib.sha256(password.encode()).hexdigest()
-
             if provided_password_hash == user.password:
                 payload = {
                     'user_id': str(user.id),
                     'sub': '1',
                     'jti': str(uuid.uuid4()),
+                    "name":user.name,
+                    "mobile":user.mobile,
                     'identity': user.email,
+                    "businessName":user.businessName,
+                    "businessMobile":user.businessMobile,
+                    "businessEmail":user.businessEmail,
+                    "businessAddress":user.businessAddress,
+                    "businessType":user.businessType,
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=50),
                     'type': 'access',
                     'fresh': True
