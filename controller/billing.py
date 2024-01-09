@@ -9,12 +9,15 @@ from mongoengine.errors import DoesNotExist
 billing=Blueprint('billing',__name__)
 
 
-
+# Global variable for the bill counter
+bill_counter = 1001  # Initialize with the starting value
 
 # Create a new billing route
 @billing.route('/v1/billing', methods=['POST'])
 def create_bill():
     try:
+        global bill_counter  # Access the global variable
+
         # Extract the user_id from the request headers
         user_id = request.headers.get('user_id')
 
@@ -44,8 +47,8 @@ def create_bill():
             if not item_code.strip():
                   return jsonify({'body': None, "status": "error", 'message': 'itemCode cannot be empty.', 'statusCode': 400}), 200
        
-            # Calculate item total
-            item_total = item.itemPrice * quantity
+                # Calculate item total
+            item_total = int(item.itemPrice * quantity)
 
             # Update subtotal
             subtotal += item_total
@@ -54,40 +57,49 @@ def create_bill():
             item.currentStock -= quantity
             item.save()
 
-            # Add billing entry
+            # Get tax and discount from the request payload
+            tax = int(request.json.get('tax', 0))
+            discount = int(request.json.get('discount', 0))
+
+            # Calculate grand total
+            grand_total = int(subtotal + tax - discount)
+            # Add billing entry with auto-incrementing bill number
             billing_entry = Billing(
                 itemCode=item.itemCode,
                 itemName=item.itemName,
                 quantity=quantity,
                 itemPrice=item.itemPrice,
                 itemTotal=item_total,
-                creator=user
+                subtotal=subtotal,
+                tax=tax,
+                discount=discount,
+                grandTotal=grand_total,
+                creator=user,
+                billNumber=bill_counter,
+                status='complete'  # Add the auto-incrementing bill number
             )
             billing_entry.save()
 
-        # Get tax and discount from the request payload
-        tax = request.json.get('tax', 0)
-        discount = request.json.get('discount', 0)
 
-        # Calculate grand total
-        grand_total = subtotal + tax - discount
+
+        # Increment the bill counter for the next bill
+        bill_counter += 1
 
         # Create a response object
         response_items = [{
             'itemCode': item_data.get('itemCode'),
             'itemName': item.itemName,
-            # 'itemName': item_data.get('itemName'),
             'quantity': item_data.get('quantity', 1),
             'itemTotal': item.itemPrice * item_data.get('quantity', 1)
         } for item_data in items]
 
         response = {
             'items': response_items,
-            # 'itemName': item.itemName,
             'subtotal': subtotal,
             'tax': tax,
             'discount': discount,
             'grandTotal': grand_total,
+            'billNumber': bill_counter - 1,  # Use the last assigned bill number
             'status': 'complete'  # You may update this status based on your business logic
         }
 
@@ -95,6 +107,8 @@ def create_bill():
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+    
+
     
 # # Create a new billing route
 # @billing.route('/v1/billing', methods=['POST'])
@@ -265,8 +279,37 @@ def validate_user_id():
 #         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
 
 
-
+# _____________________________________________________________________________
 # Retrieve all billing entries for a user
+# @billing.route('/v1/allbilling', methods=['GET'])
+# def get_all_billing_entries():
+#     try:
+#         # Validate user ID
+#         valid_user, response = validate_user_id()
+#         if not valid_user:
+#             return response
+
+#         # Get the current user
+#         user = User.objects.get(id=request.headers.get('user_id'))
+
+#         # Retrieve all billing entries for the user
+#         billing_entries = Billing.objects(creator=user)
+
+#         # Create a response object
+#         response_entries = [{
+#             'id': str(entry.id),
+#             'billNumber': entry.billNumber,
+#             'itemCode': entry.itemCode,
+#             'itemName': entry.itemName,
+#             'quantity': entry.quantity,
+#             'itemTotal': entry.itemTotal
+#         } for entry in billing_entries]
+
+#         return jsonify({'body': response_entries, 'status': 'success', 'statusCode': 200, 'message': 'Billing entries retrieved successfully'}), 200
+
+#     except Exception as e:
+#         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+
 @billing.route('/v1/allbilling', methods=['GET'])
 def get_all_billing_entries():
     try:
@@ -282,18 +325,37 @@ def get_all_billing_entries():
         billing_entries = Billing.objects(creator=user)
 
         # Create a response object
-        response_entries = [{
-            'id': str(entry.id), 
-            'itemCode': entry.itemCode,
-            'itemName': entry.itemName,
-            'quantity': entry.quantity,
-            'itemTotal': entry.itemTotal
-        } for entry in billing_entries]
+        response_entries = []
+        for entry in billing_entries:
+            response_entry = {
+                'billNumber': entry.billNumber,
+                'grandTotal': float(entry.grandTotal),
+                'items': [{
+                    'itemCode': entry.itemCode,
+                    'itemName': entry.itemName,
+                    'itemTotal': float(entry.itemTotal),
+                    'quantity': entry.quantity
+                }],
+                'status': entry.status,
+                'subtotal': float(entry.subtotal),
+                'tax': float(entry.tax),
+                'totalDiscount': float(entry.discount)  # Assuming totalDiscount is your discount field
+            }
+            response_entries.append(response_entry)
 
-        return jsonify({'body': response_entries, 'status': 'success', 'statusCode': 200, 'message': 'Billing entries retrieved successfully'}), 200
+        response = {
+            'body': response_entries,
+            'message': 'Billing entries retrieved successfully',
+            'status': 'success',
+            'statusCode': 200
+        }
+
+        return jsonify(response), 200
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+
+# ______________________________________________________________________________________
 
 
 def validate_user_id():
@@ -309,13 +371,19 @@ def validate_user_id():
 
 
 
+# Get billing entry by code or name
 @billing.route('/v1/billing', methods=['GET'])
 def get_billing_entry_by_code_or_name():
     try:
-        # Validate user ID
-        valid_user, response = validate_user_id()
-        if not valid_user:
-            return response
+        # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
+
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+
+        # Get the current user
+        user = User.objects.get(id=user_id)
 
         # Get itemCode and itemName from query parameters
         item_code = request.args.get('itemCode')
@@ -330,7 +398,7 @@ def get_billing_entry_by_code_or_name():
 
         # Query for the billing entry based on itemCode or itemName
         query_params = {
-            'creator': request.headers.get('user_id')
+            'creator': user
         }
         if item_code is not None:
             query_params['itemCode'] = item_code
@@ -347,6 +415,7 @@ def get_billing_entry_by_code_or_name():
         for entry in billing_entries:
             response_entry = {
                 'id': str(entry.id), 
+                'billNumber': entry.billNumber,
                 'itemCode': entry.itemCode,
                 'itemName': entry.itemName,
                 'quantity': entry.quantity,
@@ -354,7 +423,8 @@ def get_billing_entry_by_code_or_name():
             }
             response_entries.append(response_entry)
 
-        return jsonify({'body': response_entries, 'status': 'success', 'statusCode': 200, 'message': 'Billing entries retrieved successfully'}), 200
+        response = {'body': response_entries, 'status': 'success', 'statusCode': 200, 'message': 'Billing entries retrieved successfully'}
+        return jsonify(response), 200
 
     except Exception as e:
         logging.error(f"Error in API: {str(e)}")

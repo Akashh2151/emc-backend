@@ -1,10 +1,12 @@
 from attr import validate
 from mongoengine import Document, StringField,ReferenceField, EmailField,ListField,DecimalField,DateTimeField,IntField,URLField,EmbeddedDocumentField,EmbeddedDocument,FloatField
 from mongoengine import connect
+from pymongo import MongoClient
 from wtforms import ValidationError
 from model.resto_model import Item
   
-
+# Disable OCSP support
+MongoClient._ocsp_support = False
   
 from model.signInsignup_model import User
 # Replace the values with your MongoDB URI and other settings
@@ -28,8 +30,18 @@ class Billing(Document):
     itemName = StringField()
     quantity = IntField()
     itemPrice = DecimalField()
-    itemTotal = DecimalField()
+    itemTotal = IntField()
+    billNumber = IntField(required=True)
     creator = ReferenceField(User)
+
+    # Modify the following fields to store integers or floats
+    discount = IntField()
+    grandTotal = DecimalField()
+    subtotal = IntField()
+    tax = DecimalField()
+
+      # Add the status field
+    status = StringField()
 
 
 class BillingEntry(Document):

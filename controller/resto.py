@@ -612,7 +612,8 @@ def create_employee():
 
         # Get the current user
         user = User.objects.get(id=user_id)
-  
+ 
+        print("_____________",user)
 
         data = request.json
         employee_code = data.get('employeeCode')
@@ -676,32 +677,36 @@ def create_employee():
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
+# Get all employees associated with the user
 @restoapp.route('/v1/employee', methods=['GET'])
 def get_all_employees():
     try:
-                # Extract the user_id from the request headers
+        # Extract the user_id from the request headers
         user_id = request.headers.get('user_id')
 
         # Check if the user_id is provided
         if not user_id:
             return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
 
-        # Get all employees
-        employees = Employee.objects()
+        # Get the current user
+        user = User.objects.get(id=user_id)
+
+        # Get all employees associated with the user
+        employees = Employee.objects(creator=user)
 
         # Prepare response data
         employee_list = []
         for employee in employees:
             employee_data = {
-                    "_id": str(employee.id),
-                    "employeeCode": employee.employeeCode,
-                    "employeeName": employee.employeeName,
-                    "employeeMobile": employee.employeeMobile,
-                    "employeeEmail": employee.employeeEmail,
-                    "employeeAddr": employee.employeeAddr,
-                    "employeeVerification": employee.employeeVerification
-                }
-            
+                "_id": str(employee.id),
+                "employeeCode": employee.employeeCode,
+                "employeeName": employee.employeeName,
+                "employeeMobile": employee.employeeMobile,
+                "employeeEmail": employee.employeeEmail,
+                "employeeAddr": employee.employeeAddr,
+                "employeeVerification": employee.employeeVerification
+            }
+
             employee_list.append(employee_data)
 
         response_data = {"body": employee_list, "status": "success", "statusCode": 200, "message": 'All employees retrieved successfully'}
@@ -709,6 +714,8 @@ def get_all_employees():
 
     except Exception as e:
         return jsonify({'body': None, 'status': 'error', 'message': str(e), 'statusCode': 500}), 500
+
+
 
 @restoapp.route('/v1/employee/<employee_code>', methods=['GET'])
 def get_employee(employee_code):
@@ -1190,17 +1197,22 @@ def create_table():
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
+
 @restoapp.route('/v1/table', methods=['GET'])
 def get_all_tables():
     try:
-        tables = Table.objects()
-
         # Extract the user_id from the request headers
         user_id = request.headers.get('user_id')
 
         # Check if the user_id is provided
         if not user_id:
             return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+
+        # Get the current user
+        user = User.objects.get(id=user_id)
+
+        # Get all tables associated with the user
+        tables = Table.objects(creator=user)
 
         response_tables = [{"_id": str(table.id), "tableCode": table.tableCode, "tableName": table.tableName,
                              "tableStatus": table.tableStatus, "tablePlacement": table.tablePlacement,
@@ -1211,6 +1223,7 @@ def get_all_tables():
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+    
 
 
 @restoapp.route('/v1/table/<table_code>', methods=['GET'])
@@ -1394,16 +1407,21 @@ def create_vendor():
 
 
 
-
 @restoapp.route('/v1/vendors', methods=['GET'])
 def get_all_vendors():
     try:
-        user_id=request.headers.get('user_id')
-        
+        # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
+
+        # Check if the user_id is provided
         if not user_id:
             return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
-               
-        vendors = Vendor.objects()
+
+        # Get the current user
+        user = User.objects.get(id=user_id)
+
+        # Get all vendors associated with the user
+        vendors = Vendor.objects(creator=user)
 
         response_vendors = [
             {
@@ -1422,7 +1440,6 @@ def get_all_vendors():
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
-
 
 
 

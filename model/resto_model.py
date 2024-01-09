@@ -4,6 +4,8 @@ from mongoengine import Document, StringField,ReferenceField, EmailField,ListFie
 # from pydantic import ValidationError
 from pymongo import MongoClient
 from mongoengine import EmbeddedDocument, StringField
+# Disable OCSP support
+MongoClient._ocsp_support = False
 
 
  
