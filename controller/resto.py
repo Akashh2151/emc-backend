@@ -880,20 +880,27 @@ def create_item():
     
         # Validate employee_name format
         if not re.match(r"^[A-Za-z0-9]+(?: [A-Za-z0-9]+)?$", item_name):
-            return jsonify({'body': None, "status": "error", 'message': 'itemname should only contain alphabets and numbers with at most one space in between.', 'statusCode': 400}), 200
+            response = {
+                'body': {},
+                'status': 'error',
+                'message': 'employee_name should only contain alphabets and numbers with at most one space in between.',
+                'statusCode': 400
+            }
+            return jsonify(response), 200
+
 
         # Check if the required fields are provided
         if item_code is None or item_name is None or item_price is None:
-            return jsonify({'body': None, "status": "error", 'message': 'itemCode, itemName, and itemPrice are required fields.', 'statusCode': 400}), 200
+            return jsonify({'body': {}, "status": "error", 'message': 'itemCode, itemName, and itemPrice are required fields.', 'statusCode': 400}), 200
              # Check if itemCode is not empty
         
         if not item_code.strip():
-            return jsonify({'body': None, "status": "error", 'message': 'itemCode cannot be empty.', 'statusCode': 400}), 200
+            return jsonify({'body': {}, "status": "error", 'message': 'itemCode cannot be empty.', 'statusCode': 400}), 200
        
        
         existing_item = Item.objects(itemCode=item_code).first()
         if existing_item:
-            return jsonify({'body': None, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statusCode': 400}), 200
+            return jsonify({'body': {}, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statusCode': 400}), 200
                 # Validate for blank spaces in keys and values
     
         new_item = Item(
@@ -918,7 +925,7 @@ def create_item():
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
-            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
+            response = {"body": {}, "status": "error", "statusCode": 400, "message": error_message}
             return jsonify(response), 200
 
         # Save the new item
@@ -933,7 +940,7 @@ def create_item():
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': {}, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -1190,7 +1197,17 @@ def create_table():
 
         new_table.save()
 
-        response = {"body": {}, "status": "success", "statusCode": 200, "message": 'Table created successfully'}
+        table_data = {
+            "_id":str(new_table.id),
+            "tableCode": new_table.tableCode,
+            "tableName": new_table.tableName,
+            "tableStatus": new_table.tableStatus,
+            "tablePlacement": new_table.tablePlacement,
+            "tableQR": new_table.tableQR
+        }
+
+
+        response = {"body": table_data, "status": "success", "statusCode": 200, "message": 'Table created successfully'}
         return jsonify(response), 200
 
     except Exception as e:

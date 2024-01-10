@@ -331,6 +331,7 @@ def get_all_billing_entries():
                 'billNumber': entry.billNumber,
                 'grandTotal': float(entry.grandTotal),
                 'items': [{
+                    "_id":str(entry.id),
                     'itemCode': entry.itemCode,
                     'itemName': entry.itemName,
                     'itemTotal': float(entry.itemTotal),
