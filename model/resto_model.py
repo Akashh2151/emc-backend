@@ -164,6 +164,7 @@ class Table(Document):
         tableStatus =StringField(required=True)
         tableQR=StringField(required=True)
         tablePlacement =StringField(required=True)
+        creator = ReferenceField(User, reverse_delete_rule=2)
         
 # Assume you have a User model defined
 class User(Document):

@@ -1160,8 +1160,8 @@ def create_table():
         table_status = data.get('tableStatus')
         table_placement = data.get('tablePlacement')
         table_qr = data.get('tableQR')
-        
-         # Extract the user_id from the request headers
+
+        # Extract the user_id from the request headers
         user_id = request.headers.get('user_id')
 
         # Check if the user_id is provided
@@ -1170,11 +1170,10 @@ def create_table():
 
         if not table_code or not table_name or not table_status or not table_placement or not table_qr:
             response = {'body': None, "status": "error", 'statusCode': 400, 'message': 'All fields are required'}
-            return jsonify(response),200
-        
+            return jsonify(response), 200
+
         if not table_code.strip():
             return jsonify({'body': None, "status": "error", 'message': 'tableCode cannot be empty.', 'statusCode': 400}), 200
-
 
         existing_table = Table.objects(tableCode=table_code).first()
 
@@ -1186,7 +1185,8 @@ def create_table():
             tableName=table_name,
             tableStatus=table_status,
             tablePlacement=table_placement,
-            tableQR=table_qr
+            tableQR=table_qr,
+            creator=user_id  # Assuming creator is a reference to the user's ID
         )
 
         # Validate for blank spaces in keys and values
@@ -1198,7 +1198,7 @@ def create_table():
         new_table.save()
 
         table_data = {
-            "_id":str(new_table.id),
+            "_id": str(new_table.id),
             "tableCode": new_table.tableCode,
             "tableName": new_table.tableName,
             "tableStatus": new_table.tableStatus,
@@ -1206,12 +1206,12 @@ def create_table():
             "tableQR": new_table.tableQR
         }
 
-
         response = {"body": table_data, "status": "success", "statusCode": 200, "message": 'Table created successfully'}
         return jsonify(response), 200
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+
 
 
 
@@ -1231,16 +1231,30 @@ def get_all_tables():
         # Get all tables associated with the user
         tables = Table.objects(creator=user)
 
-        response_tables = [{"_id": str(table.id), "tableCode": table.tableCode, "tableName": table.tableName,
-                             "tableStatus": table.tableStatus, "tablePlacement": table.tablePlacement,
-                             "tableQR": table.tableQR} for table in tables]
+        response_tables = []
+        for table in tables:
+            response_table = {
+                "_id": str(table.id),
+                "tableCode": table.tableCode,
+                "tableName": table.tableName,
+                "tableStatus": table.tableStatus,
+                "tablePlacement": table.tablePlacement,
+                "tableQR": table.tableQR,
+            }
+            response_tables.append(response_table)
+            print(response_table)
 
         response = {'body': response_tables, 'status': 'success', 'statusCode': 200, 'message': 'Tables retrieved successfully'}
+        
+        # If there are no tables, return an empty array in the body
+        if not response_tables:
+            response['body'] = []
+
         return jsonify(response), 200
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
-    
+
 
 
 @restoapp.route('/v1/table/<table_code>', methods=['GET'])
