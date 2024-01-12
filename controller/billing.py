@@ -1,7 +1,7 @@
 import logging
 from flask import Blueprint, jsonify, request
 from model.billing_model import Billing, BillingEntry
-from model.resto_model import Item
+from model.resto_model import Item, ItemMaster
 from model.signInsignup_model import User
 from mongoengine.errors import DoesNotExist
 
@@ -310,6 +310,7 @@ def validate_user_id():
 #     except Exception as e:
 #         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
 
+
 @billing.route('/v1/allbilling', methods=['GET'])
 def get_all_billing_entries():
     try:
@@ -323,26 +324,34 @@ def get_all_billing_entries():
 
         # Retrieve all billing entries for the user
         billing_entries = Billing.objects(creator=user)
-
+       
         # Create a response object
         response_entries = []
         for entry in billing_entries:
-            response_entry = {
-                'billNumber': entry.billNumber,
-                'grandTotal': float(entry.grandTotal),
-                'items': [{
-                    "_id":str(entry.id),
-                    'itemCode': entry.itemCode,
-                    'itemName': entry.itemName,
-                    'itemTotal': float(entry.itemTotal),
-                    'quantity': entry.quantity
-                }],
-                'status': entry.status,
-                'subtotal': float(entry.subtotal),
-                'tax': float(entry.tax),
-                'totalDiscount': float(entry.discount)  # Assuming totalDiscount is your discount field
-            }
-            response_entries.append(response_entry)
+            # Find the item using the item code from the current billing entry
+            item_obj = Item.objects(itemCode=entry.itemCode).first()
+
+            if item_obj:
+                response_entry = {
+                    "_id": str(item_obj.id),
+                    'billNumber': entry.billNumber,
+                    'grandTotal': float(entry.grandTotal),
+                    'items': [{
+                        "_id": str(entry.id),
+                        'itemCode': entry.itemCode,
+                        'itemName': entry.itemName,
+                        'itemTotal': float(entry.itemTotal),
+                        'quantity': entry.quantity
+                    }],
+                    'status': entry.status,
+                    'subtotal': float(entry.subtotal),
+                    'tax': float(entry.tax),
+                    'totalDiscount': float(entry.discount)  # Assuming totalDiscount is your discount field
+                }
+                response_entries.append(response_entry)
+            else:
+                # Handle the case where the item with the given itemCode is not found
+                return jsonify({'body': None, 'error': f'Item with code {entry.itemCode} not found', 'statusCode': 404}), 404
 
         response = {
             'body': response_entries,
