@@ -92,14 +92,14 @@ class History(EmbeddedDocument):
 
 
 
-class CustomerMaster(Document):
+class Customer(Document):
     customerName = StringField(required=True)
-    customerMobile = StringField(required=True, regex=r'^\d{10}$')
-    customerEmail = EmailField(required=True)
-    customerLastVisit = DateTimeField(format='%Y-%m-%dT%H:%M:%S.%fZ')
+    customerMobile = StringField(required=True)
+    customerEmail = EmailField()
+    # customerLastVisit = DateTimeField(format='%Y-%m-%dT%H:%M:%S.%fZ')
     customerAddr = StringField()
-    customerHistory = ListField(EmbeddedDocumentField(History))
-    
+    # customerHistory = ListField(EmbeddedDocumentField(History))
+    creator = ReferenceField(User, reverse_delete_rule=2) 
 
 
 

@@ -340,6 +340,7 @@ def get_all_billing_entries():
                         "_id": str(entry.id),
                         'itemCode': entry.itemCode,
                         'itemName': entry.itemName,
+                        'itemPrice': float(item_obj.itemPrice),
                         'itemTotal': float(entry.itemTotal),
                         'quantity': entry.quantity
                     }],

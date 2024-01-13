@@ -6,7 +6,7 @@ from jsonschema import ValidationError
 from pymongo.errors import DuplicateKeyError
 # from msilib import Table
 from flask import Blueprint, app, request, jsonify 
-from model.resto_model import   CustomerMaster, Employee, Item,Table, ItemMaster, Order, TaxMaster, Vendor, Verification 
+from model.resto_model import   Customer, Employee, Item,Table, ItemMaster, Order, TaxMaster, Vendor, Verification 
 from mongoengine.errors import DoesNotExist
 from model.resto_model import Verification
 
@@ -509,93 +509,225 @@ restoapp = Blueprint('restoapp', __name__)
 
 # # Set the custom JSON encoder for the app
 # restoapp.json_encoder = CustomJSONEncoder
+# Route to create a customer
+@restoapp.route('/v1/customer', methods=['POST'])
+def create_customer():
+    try:
+        data = request.json
+        customerName = data.get('customerName')
+        customerMobile = data.get('customerMobile')
+        customerEmail = data.get('customerEmail')
+        customerAddr = data.get('customerAddr')
+
+        # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
+
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+        
+         # Get the current user
+        user = User.objects.get(id=user_id)
+
+        existingcustomerName = Customer.objects(customerName=customerName).first()
+        if existingcustomerName:
+            return jsonify({'body': None, "status": "error", 'message': 'customer with the provided customerName already exists.', 'statusCode': 400}), 200
+                # Check if the employeeMobile already exists
+       
+        # Validate customerName format
+        if not re.match(r"^[A-Za-z0-9]+(?:\s[A-Za-z0-9]+)?$", customerName):
+            return jsonify({'body': None, "status": "error", 'message': 'Customer name should only contain alphabets and numbers.', 'statusCode': 400}), 200
+
+        # Check if the required fields are provided
+        if customerName is None or customerMobile is None or customerEmail is None:
+            return jsonify({'body': None, "status": "error", 'message': 'customerName, customerMobile, and customerEmail are required fields.', 'statusCode': 400}), 200
+
+        # Validate customerMobile format
+        if not customerMobile.isdigit() or len(customerMobile) != 10:
+            return jsonify({'body': None, "status": "error", 'message': 'Invalid customerMobile format.', 'statusCode': 400}), 200
+
+        # Validate customerEmail format
+        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", customerEmail):
+            return jsonify({'body': None, "status": "error", 'message': 'Invalid customerEmail format.', 'statusCode': 400}), 200
+
+        existing_customer = Customer.objects(customerMobile=customerMobile).first()
+        if existing_customer:
+            return jsonify({'body': None, "status": "error", 'message': 'Customer with the provided customerMobile already exists.', 'statusCode': 400}), 200
+
+        new_customer = Customer(
+            customerName=customerName,
+            customerMobile=customerMobile,
+            customerEmail=customerEmail,
+            customerAddr=customerAddr, 
+            creator=user.id
+        )
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
+        if not is_no_blank_spaces:
+            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
+            return jsonify(response), 200
+        
+        new_customer.save()
+   
+
+        customer_data = {
+            "_id": str(new_customer.id),
+            "customerName": new_customer.customerName,
+            "customerMobile": new_customer.customerMobile,
+            "customerEmail": new_customer.customerEmail,
+            "customerAddr": new_customer.customerAddr,
+           
+        }
+
+        response = {"body":customer_data, "status": "success", "statusCode": 200, "message": 'Customer created successfully'}
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
 
 
-# @restoapp.route('/customer', methods=['POST'])
-# def create_customer():
-#     try:
-#         data = request.json
-#         customerName = data.get('customerName')
-#         customerMobile = data.get('customerMobile')
-#         customerEmail = data.get('customerEmail')
-#         customerLastVisit = datetime.strptime(data.get('customerLastVisit'), '%Y-%m-%dT%H:%M:%S.%fZ')
-#         customerAddr = data.get('customerAddr')
-#         customerHistory = [History(date=datetime.strptime(hist['date'], '%Y-%m-%dT%H:%M:%S.%fZ'), action=hist['action']) for hist in data.get('customerHistory', [])]
-
-#         new_customer = CustomerMaster(
-#             customerName=customerName,
-#             customerMobile=customerMobile,
-#             customerEmail=customerEmail,
-#             customerLastVisit=customerLastVisit,
-#             customerAddr=customerAddr,
-#             customerHistory=customerHistory
-#         )
-#         new_customer.save()
-
-#         response = {"body": None, "status": "success", "statusCode": 200, "message": 'Customer created'}
-#         return jsonify(response)
-
-#     except Exception as e:
-#         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
     
-    
+# Get all customers associated with the user
+@restoapp.route('/v1/customer', methods=['GET'])
+def get_all_customers():
+    try:
+        # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
 
-# # Get all customers
-# @restoapp.route('/customer', methods=['GET'])
-# def get_customers():
-#     try:
-#         customers = CustomerMaster.objects()
-#         customers_list = [{"customerName": customer.customerName,
-#                            "customerMobile": customer.customerMobile,
-#                            "customerEmail": customer.customerEmail,
-#                            "customerLastVisit": customer.customerLastVisit,
-#                            "customerAddr": customer.customerAddr,
-#                            "customerHistory": customer.customerHistory} for customer in customers]
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
 
-#         response = {'body': customers_list, 'status': 'success', 'statusCode': 200, 'message': 'Customers retrieved'}
-#         return jsonify(response)
+        # Get the current user
+        user = User.objects.get(id=user_id)
 
-#     except Exception as e:
-#         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+        # Get all customers associated with the user
+        customers = Customer.objects(creator=user)
 
-# # Update customer route
-# @restoapp.route('/customer/<customer_id>', methods=['PUT'])
-# def update_customer(customer_id):
-#     try:
-#         data = request.json
-#         # Find the customer by ID
-#         customer = CustomerMaster.objects.get(id=customer_id)
+        # Prepare response data
+        customer_list = []
+        for customer in customers:
+            customer_data = {
+                "_id": str(customer.id),
+                "customerName": customer.customerName,
+                "customerMobile": customer.customerMobile,
+                "customerEmail": customer.customerEmail,
+                # "customerLastVisit": customer.customerLastVisit,
+                "customerAddr": customer.customerAddr,
+                # "customerHistory": customer.customerHistory
+            }
 
-#         # Update customer fields
-#         customer.customerName = data.get('customerName', customer.customerName)
-#         customer.customerMobile = data.get('customerMobile', customer.customerMobile)
-#         customer.customerEmail = data.get('customerEmail', customer.customerEmail)
-#         customer.customerLastVisit = datetime.strptime(data.get('customerLastVisit'), '%Y-%m-%dT%H:%M:%S.%fZ')
-#         customer.customerAddr = data.get('customerAddr', customer.customerAddr)
-#         customer.customerHistory = [History(date=datetime.strptime(hist['date'], '%Y-%m-%dT%H:%M:%S.%fZ'), action=hist['action']) for hist in data.get('customerHistory', [])]
+            customer_list.append(customer_data)
 
-#         customer.save()
+        response_data = {"body": customer_list, "status": "success", "statusCode": 200, "message": 'All customers retrieved successfully'}
+        return jsonify(response_data), 200
 
-#         response = {"body": None, "status": "success", "statusCode": 200, "message": 'Customer updated'}
-#         return jsonify(response)
-
-#     except Exception as e:
-#         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+    except Exception as e:
+        return jsonify({'body': None, 'status': 'error', 'message': str(e), 'statusCode': 500}), 500
 
 
 
-# # Delete customer route
-# @restoapp.route('/customer/<customer_id>', methods=['DELETE'])
-# def delete_customer(customer_id):
-#     try:
-#         # Find the customer by ID and delete
-#         CustomerMaster.objects.get(id=customer_id).delete()
+# Update customer route
+@restoapp.route('/v1/customer/<customer_id>', methods=['PUT'])
+def update_customer(customer_id):
+    try:
+        data = request.json
 
-#         response = {"body": None, "status": "success", "statusCode": 200, "message": 'Customer deleted'}
-#         return jsonify(response)
-    
-#     except Exception as e:
-#         return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+        # Validate customerMobile format
+        customer_mobile = data.get('customerMobile')
+        if not customer_mobile.isdigit() or len(customer_mobile) != 10:
+            return jsonify({'body': None, "status": "error", 'message': 'Invalid customerMobile format. It should be a 10-digit number.', 'statusCode': 400}), 400
+          # Validate customerEmail format
+        customer_email = data.get('customerEmail')
+        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", customer_email):
+            return jsonify({'body': None, "status": "error", 'message': 'Invalid customerEmail format.', 'statusCode': 400}), 200
+
+        # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
+
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+
+        # Validate if customer ID in the request matches the one in the URL
+        if data.get('customer_id') and data['customer_id'] != customer_id:
+            response = {
+                "body": {},
+                "status": "error",
+                "statusCode": 400,
+                "message": "Cannot change customer ID in the update"
+            }
+            return jsonify(response), 200
+
+        # Find the customer by ID
+        customer = Customer.objects.get(id=customer_id)
+
+        # Update customer fields
+        customer.customerName = data.get('customerName', customer.customerName)
+        customer.customerMobile = data.get('customerMobile', customer.customerMobile)
+        customer.customerEmail = data.get('customerEmail', customer.customerEmail)
+        customer.customerAddr = data.get('customerAddr', customer.customerAddr)
+        
+       
+        # Validate customerName format
+        if 'customerName' in data and not re.match(r"^[A-Za-z0-9\s]+$", data['customerName']):
+            return jsonify({'body': None, "status": "error", 'message': 'Customer name should only contain alphabets, numbers, and spaces.', 'statusCode': 400}), 200
+
+        # Validate for blank spaces in keys and values
+        is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
+        if not is_no_blank_spaces:
+            response = {"body": {}, "status": "error", "statusCode": 400, "message": error_message}
+            return jsonify(response), 200
+
+        customer.save()
+
+        customer_data = {
+            "_id": str(customer.id),
+            "customerName": customer.customerName,
+            "customerMobile": customer.customerMobile,
+            "customerEmail": customer.customerEmail,
+            "customerAddr": customer.customerAddr,
+           
+        }
+
+        response = {"body": customer_data, "status": "success", "statusCode": 200, "message": 'Customer updated successfully'}
+        return jsonify(response), 200
+
+    except DoesNotExist:
+        return jsonify({'body': {}, 'status': 'error', 'message': 'Customer not found', 'statusCode': 404}), 404
+    except Exception as e:
+        return jsonify({'body': {}, 'status': 'error', 'message': str(e), 'statusCode': 500}), 500
+
+
+
+@restoapp.route('/v1/customer/<customer_id>', methods=['DELETE'])
+def delete_customer(customer_id):
+    try:
+        # Find the customer by ID
+        customer = Customer.objects.get(id=customer_id)
+
+        # Extract the user_id from the request headers
+        user_id = request.headers.get('user_id')
+
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 400
+
+        # Check if the user has permission to delete the customer
+        if str(customer.creator.id) != user_id:
+            return jsonify({'body': None, "status": "error", 'message': 'You do not have permission to delete this customer.', 'statusCode': 403}), 403
+
+        # Delete the customer
+        customer.delete()
+
+        response = {"body": None, "status": "success", "statusCode": 200, "message": 'Customer deleted successfully'}
+        return jsonify(response), 200
+
+    except DoesNotExist:
+        return jsonify({'body': None, 'status': 'error', 'message': 'Customer not found for deletion.', 'statusCode': 404}), 404
+    except Exception as e:
+        return jsonify({'body': None, 'status': 'error', 'message': str(e), 'statusCode': 500}), 500
+
     
     
 # # --
