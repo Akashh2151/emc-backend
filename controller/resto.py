@@ -1,5 +1,6 @@
 # import datetime
 from json import JSONEncoder
+import logging
 import re
 from bson import ObjectId
 from jsonschema import ValidationError
@@ -1279,8 +1280,68 @@ def delete_item(item_code):
         return jsonify({'body': {}, 'error': str(e), 'statusCode': 500})
 
 
+# Search and filter items by itemCode and itemName
+@restoapp.route('/v1/item/search', methods=['GET'])
+def search_items():
+    try:
+        # Extract the user_id from the request headers  
+        user_id = request.headers.get('user_id')
 
+        # Check if the user_id is provided
+        if not user_id:
+            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
 
+        try:
+            # Get the current user
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return jsonify({'body': None, 'status': 'error', 'message': 'User not found.', 'statusCode': 404}), 404
+
+        # Get query parameters for search
+        item_code_query = request.args.get('itemCode')
+        item_name_query = request.args.get('itemName')
+
+        # Create a filter dictionary based on the provided query parameters
+        filter_dict = {'creator': user}
+
+        if item_code_query:
+            filter_dict['itemCode__icontains'] = item_code_query
+
+        if item_name_query:
+            filter_dict['itemName__icontains'] = item_name_query
+
+        # Filter items based on the criteria
+        items = Item.objects(**filter_dict)
+
+        response_items = []
+        for item in items:
+            response_item = {
+                "_id": str(item.id),
+                "itemCode": str(item.itemCode) if item.itemCode else None,
+                "itemName": item.itemName,
+                "itemCategory": item.itemCategory,
+                "itemSubCategory": item.itemSubCategory,
+                "itemPrice": float(item.itemPrice) if item.itemPrice is not None else None,
+                "ingredients": item.ingredients,
+                "recipe": item.recipe,
+                "allergen": item.allergen,
+                "portionSize": item.portionSize,
+                "status": item.status,
+                "tax": float(item.tax) if item.tax is not None else None,
+                "discount": float(item.discount) if item.discount is not None else None,
+                "currentStock": item.currentStock,
+                "barcode": item.barcode,
+            }
+            response_items.append(response_item)
+
+        if not response_items:
+            return jsonify({'body': None, 'status': 'success', 'statusCode': 200, 'message': 'No items found based on the search criteria'}), 200
+
+        response = {'body': response_items, 'status': 'success', 'statusCode': 200, 'message': 'Items retrieved successfully'}
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500, 'message': 'Error occurred while processing the request.'}), 500
 # __
  
 @restoapp.route('/v1/table', methods=['POST'])

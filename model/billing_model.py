@@ -33,13 +33,11 @@ class Billing(Document):
     itemTotal = IntField()
     billNumber = IntField(required=True)
     creator = ReferenceField(User)
-
     # Modify the following fields to store integers or floats
     discount = IntField()
     grandTotal = DecimalField()
     subtotal = IntField()
     tax = DecimalField()
-
       # Add the status field
     status = StringField()
 
