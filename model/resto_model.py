@@ -5,7 +5,7 @@ from mongoengine import Document, StringField,ReferenceField, EmailField,ListFie
 from pymongo import MongoClient
 from mongoengine import EmbeddedDocument, StringField
 # Disable OCSP support
-MongoClient._ocsp_support = False
+# MongoClient._ocsp_support = False
 
 
  
@@ -133,7 +133,7 @@ class Verification(EmbeddedDocument):
 #     creator = ReferenceField(User, reverse_delete_rule=2) 
     
     
-    
+
     
 class Item(Document):
     itemCode = StringField(required=True, unique=True)

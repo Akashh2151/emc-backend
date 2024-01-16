@@ -1,3 +1,4 @@
+import datetime
 from attr import validate
 from mongoengine import Document, StringField,ReferenceField, EmailField,ListField,DecimalField,DateTimeField,IntField,URLField,EmbeddedDocumentField,EmbeddedDocument,FloatField
 from mongoengine import connect
@@ -23,8 +24,12 @@ def validate_non_empty(value):
         # You can customize this part based on your requirements for numeric fields
         pass
 
+ 
 
 
+ # Billing model
+
+# Billing model
 class Billing(Document):
     itemCode = StringField()
     itemName = StringField()
@@ -33,18 +38,26 @@ class Billing(Document):
     itemTotal = IntField()
     billNumber = IntField(required=True)
     creator = ReferenceField(User)
-    # Modify the following fields to store integers or floats
     discount = IntField()
     grandTotal = DecimalField()
+    currentStock = IntField()
     subtotal = IntField()
     tax = DecimalField()
-      # Add the status field
-    status = StringField()
+    ingredients = ListField(StringField())
+    allergen = ListField(StringField())
+    portionSize = StringField()
+    itemCategory = StringField()
+    barcode = StringField()
+    itemSubCategory = StringField(validation=validate_non_empty)
+    recipe = StringField()
+    # allergen = StringField()
+    billNumber = IntField()
+    created_at = DateTimeField()
 
-
+# BillingEntry model
 class BillingEntry(Document):
     item = ReferenceField(Item, required=True)
     quantity = IntField(default=1)
     itemTotal = DecimalField(precision=2)
-    createdAt = DateTimeField()
-    creator = ReferenceField(User)    
+    # created_at = DateTimeField(default=datetime.utcnow)
+    creator = ReferenceField(User)
