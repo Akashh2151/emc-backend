@@ -5,17 +5,17 @@ from model.billing_model import Billing, BillingEntry
 from model.resto_model import Item, ItemMaster
 from model.signInsignup_model import User
 from mongoengine.errors import DoesNotExist
+from decimal import Decimal
 
 from security.mastervalidation import validate_no_blank_spaces
 
 
 billing=Blueprint('billing',__name__)
 # Global variable for the bill counter
-
 bill_counter = 1001  # Initialize with the starting value
 @billing.route('/v1/billing', methods=['POST'])
-def create_item():
-    global bill_counter 
+def create_items():
+    global bill_counter
     try:
         # Extract the user_id from the request headers
         user_id = request.headers.get('user_id')
@@ -27,90 +27,94 @@ def create_item():
         # Get the current user
         user = User.objects.get(id=user_id)
 
-        data = request.json
-        item_code = data.get('itemCode')
-        item_name = data.get('itemName')
-        item_price = data.get('itemPrice')
+        items_data = request.json
 
-        # Calculate subtotal, grandTotal, status, discount, and tax
-        subtotal = item_price * data.get('quantity', 1)
-        discount = data.get('discount', 0)
-        tax = data.get('tax', 0)
+        billing_response = []
 
-        grand_total = subtotal - discount + tax
+        for data in items_data:
+            item_code = data.get('itemCode')
+            item_name = data.get('itemName')
+            item_price = data.get('itemPrice')
 
-        # Get the item from the collection based on itemCode
-        existing_item = Item.objects(itemCode=item_code).first()
+            # Calculate subtotal, grandTotal, status, discount, and tax
+            subtotal = item_price * data.get('quantity', 1)
+            discount = data.get('discount', 0)
+            tax = data.get('tax', 0)
 
-        if existing_item:
-            # Check and subtract quantity from currentStock
-            current_stock = existing_item.currentStock
-            requested_quantity = data.get('quantity', 1)
+            grand_total = subtotal - discount + tax
 
-            if current_stock is not None and current_stock >= requested_quantity:
-                existing_item.currentStock -= requested_quantity
-            else:
-                return jsonify({'body': {}, "status": "error", 'message': 'Insufficient stock.', 'statusCode': 400}), 200
+            # Get the item from the collection based on itemCode
+            existing_item = Item.objects(itemCode=item_code).first()
 
-            # Save the updated item
-            existing_item.save()
+            if existing_item:
+                # Check and subtract quantity from currentStock
+                current_stock = existing_item.currentStock
+                requested_quantity = data.get('quantity', 1)
 
-            # Store the calculated values in the new billing document
-            new_billing = Billing(
-                itemCode=item_code,
-                itemName=item_name,
-                itemPrice=item_price,
-                itemCategory=data.get('itemCategory', None),
-                itemSubCategory=data.get('itemSubCategory', None),
-                ingredients=data.get('ingredients', None),
-                recipe=data.get('recipe', None),
-                allergen=data.get('allergen', None),
-                portionSize=data.get('portionSize', None),
-                # status="Your Calculated Status",  # Define your status calculation logic here
-                tax=tax,
-                discount=discount,
-                currentStock=existing_item.currentStock,  # Use the updated currentStock
-                barcode=data.get('barcode', None),
-                quantity=requested_quantity,
-                creator=user,
-                subtotal=subtotal,
-                grandTotal=grand_total
-            )
+                if current_stock is not None and current_stock >= requested_quantity:
+                    existing_item.currentStock -= requested_quantity
+                else:
+                    return jsonify({'body': {}, "status": "error", 'message': f'Insufficient stock for itemCode: {item_code}', 'statusCode': 400}), 200
 
-            # Validate for blank spaces in keys and values
-            is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
-            if not is_no_blank_spaces:
-                response = {"body": {}, "status": "error", "statusCode": 400, "message": error_message}
-                return jsonify(response), 200
+                # Save the updated item
+                existing_item.save()
 
-            # Save the new billing document
-            new_billing.save()
-           
-            # Increment the bill counter
-            bill_counter += 1
+                # Store the calculated values in the new billing document
+                new_billing = Billing(
+                    itemCode=item_code,
+                    itemName=item_name,
+                    itemPrice=item_price,
+                    itemCategory=data.get('itemCategory', None),
+                    itemSubCategory=data.get('itemSubCategory', None),
+                    ingredients=data.get('ingredients', None),
+                    recipe=data.get('recipe', None),
+                    allergen=data.get('allergen', None),
+                    portionSize=data.get('portionSize', None),
+                    tax=tax,
+                    discount=discount,
+                    currentStock=existing_item.currentStock,
+                    barcode=data.get('barcode', None),
+                    quantity=requested_quantity,
+                    creator=user,
+                    subtotal=subtotal,
+                    grandTotal=grand_total
+                )
 
-            # Return the response with the billing document ID and other details
-            response = {
-                "body": {
+                # Validate for blank spaces in keys and values
+                is_no_blank_spaces, error_message = validate_no_blank_spaces(data)
+                if not is_no_blank_spaces:
+                    response = {"body": {}, "status": "error", "statusCode": 400, "message": error_message}
+                    return jsonify(response), 200
+
+                # Save the new billing document
+                new_billing.save()
+
+                # Increment the bill counter
+                bill_counter += 1
+
+                # Append billing details to the response array
+                billing_response.append({
                     "billingId": str(new_billing.id),
                     "billNumber": bill_counter,
                     "subtotal": subtotal,
                     "grandTotal": grand_total,
-                    # "status": new_billing.status,
                     "discount": discount,
                     "tax": tax,
-                    "Iteam": [data],  
-                },
-                "status": "success",
-                "statusCode": 200,
-                "message": 'Item created successfully'
-            }
+                    "item": data,
+                })
 
-            return jsonify(response), 200
+        # Return the response with the billing details for each item
+        response = {
+            "body": billing_response,
+            "status": "success",
+            "statusCode": 200,
+            "message": 'Items created successfully'
+        }
+
+        return jsonify(response), 200
 
     except Exception as e:
         return jsonify({'body': {}, 'error': str(e), 'statusCode': 500})
-
 
 
 
@@ -313,6 +317,9 @@ def validate_user_id():
 
 #     except Exception as e:
 #         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+
+
+
 @billing.route('/v1/allbilling', methods=['GET'])
 def get_all_billing_entries():
     try:
@@ -329,55 +336,61 @@ def get_all_billing_entries():
 
         # Create a response object
         response_entries = []
+        subtotal = Decimal('0.0')  # Initialize subtotal as Decimal
+        total_tax = Decimal('0.0')  # Initialize total_tax as Decimal
+        total_discount = Decimal('0.0')  # Initialize total_discount as Decimal
+
         for entry in billing_entries:
             # Find the item using the item code from the current billing entry
             item_obj = Item.objects(itemCode=entry.itemCode).first()
 
             if item_obj:
+                # Calculate item total as Decimal
+                item_total = Decimal(entry.itemPrice) * Decimal(entry.quantity)
+
+                # Update subtotal, tax, and discount
+                subtotal += item_total
+                total_tax += Decimal(entry.tax) if entry.tax is not None else Decimal('0.0')
+                total_discount += Decimal(entry.discount) if entry.discount is not None else Decimal('0.0')
+
+                # Append item details to the response_entries
                 response_entry = {
                     "_id": str(item_obj.id),
-                    'billNumber': entry.billNumber,
-                    'grandTotal': float(entry.grandTotal),
-                  'items': [{
-                        "_id": str(entry.id),
-                        'itemCode': entry.itemCode,
-                        'itemName': entry.itemName,
-                        'itemCategory': entry.itemCategory,  # Add this line
-                        'itemSubCategory': entry.itemSubCategory,  # Add this line
-                        'itemPrice': float(item_obj.itemPrice),
-                        'ingredients': entry.ingredients,  # Add this line
-                        'recipe': entry.recipe,  # Add this line
-                        'allergen': entry.allergen,  # Add this line
-                        'portionSize': entry.portionSize,  # Add this line
-                        # 'status': entry.status,  # Add this line
-                        'tax': float(entry.tax) if entry.tax is not None else None,  # Add this line
-                        'discount': float(entry.discount) if entry.discount is not None else None,  # Add this line
-                        'currentStock': int(entry.currentStock) if entry.currentStock is not None else None,  # Add this line
-                        'barcode': entry.barcode,  # Add this line
-                        'itemTotal': float(entry.itemTotal) if entry.itemTotal is not None else None,
-                        'quantity': entry.quantity
-                    }],
-                    # 'status': entry.status,
-                    'subtotal': float(entry.subtotal),
-                    'tax': float(entry.tax),
-                    'totalDiscount': float(entry.discount) if entry.discount is not None else None
+                    "itemCode": entry.itemCode,
+                    "itemName": entry.itemName,
+                    "itemCategory": entry.itemCategory,
+                    "itemSubCategory": entry.itemSubCategory,
+                    "itemPrice": float(entry.itemPrice),
+                    "ingredients": entry.ingredients,
+                    "recipe": entry.recipe,
+                    "allergen": entry.allergen,
+                    "portionSize": entry.portionSize,
+                    "quantity": entry.quantity,
+                    "tax": float(entry.tax) if entry.tax is not None else None,
+                    "discount": float(entry.discount) if entry.discount is not None else None,
+                    "currentStock": int(entry.currentStock) if entry.currentStock is not None else None,
+                    "barcode": entry.barcode,
+                    "itemTotal": None,  # You might want to calculate it based on your logic
                 }
-                response_entries.append(response_entry)
-            else:
-                # Handle the case where the item with the given itemCode is not found
-                return jsonify({'body': None, 'error': f'Item with code {entry.itemCode} not found', 'statusCode': 404}), 404
 
+                response_entries.append(response_entry)
+
+        # Create the final response
         response = {
-            'body': response_entries,
-            'message': 'Billing entries retrieved successfully',
-            'status': 'success',
-            'statusCode': 200
+            "items": response_entries,
+            "subtotal": round(float(subtotal), 2),
+            "tax": round(float(total_tax), 2),
+            "totalDiscount": round(float(total_discount), 2),
+            "status": "success",
+            "statusCode": 200,
+            "message": "Billing entries retrieved successfully",
         }
 
         return jsonify(response), 200
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+
 
 # ______________________________________________________________________________________
 
@@ -395,8 +408,9 @@ def validate_user_id():
 
 
 
+
 # Get billing entry by code or name
-@billing.route('/v1/billing', methods=['GET'])
+@billing.route('/v1/billing/search', methods=['GET'])
 def get_billing_entry_by_code_or_name():
     try:
         # Extract the user_id from the request headers
@@ -429,7 +443,7 @@ def get_billing_entry_by_code_or_name():
         if item_name is not None:
             query_params['itemName__iexact'] = item_name
 
-        billing_entries = Billing.objects.filter(**query_params)
+        billing_entries = Item.objects.filter(**query_params)
 
         if not billing_entries:
             return jsonify({'body': None, 'status': 'error', 'message': 'Billing entry not found', 'statusCode': 404}), 404
