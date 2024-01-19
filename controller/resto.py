@@ -1281,7 +1281,9 @@ def delete_item(item_code):
 
 
 
-# Search items by itemCode or itemName
+from mongoengine.queryset.visitor import Q
+
+# Search items by itemCode or itemName using a single query parameter
 @restoapp.route('/v1/item/search', methods=['GET'])
 def search_items():
     try:
@@ -1295,27 +1297,18 @@ def search_items():
         # Get the current user
         user = User.objects.get(id=user_id)
 
-        # Get the search parameters from the query string
-        item_code = request.args.get('itemCode')
-        item_name = request.args.get('itemName')
+        # Get the search parameter from the query string
+        search_query = request.args.get('search')
 
-        # Validate search parameters
-        if not item_code and not item_name:
-            return jsonify({'body': None, 'status': 'error', 'message': 'At least one of itemCode or itemName is required for search.', 'statusCode': 400}), 200
+        # Validate search parameter
+        if not search_query:
+            return jsonify({'body': None, 'status': 'error', 'message': 'Search query is required for search.', 'statusCode': 400}), 200
 
-        # Prepare the search criteria
-        search_criteria = {
-            'creator': user
-        }
-
-        if item_code:
-            search_criteria['itemCode'] = item_code
-
-        if item_name:
-            search_criteria['itemName__icontains'] = item_name
+        # Prepare the search criteria using Q
+        search_criteria = Q(creator=user) & (Q(itemCode__icontains=search_query) | Q(itemName__icontains=search_query))
 
         # Perform the search
-        items = Item.objects(**search_criteria)
+        items = Item.objects(search_criteria)
 
         response_items = []
 
@@ -1344,6 +1337,8 @@ def search_items():
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+
+
 
 # __
  
