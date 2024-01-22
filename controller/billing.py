@@ -1,3 +1,4 @@
+from collections import defaultdict
 import logging
 import re
 from flask import Blueprint, jsonify, request
@@ -30,6 +31,8 @@ def create_items():
         items_data = request.json
 
         billing_response = []
+               # Use the current bill counter for all items in this request
+        current_bill_number = bill_counter
 
         for data in items_data:
             item_code = data.get('itemCode')
@@ -40,8 +43,9 @@ def create_items():
             subtotal = item_price * data.get('quantity', 1)
             discount = data.get('discount', 0)
             tax = data.get('tax', 0)
-
             grand_total = subtotal - discount + tax
+
+
 
             # Get the item from the collection based on itemCode
             existing_item = Item.objects(itemCode=item_code).first()
@@ -77,6 +81,7 @@ def create_items():
                     quantity=requested_quantity,
                     creator=user,
                     subtotal=subtotal,
+                    billNumber=current_bill_number, 
                     grandTotal=grand_total
                 )
 
@@ -90,18 +95,21 @@ def create_items():
                 new_billing.save()
 
                 # Increment the bill counter
-                bill_counter += 1
+                # bill_counter += 1
 
                 # Append billing details to the response array
                 billing_response.append({
                     "billingId": str(new_billing.id),
-                    "billNumber": bill_counter,
+                    "billNumber": current_bill_number,
                     "subtotal": subtotal,
                     "grandTotal": grand_total,
                     "discount": discount,
                     "tax": tax,
                     "item": data,
                 })
+
+             # Increment the bill counter after processing all items
+                bill_counter += 1
 
         # Return the response with the billing details for each item
         response = {
@@ -334,28 +342,27 @@ def get_all_billing_entries():
         # Retrieve all billing entries for the user
         billing_entries = Billing.objects(creator=user)
 
-        # Create a response object
-        response_entries = []
-        subtotal = Decimal('0.0')  # Initialize subtotal as Decimal
-        total_tax = Decimal('0.0')  # Initialize total_tax as Decimal
-        total_discount = Decimal('0.0')  # Initialize total_discount as Decimal
-
+        # Aggregate billing entries by bill number
+        bills = defaultdict(list)
         for entry in billing_entries:
-            # Find the item using the item code from the current billing entry
-            item_obj = Item.objects(itemCode=entry.itemCode).first()
+            bills[entry.billNumber].append(entry)
 
-            if item_obj:
-                # Calculate item total as Decimal
+        # Create a response object
+        response_bills = []
+        for bill_number, entries in bills.items():
+            bill_subtotal = Decimal('0.0')
+            bill_total_tax = Decimal('0.0')
+            bill_total_discount = Decimal('0.0')
+            bill_items = []
+
+            for entry in entries:
                 item_total = Decimal(entry.itemPrice) * Decimal(entry.quantity)
+                bill_subtotal += item_total
+                bill_total_tax += Decimal(entry.tax) if entry.tax is not None else Decimal('0.0')
+                bill_total_discount += Decimal(entry.discount) if entry.discount is not None else Decimal('0.0')
 
-                # Update subtotal, tax, and discount
-                subtotal += item_total
-                total_tax += Decimal(entry.tax) if entry.tax is not None else Decimal('0.0')
-                total_discount += Decimal(entry.discount) if entry.discount is not None else Decimal('0.0')
-
-                # Append item details to the response_entries
-                response_entry = {
-                    "_id": str(item_obj.id),
+                bill_items.append({
+                    "_id": str(entry.id),
                     "itemCode": entry.itemCode,
                     "itemName": entry.itemName,
                     "itemCategory": entry.itemCategory,
@@ -370,17 +377,23 @@ def get_all_billing_entries():
                     "discount": float(entry.discount) if entry.discount is not None else None,
                     "currentStock": int(entry.currentStock) if entry.currentStock is not None else None,
                     "barcode": entry.barcode,
-                    "itemTotal": None,  # You might want to calculate it based on your logic
-                }
+                    "itemTotal": float(item_total)
+                })
 
-                response_entries.append(response_entry)
+            bill_grand_total = bill_subtotal + bill_total_tax - bill_total_discount
+            response_bills.append({
+                # "_id": str(bill_number),
+                "billNumber": bill_number,
+                "subtotal": round(float(bill_subtotal), 2),
+                "tax": round(float(bill_total_tax), 2),
+                "totalDiscount": round(float(bill_total_discount), 2),
+                "grandTotal": round(float(bill_grand_total), 2),
+                "items": bill_items
+            })
 
         # Create the final response
         response = {
-            "items": response_entries,
-            "subtotal": round(float(subtotal), 2),
-            "tax": round(float(total_tax), 2),
-            "totalDiscount": round(float(total_discount), 2),
+            "bills": response_bills,
             "status": "success",
             "statusCode": 200,
             "message": "Billing entries retrieved successfully",
@@ -390,7 +403,6 @@ def get_all_billing_entries():
 
     except Exception as e:
         return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
-
 
 # ______________________________________________________________________________________
 

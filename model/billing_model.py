@@ -52,6 +52,7 @@ class Billing(Document):
     recipe = StringField()
     # allergen = StringField()
     billNumber = IntField()
+    creator = ReferenceField(User)
     created_at = DateTimeField()
 
 # BillingEntry model
