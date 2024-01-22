@@ -1,12 +1,14 @@
+# import datetime
+from datetime import datetime
 from attr import validate
-from mongoengine import Document, StringField,ReferenceField, EmailField,ListField,DecimalField,DateTimeField,IntField,URLField,EmbeddedDocumentField,EmbeddedDocument,FloatField
+from mongoengine import Document,EmbeddedDocument, DateTimeField, StringField,ReferenceField, EmailField,ListField,DecimalField,DateTimeField,IntField,URLField,EmbeddedDocumentField,EmbeddedDocument,FloatField
 # from pydantic import ValidationError
 # from pydantic import ValidationError
 from pymongo import MongoClient
 from mongoengine import EmbeddedDocument, StringField
-# Disable OCSP support
-# MongoClient._ocsp_support = False
+ 
 
+from mongoengine.fields import DateTimeField
 
  
 from mongoengine import connect
@@ -133,6 +135,10 @@ class Verification(EmbeddedDocument):
 #     creator = ReferenceField(User, reverse_delete_rule=2) 
     
     
+# Define an EmbeddedDocument class for sales history
+class SaleHistoryEntry(EmbeddedDocument):
+    date = DateTimeField(default=datetime.utcnow)
+    action = StringField()
 
     
 class Item(Document):
@@ -153,6 +159,7 @@ class Item(Document):
     barcode = StringField()
     creator = ReferenceField(User, reverse_delete_rule=2)  # Reverse delete rule: when a user is deleted, set the reference to None
     # salesHistory = ListField(EmbeddedDocumentField(History))
+    salesHistory = ListField(EmbeddedDocumentField(SaleHistoryEntry))
     # customNotes = StringField()    
 
  

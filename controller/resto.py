@@ -7,7 +7,7 @@ from jsonschema import ValidationError
 from pymongo.errors import DuplicateKeyError
 # from msilib import Table
 from flask import Blueprint, app, request, jsonify 
-from model.resto_model import   Customer, Employee, Item,Table, ItemMaster, Order, TaxMaster, Vendor, Verification 
+from model.resto_model import   Customer, Employee, Item, SaleHistoryEntry,Table, ItemMaster, Order, TaxMaster, Vendor, Verification 
 from mongoengine.errors import DoesNotExist
 from model.resto_model import Verification
 
@@ -1035,7 +1035,12 @@ def create_item():
         if existing_item:
             return jsonify({'body': {}, "status": "error", 'message': 'Item with the provided itemCode already exists.', 'statusCode': 400}), 200
                 # Validate for blank spaces in keys and values
-    
+         
+        # Create sales history entries dynamically
+        sales_history_entries = []
+        for entry in data.get('salesHistory', []):
+            sale_entry = SaleHistoryEntry(date=entry.get('date', datetime.utcnow()), action=entry.get('action', ''))
+            sales_history_entries.append(sale_entry)    
         new_item = Item(
             itemCode=item_code,
             itemName=item_name,
@@ -1052,6 +1057,7 @@ def create_item():
             discount=data.get('discount', None),
             currentStock=data.get('currentStock', None),
             barcode=data.get('barcode', None),
+            salesHistory=sales_history_entries,
             creator=user
         )
 
@@ -1063,6 +1069,7 @@ def create_item():
 
         # Save the new item
         new_item.save()
+
 
         # updatedetails = {
            
