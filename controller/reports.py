@@ -1,3 +1,5 @@
+import datetime
+from mongoengine.queryset.visitor import Q
 from flask import Blueprint, jsonify, request
 from model.reports_model import Expense
 from model.resto_model import Item
@@ -5,51 +7,72 @@ from model.resto_model import Item
 
 reports=Blueprint('reports',__name__)
 
+import datetime
+from mongoengine.queryset.visitor import Q
+from flask import Blueprint, jsonify, request
+from model.reports_model import Expense
+from model.resto_model import Item
 
-# Report API
+reports = Blueprint('reports',__name__)
 @reports.route('/v1/reports', methods=['GET'])
 def generate_report():
     try:
-        # Get query parameters for year and month
-        year = request.args.get('year')
-        month = request.args.get('month')
+        year = request.args.get('year', type=int)
+        month = request.args.get('month', type=int)
 
-        # Validate year and month
-        if not year or not month:
-            return jsonify({'body': None, 'status': 'error', 'message': 'Year and month are required query parameters.', 'statusCode': 400}), 200
+        if year is None or month is None:
+            return jsonify({'body': None, 'status': 'error', 'message': 'Year and month are required query parameters.', 'statusCode': 400}), 400
 
-        # Get items with sales history for the specified year and month
-        items = Item.objects(salesHistory__date__year=year, salesHistory__date__month=month)
-
-        # Initialize report data
         report = {
             'year': year,
-            'month': month,
-            'total_purchase': 0.0,
-            'total_sales': 0.0,
-            'total_expense': 0.0
+            'month': datetime.date(1900, month, 1).strftime('%B'),
+            'purchases': {'purchase': 0, 'purchasecancel': 0, 'total': 0},
+            'sales': {'sale': 0, 'salecancel': 0, 'total': 0},
+            'totalExpense': 0.0
         }
 
-        # Calculate totals based on sales history actions
+        items = Item.objects.all()
+
         for item in items:
-            for purchase_entry in item.purchasesHistory:
-                if purchase_entry.date.year == int(year) and purchase_entry.date.month == int(month):
-                    report['total_purchase'] += item.itemPrice
+            for history in item.salesHistory:
+                if history.date.year == year and history.date.month == month:
+                    if history.action == 'purchase':
+                        report['purchases']['purchase'] += 1
+                    elif history.action == 'sale':
+                        report['sales']['sale'] += 1
+                    elif history.action == 'purchasecancel':
+                        report['purchases']['purchasecancel'] += 1
+                    elif history.action == 'salecancel':
+                        report['sales']['salecancel'] += 1
 
-            for sale_entry in item.salesHistory:
-                if sale_entry.date.year == int(year) and sale_entry.date.month == int(month):
-                    report['total_sales'] += item.itemPrice
+        # Adding the total of purchase and purchasecancel
+        report['purchases']['total'] = report['purchases']['purchase'] + report['purchases']['purchasecancel']
+        # Adding the total of sale and salecancel
+        report['sales']['total'] = report['sales']['sale'] + report['sales']['salecancel']
 
-        # Calculate total expenses
-        expenses = Expense.objects(expenses__date__year=year, expenses__date__month=month)
-        report['total_expense'] = sum(expense.amount for expense in expenses)
+        start_date = datetime.datetime(year, month, 1)
+        end_date = datetime.datetime(year, month + 1, 1) if month < 12 else datetime.datetime(year + 1, 1, 1)
 
-        return jsonify({'body': report, 'status': 'success', 'statusCode': 200, 'message': 'Report generated successfully.'}), 200
+        expenses = Expense.objects(Q(date__gte=start_date) & Q(date__lt=end_date))
+        report['totalExpense'] = sum(expense.amount for expense in expenses)
+        
+          # Adding the sums of purchases and sales to the total expense
+        report['totalExpense'] += report['purchases']['total'] + report['sales']['total']
+
+        response = {
+            "report": report,
+            "status": "success",
+            "statusCode": 200,
+            "message": "Report entries retrieved successfully"
+        }
+        return jsonify(response), 200
+    
+        # return jsonify(response), 200
+        
+        
 
     except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 200
-
-
+        return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
 
 
 @reports.route('/akash')

@@ -39,12 +39,17 @@ class PurchaseHistoryEntry(EmbeddedDocument):
     action = StringField()
 
 class SaleHistoryEntry(EmbeddedDocument):
-    date = DateTimeField()
-    action = StringField()
+    action = StringField(required=True)  # 'purchase', 'sale', 'cancel'
+    type = StringField(required=True)  # 'sale' or 'purchase'
+    date = DateTimeField(required=True)
+    amount = DecimalField(precision=2)
+
 
 class ExpenseEntry(EmbeddedDocument):
     date = DateTimeField()
     amount = FloatField()
 
+
 class Expense(Document):
-    expenses = ListField(EmbeddedDocumentField(ExpenseEntry))
+    amount = DecimalField(precision=2, required=True)
+    date = DateTimeField(required=True)

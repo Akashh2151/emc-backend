@@ -26,7 +26,7 @@ def create_items():
             return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
 
         # Get the current user
-        user = User.objects.get(id=user_id)
+        user = User.objects.get(id=user_id) 
 
         items_data = request.json
 
