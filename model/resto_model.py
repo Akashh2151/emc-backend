@@ -145,17 +145,16 @@ class Item(Document):
     itemCode = StringField(required=True, unique=True)
     itemName = StringField(required=True)
     itemCategory = StringField()
-    itemSubCategory = StringField(validation=validate_non_empty)
+    itemSubCategory = StringField()
     itemPrice = DecimalField(precision=2,required=True)
     ingredients = StringField()
     recipe = StringField()
     allergen = StringField()
     portionSize = StringField()
     status = StringField()
-    tax = DecimalField()
-    discount = DecimalField()
-    # images = ListField(StringField())  # Assuming images are stored as file paths or URLs
-    currentStock = IntField()
+    tax = DecimalField(precision=2, required=False)  # Optional field
+    discount = DecimalField(precision=2, required=False)  # Optional field
+    currentStock = IntField(required=False) 
     barcode = StringField()
     creator = ReferenceField(User, reverse_delete_rule=2)  # Reverse delete rule: when a user is deleted, set the reference to None
     # salesHistory = ListField(EmbeddedDocumentField(History))

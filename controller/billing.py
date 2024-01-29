@@ -23,7 +23,7 @@ def create_items():
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+            return jsonify({'body': {}, 'message': 'User ID is required in headers', "status": "error", 'statusCode': 400}), 200
 
         # Get the current user
         user = User.objects.get(id=user_id) 
@@ -58,7 +58,7 @@ def create_items():
                 if current_stock is not None and current_stock >= requested_quantity:
                     existing_item.currentStock -= requested_quantity
                 else:
-                    return jsonify({'body': {}, "status": "error", 'message': f'Insufficient stock for itemCode: {item_code}', 'statusCode': 400}), 200
+                    return jsonify({'body': {},'message': f'Insufficient stock for itemCode: {item_code}', "status": "error", 'statusCode': 400}), 200
 
                 # Save the updated item
                 existing_item.save()
@@ -88,7 +88,7 @@ def create_items():
                 # Validate for blank spaces in keys and values
                 is_no_blank_spaces, error_message = validate_no_blank_spaces(data)
                 if not is_no_blank_spaces:
-                    response = {"body": {}, "status": "error", "statusCode": 400, "message": error_message}
+                    response = {"body": {}, "message": error_message,"status": "error", "statusCode": 400}
                     return jsonify(response), 200
 
                 # Save the new billing document
@@ -205,11 +205,11 @@ def create_items():
 def validate_user_id():
     user_id = request.headers.get('user_id')
     if not user_id:
-        return False, jsonify({'body': None, 'status': 'error', 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+        return False, jsonify({'body': {}, 'message': 'User ID is required in headers', 'status': 'error', 'statusCode': 400}), 200
 
     user_exists = User.objects(id=user_id).first()
     if not user_exists:
-        return False, jsonify({'body': None, 'status': 'error', 'message': 'Invalid User ID.', 'statusCode': 401}), 401
+        return False, jsonify({'body': {},'message': 'Invalid User ID','status': 'error', 'statusCode': 401}), 401
     return True, None
 
 
@@ -394,15 +394,15 @@ def get_all_billing_entries():
         # Create the final response
         response = {
             "bills": response_bills,
+            "message": "Billing entries retrieved successfully",
             "status": "success",
             "statusCode": 200,
-            "message": "Billing entries retrieved successfully",
         }
 
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+        return jsonify({'body': {}, 'error': str(e), 'statusCode': 500}), 500
 
 # ______________________________________________________________________________________
 
@@ -410,13 +410,13 @@ def get_all_billing_entries():
 def validate_user_id():
     user_id = request.headers.get('user_id')
     if not user_id:
-        return False, jsonify({'body': None, 'status': 'error', 'message': 'User ID not provided in headers', 'statusCode': 400})
+        return False, jsonify({'body': {},'message': 'User ID not provided in headers', 'status': 'error', 'statusCode': 400})
     
     try:
         user = User.objects.get(id=user_id)
         return True, None
     except DoesNotExist:
-        return False, jsonify({'body': None, 'status': 'error', 'message': 'User not found', 'statusCode': 404})
+        return False, jsonify({'body': {},'message': 'User not found', 'status': 'error', 'statusCode': 404})
 
 
 
@@ -430,7 +430,7 @@ def get_billing_entry_by_code_or_name():
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+            return jsonify({'body': {},'message': 'User ID is required in headers', "status": "error", 'statusCode': 400}), 200
 
         # Get the current user
         user = User.objects.get(id=user_id)
@@ -444,7 +444,7 @@ def get_billing_entry_by_code_or_name():
 
         # Validate that at least one of itemCode or itemName is provided
         if item_code is None and item_name is None:
-            return jsonify({'body': None, 'status': 'error', 'message': 'Please provide either itemCode or itemName', 'statusCode': 400}), 400
+            return jsonify({'body': {}, 'message': 'Please provide either itemCode or itemName','status': 'error', 'statusCode': 400}), 400
 
         # Query for the billing entry based on itemCode or itemName
         query_params = {
@@ -458,7 +458,7 @@ def get_billing_entry_by_code_or_name():
         billing_entries = Item.objects.filter(**query_params)
 
         if not billing_entries:
-            return jsonify({'body': None, 'status': 'error', 'message': 'Billing entry not found', 'statusCode': 404}), 404
+            return jsonify({'body': {},'message': 'Billing entry not found','status': 'error', 'statusCode': 404}), 404
 
         response_entries = []
         for entry in billing_entries:
@@ -495,12 +495,12 @@ def get_billing_entry_by_code_or_name():
             }
             response_entries.append(response_entry)
 
-        response = {'body': response_entries, 'status': 'success', 'statusCode': 200, 'message': 'Billing entries retrieved successfully'}
+        response = {'body': response_entries, 'message': 'Billing entries retrieved successfully','status': 'success', 'statusCode': 200,}
         return jsonify(response), 200
 
     except Exception as e:
         logging.error(f"Error in API: {str(e)}")
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+        return jsonify({'body': {}, 'error': str(e), 'statusCode': 500}), 500
 
 
 
@@ -521,13 +521,13 @@ def delete_billing_entry(billing_id):
         # Delete the billing entry
         billing_entry.delete()
 
-        return jsonify({'body': None, 'status': 'success', 'statusCode': 200, 'message': 'Billing entry deleted successfully'}), 200
+        return jsonify({'body': {}, 'message': 'Billing entry deleted successfully','status': 'success', 'statusCode': 200, }), 200
 
     except DoesNotExist:
-        return jsonify({'body': None, 'status': 'error', 'message': 'Billing entry not found', 'statusCode': 404}), 404
+        return jsonify({'body': {}, 'message': 'Billing entry not found','status': 'error', 'statusCode': 404}), 404
 
     except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+        return jsonify({'body': {}, 'error': str(e), 'statusCode': 500}), 500
     
 
 
