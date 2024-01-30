@@ -1,9 +1,6 @@
-# import datetime
 from datetime import datetime
 from attr import validate
 from mongoengine import Document,EmbeddedDocument, DateTimeField, StringField,ReferenceField, EmailField,ListField,DecimalField,DateTimeField,IntField,URLField,EmbeddedDocumentField,EmbeddedDocument,FloatField
-# from pydantic import ValidationError
-# from pydantic import ValidationError
 from pymongo import MongoClient
 from mongoengine import EmbeddedDocument, StringField
  
@@ -57,7 +54,7 @@ class Order(Document):
     vendorCode = StringField(required=True, unique=True)
     vendorName = StringField(required=True)
     vendorEmail = EmailField(required=True)
-    vendorMobile = StringField(required=True, regex=r'^\d{10}$')
+    vendorMobile = StringField(required=True)
     vendorAddr = StringField(required=True)
     creator = ReferenceField(User, reverse_delete_rule=2)  # Assuming User is the creator
     

@@ -537,20 +537,20 @@ def create_customer():
                 # Check if the employeeMobile already exists
        
         # Validate customerName format
-        if not re.match(r"^[A-Za-z0-9]+(?:\s[A-Za-z0-9]+)?$", customerName):
-            return jsonify({'body': {}, 'message': 'Customer name should only contain alphabets and numbers', "status": "error",'statusCode': 400}), 200
+        if not re.match(r"^[A-Za-z]+(?: [A-Za-z]+)*$", customerName):
+            return jsonify({'body': {}, 'message': 'Invalid Customer name. Only alphabets and single spaces allowed', "status": "error",'statusCode': 400}), 200
 
         # Check if the required fields are provided
         if customerName is None or customerMobile is None :
-            return jsonify({'body':  {},'message': 'customerName, customerMobile, are required fields', "status": "error",'statusCode': 400}), 200
+            return jsonify({'body':  {},'message': 'All fields customerName, customerMobile, are required', "status": "error",'statusCode': 400}), 200
 
         # Validate customerMobile format
         if not customerMobile.isdigit() or len(customerMobile) != 10:
-            return jsonify({'body': {},'message': 'Invalid customerMobile format', "status":"error",'statusCode': 400}), 200
+            return jsonify({'body': {},'message': 'Invalid mobile number. Must be 10 digits', "status":"error",'statusCode': 400}), 200
 
-        # # Validate customerEmail format
-        # if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", customerEmail):
-        #     return jsonify({'body': {}, "status": "error", 'message': 'Invalid customerEmail format', 'statusCode': 400}), 200
+        # Validate customerEmail format
+        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", customerEmail):
+            return jsonify({'body': {}, 'message': 'Invalid email format',"status": "error",'statusCode': 400}), 200
 
         existing_customer = Customer.objects(customerMobile=customerMobile).first()
         if existing_customer:
@@ -758,32 +758,33 @@ def create_employee():
         employee_verification = data.get('employeeVerification')    
 
             # Validate employee_name format
-        if not re.match(r"^[A-Za-z0-9]+$", employee_name):
-            return jsonify({'body': {},'message': 'Employee name should only contain alphabets and numbers', "status": "error",'statusCode': 400}), 200
+        # if not re.match(r"^[A-Za-z0-9]+$", employee_name):
+        if not re.match(r"^[A-Za-z]+(?: [A-Za-z]+)*$", employee_name):
+            return jsonify({'body': {},'message': 'Invalid employee name. Only alphabets and single spaces allowed', "status": "error",'statusCode': 400}), 200
                 
         if not employee_code.strip():
-            return jsonify({'body': None,'message': 'employee code cannot be empty',"status": "error",'statusCode': 400}), 200
+            return jsonify({'body': None,'message': 'Employee code is required',"status": "error",'statusCode': 400}), 200
        
         # Check if the required fields are provided
         if employee_code is None or employee_name is None or employee_mobile is None or employee_email is None:
-            return jsonify({'body':  {},'message': 'employeeCode, employeeName, employeeMobile, and employeeEmail are required fields',  "status": "error",'statusCode': 400}), 200
+            return jsonify({'body':  {},'message': 'All fields employeeCode, employeeName, employeeMobile, employeeEmail are required',  "status": "error",'statusCode': 400}), 200
 
         # Validate employeeMobile format
         if not employee_mobile.isdigit() or len(employee_mobile) != 10:
-            return jsonify({'body':  {}, 'message': 'Invalid employeeMobile format',  "status": "error",'statusCode': 400}), 200
+            return jsonify({'body':  {}, 'message': 'Invalid mobile number. Must be 10 digits',  "status": "error",'statusCode': 400}), 200
 
         # Validate employeeEmail format
         if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", employee_email):
-            return jsonify({'body':  {},'message': 'Invalid employeeEmail format',"status": "error",'statusCode': 400}), 200
+            return jsonify({'body':  {},'message': 'Invalid email format',"status": "error",'statusCode': 400}), 200
 
         existing_employee = Employee.objects(employeeCode=employee_code).first()
         if existing_employee:
-            return jsonify({'body':  {},'message': 'Employee with the provided employeeCode already exists',"status": "error",'statusCode': 400}), 200
+            return jsonify({'body':  {},'message': 'Employee with this code already exists',"status": "error",'statusCode': 400}), 200
                 # Check if the employeeMobile already exists
        
         existing_employee = Employee.objects(employeeMobile=employee_mobile).first()
         if existing_employee:
-            return jsonify({'body': {},'message': 'Employee with the provided employeeMobile already exists',"status": "error",'statusCode': 400}), 200
+            return jsonify({'body': {},'message': 'Employee with this mobile number already exists',"status": "error",'statusCode': 400}), 200
 
         new_employee = Employee(
             employeeCode=employee_code,
@@ -993,6 +994,7 @@ def delete_employee(employee_code):
      
 
 # __
+    
 @restoapp.route('/v1/item', methods=['POST'])
 def create_item():
     try:
@@ -1010,6 +1012,18 @@ def create_item():
         item_code = data.get('itemCode')
         item_name = data.get('itemName')
         item_price = data.get('itemPrice')
+
+
+        # Extract optional fields, set to None if empty
+        tax = data.get('tax')
+        discount = data.get('discount')
+        currentStock = data.get('currentStock')
+
+        # Check if the values are empty and set them to None
+        tax = None if tax == "" else tax
+        discount = None if discount == "" else discount
+        currentStock = None if currentStock == "" else currentStock
+
  
 
     
@@ -1055,9 +1069,9 @@ def create_item():
             allergen=data.get('allergen', None),
             portionSize=data.get('portionSize', None),
             status=data.get('status', None),
-            tax=data.get('tax', None),
-            discount=data.get('discount', None),
-            currentStock=data.get('currentStock', None),
+            tax=tax,
+            discount=discount,
+            currentStock=currentStock,
             barcode=data.get('barcode', None),
             salesHistory=sales_history_entries,
             creator=user
@@ -1575,20 +1589,20 @@ def create_vendor():
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+            return jsonify({'body':  {},'message': 'User ID is required in headers',"status": "error", 'statusCode': 400}), 200
 
         # Convert the user_id string to ObjectId
         try:
             user_id = ObjectId(user_id)
         except:
-            return jsonify({'body': None, "status": "error", 'message': 'Invalid user ID format', 'statusCode': 400}), 200
+            return jsonify({'body': {}, 'message': 'Invalid user ID format',  "status": "error",'statusCode': 400}), 200
 
         # Get the current user
         user = User.objects.filter(id=user_id).first()
 
         # Check if the user exists
         if not user:
-            return jsonify({'body': None, "status": "error", 'message': 'User matching query does not exist', 'statusCode': 404}), 200
+            return jsonify({'body': {},'message': 'User matching query does not exist',"status": "error",'statusCode': 404}), 200
 
         data = request.json
         vendor_code = data.get('vendorCode')
@@ -1599,21 +1613,42 @@ def create_vendor():
 
         # Check if the required fields are provided
         if vendor_code is None or vendor_name is None  or vendor_mobile is None :
-            return jsonify({'body': None, "status": "error", 'message': 'All vendor fields are required.', 'statusCode': 400}), 200
+            return jsonify({'body': {},'message': 'All vendor fields are required', "status": "error", 'statusCode': 400}), 200
+        
+        if not re.match(r"^[A-Za-z]+(?: [A-Za-z]+)*$", vendor_name):
+           return jsonify({'body': {},'message': 'Invalid vendor name. Only alphabets and single spaces allowed','status': 'error','statusCode': 400}), 200
+       
 
+        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", vendor_email):
+            return jsonify({
+                'body': {},
+                'message': 'Invalid email format',
+                'status': 'error',
+                'statusCode': 400
+            }), 200
+        
+        if not vendor_mobile.isdigit() or len(vendor_mobile) != 10:
+            return jsonify({
+                    'body': {},
+                    'message': 'Invalid mobile number. Must be 10 digits',
+                    'status': 'error',
+                    'statusCode': 400
+            }), 200
+
+       
         existing_vendor = Vendor.objects(vendorCode=vendor_code).first()
         if existing_vendor:
-            return jsonify({'body': None, "status": "error", 'message': 'Vendor with the provided vendorCode already exists.', 'statusCode': 400}), 200
+            return jsonify({'body': {}, "status": "error", 'message': 'Vendor with the provided vendorCode already exists', 'statusCode': 400}), 200
 
         
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
-            return jsonify({"body": None, "status": "error", "statusCode": 400, "message": error_message}), 400
+            return jsonify({"body": {},"message": error_message,"status": "error", "statusCode": 400}), 400
 
         # Check if vendorName is not empty
         if not vendor_code.strip():
-            return jsonify({"body": None, "status": "error", "statusCode": 400, "message": 'VendorCode cannot be empty.'}), 400
+            return jsonify({"body": {}, "message": 'VendorCode cannot be empty', "status": "error", "statusCode": 400}), 400
 
     
         # Create a new vendor
@@ -1634,7 +1669,7 @@ def create_vendor():
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body':  {}, 'error': str(e), 'statusCode': 500})
     
     
 
@@ -1650,7 +1685,7 @@ def get_all_vendors():
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+            return jsonify({'body': {},'message': 'User ID is required in headers', "status": "error", 'statusCode': 400}), 200
 
         # Get the current user
         user = User.objects.get(id=user_id)
@@ -1670,11 +1705,11 @@ def get_all_vendors():
             for vendor in vendors
         ]
 
-        response = {'body': response_vendors, 'status': 'success', 'statusCode': 200, 'message': 'Vendors retrieved successfully'}
+        response = {'body': response_vendors,'message': 'Vendors retrieved successfully', 'status': 'success', 'statusCode': 200}
         return jsonify(response), 200
 
     except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body': {}, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -1688,7 +1723,7 @@ def get_vendor_by_code(vendor_code):
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+            return jsonify({'body': {},'message': 'User ID is required in headers', "status": "error", 'statusCode': 400}), 200
         
         vendor = Vendor.objects.get(vendorCode=vendor_code)
 
@@ -1700,13 +1735,13 @@ def get_vendor_by_code(vendor_code):
             "vendorAddr": vendor.vendorAddr
         }
 
-        response = {'body': vendor_data, 'status': 'success', 'statusCode': 200, 'message': 'Vendor retrieved successfully'}
+        response = {'body': vendor_data, 'message': 'Vendor retrieved successfully', 'status': 'success', 'statusCode': 200}
         return jsonify(response), 200
 
     except DoesNotExist:
-        return jsonify({'body': None, 'error': 'Vendor not found', 'statusCode': 404}), 404
+        return jsonify({'body':  {}, 'error': 'Vendor not found', 'statusCode': 404}), 404
     except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body':  {}, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -1721,15 +1756,16 @@ def update_vendor(vendor_code):
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+            return jsonify({'body': {},'message': 'User ID is required in headers', "status": "error", 'statusCode': 400}), 200
         
         
         if data.get('vendorCode') and data['vendorCode'] != vendor_code:
             response = {
-                "body": None,
+                "body":  {},
+                 "message": "Cannot change vendorCode in the update",
                 "status": "error",
                 "statusCode": 400,
-                "message": "Cannot change vendorCode in the update"
+               
             }
             return jsonify(response), 200
         
@@ -1744,18 +1780,18 @@ def update_vendor(vendor_code):
         # Validate for blank spaces in keys and values
         is_no_blank_spaces, error_message = validate_no_blank_spaces(request.json)
         if not is_no_blank_spaces:
-            response = {"body": None, "status": "error", "statusCode": 400, "message": error_message}
+            response = {"body": {}, "message": error_message, "status": "error", "statusCode": 400}
             return jsonify(response), 200
 
         vendor.save()
 
-        response = {"body": data, "status": "success", "statusCode": 200, "message": 'Vendor updated successfully'}
+        response = {"body": data,"message": 'Vendor updated successfully', "status": "success", "statusCode": 200}
         return jsonify(response), 200
 
     except DoesNotExist:
-        return jsonify({'body': None, 'error': 'Vendor not found', 'statusCode': 404}), 404
+        return jsonify({'body': {}, 'error': 'Vendor not found', 'statusCode': 404}), 404
     except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body':  {}, 'error': str(e), 'statusCode': 500})
 
 
 
@@ -1770,18 +1806,18 @@ def delete_vendor(vendor_code):
 
         # Check if the user_id is provided
         if not user_id:
-            return jsonify({'body': None, "status": "error", 'message': 'User ID is required in headers.', 'statusCode': 400}), 200
+            return jsonify({'body':  {},'message': 'User ID is required in headers', "status": "error", 'statusCode': 400}), 200
         
         vendor = Vendor.objects.get(vendorCode=vendor_code)
         vendor.delete()
 
-        response = {"body": None, "status": "success", "statusCode": 200, "message": 'Vendor deleted successfully'}
+        response = {"body": {},"message": 'Vendor deleted successfully', "status": "success", "statusCode": 200}
         return jsonify(response), 200
 
     except DoesNotExist:
-        return jsonify({'body': None, 'error': 'Vendor not found', 'statusCode': 404}), 404
+        return jsonify({'body':  {}, 'error': 'Vendor not found', 'statusCode': 404}), 404
     except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500})
+        return jsonify({'body':  {}, 'error': str(e), 'statusCode': 500})
 
 
 
