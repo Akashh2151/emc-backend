@@ -549,8 +549,8 @@ def create_customer():
             return jsonify({'body': {},'message': 'Invalid mobile number. Must be 10 digits', "status":"error",'statusCode': 400}), 200
 
         # Validate customerEmail format
-        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", customerEmail):
-            return jsonify({'body': {}, 'message': 'Invalid email format',"status": "error",'statusCode': 400}), 200
+        # if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", customerEmail):
+        #     return jsonify({'body': {}, 'message': 'Invalid email format',"status": "error",'statusCode': 400}), 200
 
         existing_customer = Customer.objects(customerMobile=customerMobile).first()
         if existing_customer:
@@ -731,8 +731,8 @@ def delete_customer(customer_id):
         return jsonify({'body':  {},'message': str(e),'status': 'error','statusCode': 500}), 500
 
     
-    
-# # --
+   
+##--
 # Route to create an employee
 @restoapp.route('/v1/employee', methods=['POST'])
 def create_employee():
@@ -766,7 +766,7 @@ def create_employee():
             return jsonify({'body': None,'message': 'Employee code is required',"status": "error",'statusCode': 400}), 200
        
         # Check if the required fields are provided
-        if employee_code is None or employee_name is None or employee_mobile is None or employee_email is None:
+        if employee_code is None or employee_name is None or employee_mobile is None :
             return jsonify({'body':  {},'message': 'All fields employeeCode, employeeName, employeeMobile, employeeEmail are required',  "status": "error",'statusCode': 400}), 200
 
         # Validate employeeMobile format
@@ -774,8 +774,8 @@ def create_employee():
             return jsonify({'body':  {}, 'message': 'Invalid mobile number. Must be 10 digits',  "status": "error",'statusCode': 400}), 200
 
         # Validate employeeEmail format
-        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", employee_email):
-            return jsonify({'body':  {},'message': 'Invalid email format',"status": "error",'statusCode': 400}), 200
+        # if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", employee_email):
+        #     return jsonify({'body':  {},'message': 'Invalid email format',"status": "error",'statusCode': 400}), 200
 
         existing_employee = Employee.objects(employeeCode=employee_code).first()
         if existing_employee:
@@ -1031,7 +1031,7 @@ def create_item():
         if not re.match(r"^[A-Za-z0-9]+(?: [A-Za-z0-9]+)?$", item_name):
             response = {
                 'body': {},
-                'message': 'employee_name should only contain alphabets and numbers with at most one space in between.',
+                'message': 'item_name should only contain alphabets and numbers with at most one space in between.',
                 'status': 'error',
                 'statusCode': 400
             }
@@ -1519,7 +1519,7 @@ def update_table(table_code):
         if data.get('tableCode') and data['tableCode'] != table_code:
             response = {
                 "body":  {},
-                "message": "Cannot change vendorCode in the update",
+                "message": "Cannot change table Code in the update",
                 "status": "error",
                 "statusCode": 400,
 
@@ -1619,13 +1619,13 @@ def create_vendor():
            return jsonify({'body': {},'message': 'Invalid vendor name. Only alphabets and single spaces allowed','status': 'error','statusCode': 400}), 200
        
 
-        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", vendor_email):
-            return jsonify({
-                'body': {},
-                'message': 'Invalid email format',
-                'status': 'error',
-                'statusCode': 400
-            }), 200
+        # if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", vendor_email):
+        #     return jsonify({
+        #         'body': {},
+        #         'message': 'Invalid email format',
+        #         'status': 'error',
+        #         'statusCode': 400
+        #     }), 200
         
         if not vendor_mobile.isdigit() or len(vendor_mobile) != 10:
             return jsonify({
@@ -1651,7 +1651,7 @@ def create_vendor():
             return jsonify({"body": {}, "message": 'VendorCode cannot be empty', "status": "error", "statusCode": 400}), 400
 
     
-        # Create a new vendor
+        # Create a new vendoremp
         new_vendor = Vendor(
             vendorCode=vendor_code,
             vendorName=vendor_name,
