@@ -38,7 +38,7 @@ def validate_non_empty(value):
 #     comments = StringField()
 
 class Employee(Document):
-    employeeCode = StringField(required=True, unique=True)
+    employeeCode = StringField(required=True)
     employeeName = StringField(required=True)
     employeeMobile = StringField(required=True,regex=r'^\d{10}$')
     employeeEmail = StringField()
@@ -51,7 +51,7 @@ class Employee(Document):
 
 # Order model with creator field
 class Order(Document):
-    vendorCode = StringField(required=True, unique=True)
+    vendorCode = StringField(required=True)
     vendorName = StringField(required=True)
     vendorEmail = EmailField(required=True)
     vendorMobile = StringField(required=True)
@@ -139,7 +139,7 @@ class SaleHistoryEntry(EmbeddedDocument):
 
     
 class Item(Document):
-    itemCode = StringField(required=True, unique=True)
+    itemCode = StringField(required=True ) 
     itemName = StringField(required=True)
     itemCategory = StringField()
     itemSubCategory = StringField()
@@ -154,15 +154,15 @@ class Item(Document):
     currentStock = IntField(required=False) 
     barcode = StringField()
     creator = ReferenceField(User, reverse_delete_rule=2)  # Reverse delete rule: when a user is deleted, set the reference to None
-    # salesHistory = ListField(EmbeddedDocumentField(History))
+#     # salesHistory = ListField(EmbeddedDocumentField(History))
     salesHistory = ListField(EmbeddedDocumentField(SaleHistoryEntry))
-    # customNotes = StringField()    
+#     # customNotes = StringField()    
 
  
 
 
 class Table(Document):
-        tableCode =StringField(required=True,unique=True)
+        tableCode =StringField(required=True)
         tableName=StringField(required=True,)
         tableStatus =StringField(required=True)
         tableQR=StringField(required=True)
@@ -176,7 +176,7 @@ class User(Document):
 
 
 class Vendor(Document):
-    vendorCode = StringField(required=True, unique=True)
+    vendorCode = StringField(required=True)
     vendorName = StringField(required=True)
     vendorEmail = EmailField(required=True,regex = r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
     vendorMobile = StringField(required=True,regex=r'^\d{10}$')

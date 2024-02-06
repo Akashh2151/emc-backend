@@ -31,7 +31,7 @@ app.config['JWT_TOKEN_LOCATION'] = ['headers']
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 1
  
 
-
+app.config['WTF_CSRF_ENABLED'] = False
 app.config['SECRET_KEY'] = '98c5bc0a178ff2d6c0c1471c6f3dc5e4'# Set your secret key
 app.config['JWT_ALGORITHM'] = 'HS256'  # Choose an appropriate algorithm
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False  # Set your token expiration as needed

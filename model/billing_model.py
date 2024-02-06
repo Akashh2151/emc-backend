@@ -7,7 +7,7 @@ from wtforms import ValidationError
 from model.resto_model import Item
   
 # Disable OCSP support
-MongoClient._ocsp_support = False
+# MongoClient._ocsp_support = False
   
 from model.signInsignup_model import User
 # Replace the values with your MongoDB URI and other settings

@@ -777,9 +777,9 @@ def create_employee():
         # if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", employee_email):
         #     return jsonify({'body':  {},'message': 'Invalid email format',"status": "error",'statusCode': 400}), 200
 
-        existing_employee = Employee.objects(employeeCode=employee_code).first()
+        existing_employee = Employee.objects(employeeCode=employee_code, creator=user).first()
         if existing_employee:
-            return jsonify({'body':  {},'message': 'Employee with this code already exists',"status": "error",'statusCode': 400}), 200
+            return jsonify({'body':  {},'message': 'Employee with the provided employeeCode already exists for this creator',"status": "error",'statusCode': 400}), 200
                 # Check if the employeeMobile already exists
        
         existing_employee = Employee.objects(employeeMobile=employee_mobile).first()
@@ -1028,10 +1028,10 @@ def create_item():
 
     
         # Validate employee_name format
-        if not re.match(r"^[A-Za-z0-9]+(?: [A-Za-z0-9]+)?$", item_name):
+        if not re.match(r"^[A-Za-z]+(?: [A-Za-z]+)*$", item_name):
             response = {
                 'body': {},
-                'message': 'item_name should only contain alphabets and numbers with at most one space in between.',
+                'message':'Invalid  Iteam name. Only alphabets and single spaces allowed',
                 'status': 'error',
                 'statusCode': 400
             }
@@ -1046,12 +1046,12 @@ def create_item():
         if not item_code.strip():
             return jsonify({'body': {},'message': 'itemCode cannot be empty',"status": "error",'statusCode': 400}), 200
        
-       
-        existing_item = Item.objects(itemCode=item_code).first()
+
+         # Check if an item with the same itemCode and creator already exists
+        existing_item = Item.objects(itemCode=item_code, creator=user).first()
         if existing_item:
-            return jsonify({'body': {},'message': 'Item with the provided itemCode already exists', "status": "error", 'statusCode': 400}), 200
-                # Validate for blank spaces in keys and values
-         
+            return jsonify({'body': {}, 'message': 'Item with the provided itemCode already exists for this creator', "status": "error", 'statusCode': 400}), 200
+
         # Create sales history entries dynamically
         sales_history_entries = []
         for entry in data.get('salesHistory', []):
@@ -1636,9 +1636,9 @@ def create_vendor():
             }), 200
 
        
-        existing_vendor = Vendor.objects(vendorCode=vendor_code).first()
+        existing_vendor = Vendor.objects(vendorCode=vendor_code,creator=user).first()
         if existing_vendor:
-            return jsonify({'body': {}, "status": "error", 'message': 'Vendor with the provided vendorCode already exists', 'statusCode': 400}), 200
+            return jsonify({'body': {}, "status": "error", 'message': 'Vendor with the provided vendorCode already exists for this creator', 'statusCode': 400}), 200
 
         
         # Validate for blank spaces in keys and values
