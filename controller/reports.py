@@ -24,7 +24,7 @@ def generate_report():
         month = request.args.get('month', type=int)
 
         if year is None or month is None:
-            return jsonify({'body': None, 'status': 'error', 'message': 'Year and month are required query parameters.', 'statusCode': 400}), 400
+            return jsonify({'body':  {}, 'status': 'error', 'message': 'Year and month are required query parameters.', 'statusCode': 400}), 400
 
         report = {
             'year': year,
