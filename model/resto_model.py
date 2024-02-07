@@ -152,6 +152,7 @@ class Item(Document):
     tax = DecimalField(precision=2, required=False)  # Optional field
     discount = DecimalField(precision=2, required=False)  # Optional field
     currentStock = IntField(required=False) 
+    fixedcurrentStock=IntField()
     barcode = StringField()
     creator = ReferenceField(User, reverse_delete_rule=2)  # Reverse delete rule: when a user is deleted, set the reference to None
 #     # salesHistory = ListField(EmbeddedDocumentField(History))

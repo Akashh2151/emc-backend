@@ -392,9 +392,9 @@ def login():
               
               
                     return jsonify({'body': updated_user_details,
-                                    'message': 'Login successfully',"status": "success", 'access_token': token,"statusCode": 200,}),200
+                                    'message': 'Login successfully',"status": "success", 'accessToken': token,"statusCode": 200,}),200
                 else:
-                    return jsonify({'body':{},'message': 'Login successfully', 'access_token': token, 'statusCode': 200}),200
+                    return jsonify({'body':{},'message': 'Login successfully', 'accessToken': token, 'statusCode': 200}),200
 
             else:
                 return jsonify({'body':{},'message': 'Incorrect password','statusCode': 401,"status": "error"}), 200
@@ -418,14 +418,14 @@ def role_login():
         user_role = decoded_token.get('role')
 
         if user_role == 'admin':
-            return jsonify({'status_code': 200, 'message': 'success', 'role': 'admin'}), 200
+            return jsonify({'statusCode': 200, 'message': 'success', 'role': 'admin'}), 200
         elif user_role == 'user':
-            return jsonify({'status_code': 200, 'message': 'success', 'role': 'user'}), 200
+            return jsonify({'statusCode': 200, 'message': 'success', 'role': 'user'}), 200
         else:
-            return jsonify({'status_code': 403, 'message': 'Permission denied'}), 403
+            return jsonify({'statusCode': 403, 'message': 'Permission denied'}), 403
     except UnicodeDecodeError as e:
         # Handle the specific error when the token payload cannot be decoded
-        return jsonify({'status_code': 400, 'error': 'Invalid token payload'}), 400
+        return jsonify({'statusCode': 400, 'error': 'Invalid token payload'}), 400
     except Exception as e:
-        return jsonify({'status_code': 500, 'error': str(e)}), 500
+        return jsonify({'statusCode': 500, 'error': str(e)}), 500
  

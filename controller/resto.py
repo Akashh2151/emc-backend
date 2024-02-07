@@ -1072,6 +1072,7 @@ def create_item():
             tax=tax,
             discount=discount,
             currentStock=currentStock,
+            fixedcurrentStock=currentStock,
             barcode=data.get('barcode', None),
             salesHistory=sales_history_entries,
             creator=user

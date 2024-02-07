@@ -75,7 +75,7 @@ def generate_report():
         
 
     except Exception as e:
-        return jsonify({'body': None, 'error': str(e), 'statusCode': 500}), 500
+        return jsonify({'body': {}, 'error': str(e), 'statusCode': 500}), 500
 
 
 # @reports.route('/v1/reports/most-sold', methods=['GET'])
@@ -152,68 +152,137 @@ def generate_report():
 # @reports.route('/akash')
 # def hello_world():
 #       return jsonify({'message': 'hi All team'}), 200
+    
+
+
+# @reports.route('/v1/reports/overview', methods=['GET'])
+# def reports_overview():
+#     try:
+#         # Extract query parameters
+#         date_str = request.args.get('date', type=str)  # Expected format: 'YYYY-MM'
+#         column = request.args.get('column', type=str)
+#         sort_order = request.args.get('sort', default='asc', type=str)
+
+#         # Validate and parse the date
+#         if date_str is None:
+#             return jsonify({'message': 'Date is a required query parameter.', 'status': 'error', 'statusCode': 400}), 400
+#         try:
+#             year, month = map(int, date_str.split('-'))
+#         except ValueError:
+#             return jsonify({'message': 'Date format should be YYYY-MM.', 'status': 'error', 'statusCode': 400}), 400
+
+#         # Validate sort_order
+#         if sort_order not in ['asc', 'desc']:
+#             return jsonify({'message': 'Sort must be either "asc" or "desc".', 'status': 'error', 'statusCode': 400}), 400
+
+#         # Query items from the database
+#         items = Item.objects.all()
+#         items_report = []
+
+#         for item in items:
+#             report = {
+#                 'itemName': item.itemName,
+#                 'mostSold': 0,  # Placeholder, assuming you'll calculate this
+#                 'leastSold': 0,  # Placeholder, assuming you'll calculate this
+#                 'quantityRemaining': item.currentStock  # Assuming this is an attribute of your item model
+#             }
+#             sales_count = 0
+#             cancellations_count = 0
+            
+#             for history in item.salesHistory:
+#                 history_date = history.date.date()  # Assuming history.date is already a datetime object
+                
+#                 if history_date.year == year and history_date.month == month:
+#                     if history.action == 'sale':
+#                         sales_count += 1
+#                     elif history.action == 'salecancel':
+#                         cancellations_count += 1
+            
+#             net_sales = sales_count - cancellations_count
+#             report['mostSold'] = net_sales  # Assuming mostSold is equivalent to net sales here
+#             # Adjust `leastSold` and other fields as necessary based on your logic
+#             report['leastSold'] = net_sales 
+#             items_report.append(report)
+
+#         # You may need to adjust the sorting logic based on your actual requirements
+#         items_report = sorted(items_report, key=lambda x: x.get(column, 0), reverse=(sort_order == 'desc'))
+
+#         # Construct the final response
+#         final_response = {
+#             'items': items_report,
+#             'status': 'success',
+#             'message': 'Report retrieved successfully',
+#             'statusCode': 200
+#         }
+
+#         return jsonify(final_response), 200
+#     except Exception as e:
+#         return jsonify({'error': str(e), 'status': 'error', 'statusCode': 500}), 500  
+    
+
 
 
 @reports.route('/v1/reports/overview', methods=['GET'])
 def reports_overview():
     try:
-        # Extract query parameters
-        date_str = request.args.get('date', type=str)  # Expected format: 'YYYY-MM'
-        column = request.args.get('column', type=str)
+        # Extract and validate query parameters
+        start_date_str = request.args.get('start_date')
+        end_date_str = request.args.get('end_date')
+        column = request.args.get('column', default='itemsSold', type=str)  # Default to sorting by itemsSold
         sort_order = request.args.get('sort', default='asc', type=str)
 
-        # Validate and parse the date
-        if date_str is None:
-            return jsonify({'message': 'Date is a required query parameter.', 'status': 'error', 'statusCode': 400}), 400
+        if not start_date_str or not end_date_str:
+            return jsonify({ 'body':{},'message': 'Start date and end date are required.', 'status': 'error', 'statusCode': 400}), 400
+
         try:
-            year, month = map(int, date_str.split('-'))
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
         except ValueError:
-            return jsonify({'message': 'Date format should be YYYY-MM.', 'status': 'error', 'statusCode': 400}), 400
+            return jsonify({ 'body':{},'message': 'Invalid date format. Use YYYY-MM-DD.', 'status': 'error', 'statusCode': 400}), 400
 
-        # Validate sort_order
+        if start_date > end_date:
+            return jsonify({ 'body':{},'message': 'Start date cannot be after end date.', 'status': 'error', 'statusCode': 400}), 400
+
         if sort_order not in ['asc', 'desc']:
-            return jsonify({'message': 'Sort must be either "asc" or "desc".', 'status': 'error', 'statusCode': 400}), 400
+            return jsonify({'body':{}, 'message': 'Sort order must be "asc" or "desc".', 'status': 'error', 'statusCode': 400}), 400
 
-        # Query items from the database
+        # Fetch items from the database
         items = Item.objects.all()
         items_report = []
 
         for item in items:
+            initial_stock = item.fixedcurrentStock if item.fixedcurrentStock is not None else 0
+            current_stock = item.currentStock if item.currentStock is not None else 0
+            items_sold = initial_stock - current_stock
+
+            # Calculate the percentage of current stock compared to initial stock
+            percentage_remaining = (current_stock / initial_stock * 100) if initial_stock > 0 else 0
+            print("________________________",percentage_remaining)
+            print("________________________",items_sold)
+
+            # if items_sold >= 30:
+                
+
+            
             report = {
                 'itemName': item.itemName,
-                'mostSold': 0,  # Placeholder, assuming you'll calculate this
-                'leastSold': 0,  # Placeholder, assuming you'll calculate this
-                'quantityRemaining': item.currentStock  # Assuming this is an attribute of your item model
-            }
-            sales_count = 0
-            cancellations_count = 0
+                'mostSold': items_sold,  # Representing net sales
+                'quantityRemaining': current_stock,
+                 # 'leastSold' logic based on percentage remaining
+                'leastSold': items_sold if items_sold <= 30 else None  # Adjust 30% as needed
+              }
             
-            for history in item.salesHistory:
-                history_date = history.date.date()  # Assuming history.date is already a datetime object
-                
-                if history_date.year == year and history_date.month == month:
-                    if history.action == 'sale':
-                        sales_count += 1
-                    elif history.action == 'salecancel':
-                        cancellations_count += 1
-            
-            net_sales = sales_count - cancellations_count
-            report['mostSold'] = net_sales  # Assuming mostSold is equivalent to net sales here
-            # Adjust `leastSold` and other fields as necessary based on your logic
-            report['leastSold'] = net_sales 
             items_report.append(report)
 
-        # You may need to adjust the sorting logic based on your actual requirements
-        items_report = sorted(items_report, key=lambda x: x.get(column, 0), reverse=(sort_order == 'desc'))
+        # Sort the items report based on the requested column and sort order
+        reverse_sort = True if sort_order == 'desc' else False
+        items_report.sort(key=lambda x: x.get(column, 0), reverse=reverse_sort)
 
-        # Construct the final response
-        final_response = {
+        return jsonify({
             'items': items_report,
             'status': 'success',
             'message': 'Report retrieved successfully',
             'statusCode': 200
-        }
-
-        return jsonify(final_response), 200
+        }), 200
     except Exception as e:
-        return jsonify({'error': str(e), 'status': 'error', 'statusCode': 500}), 500    
+        return jsonify({'error': str(e), 'status': 'error', 'statusCode': 500}), 500
