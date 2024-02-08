@@ -225,6 +225,12 @@ def generate_report():
 @reports.route('/v1/reports/overview', methods=['GET'])
 def reports_overview():
     try:
+
+        user_id=request.headers.get('user_id')
+
+        if not user_id:
+                return jsonify({'body': {},'message': 'User ID is required in headers',  "status": "error", 'statusCode': 400}), 200
+      
         # Extract and validate query parameters
         start_date_str = request.args.get('start_date')
         end_date_str = request.args.get('end_date')
