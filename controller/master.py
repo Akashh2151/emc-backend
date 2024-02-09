@@ -13,7 +13,7 @@ from flask import request, jsonify
 from bson import ObjectId  # Make sure to import ObjectId
 
  
-@master.route('/v1/update_categories', methods=['POST'])
+@master.route('/v1/updatecategories', methods=['POST'])
 def update_categories():
     try:
         # Get the user ID from the headers
@@ -64,7 +64,7 @@ def update_categories():
 
 
 
-@master.route('/v1/update_subcategories', methods=['POST'])
+@master.route('/v1/updatesubcategories', methods=['POST'])
 def update_subcategories():
     try:
         # Get the user ID from the headers
@@ -121,7 +121,7 @@ def update_subcategories():
     
     
     
-@master.route('/v1/update_submenus', methods=['POST'])
+@master.route('/v1/updatesubmenus', methods=['POST'])
 def update_submenus():
     try:
         # Get the user ID from the headers

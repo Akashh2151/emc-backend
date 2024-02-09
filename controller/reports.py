@@ -226,14 +226,14 @@ def generate_report():
 def reports_overview():
     try:
 
-        user_id=request.headers.get('user_id')
+        user_id=request.headers.get('user-id')
 
         if not user_id:
                 return jsonify({'body': {},'message': 'User ID is required in headers',  "status": "error", 'statusCode': 400}), 200
       
         # Extract and validate query parameters
-        start_date_str = request.args.get('start_date')
-        end_date_str = request.args.get('end_date')
+        start_date_str = request.args.get('start-date')
+        end_date_str = request.args.get('end-date')
         column = request.args.get('column', default='itemsSold', type=str)  # Default to sorting by itemsSold
         sort_order = request.args.get('sort', default='asc', type=str)
 
